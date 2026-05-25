@@ -1,0 +1,613 @@
+using System;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
+using CCDInspection.Core;
+using CCDInspection.Core.Enums;
+using CCDInspection.Core.Interfaces;
+using CCDInspection.Core.Interfaces.Hardware;
+using CCDInspection.Core.Interfaces.Services;
+using CCDInspection.Core.Models;
+using CCDInspection.Device.IO;
+using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
+using IAlarmHandler = CCDInspection.Core.Interfaces.Services.IAlarmHandler;
+using IInspectionStation = CCDInspection.Core.Interfaces.Services.IInspectionStation;
+
+namespace CCDInspection.Services
+{
+    /// <summary>
+    /// 工位控制器 — 双层状态机驱动自动检测流程
+    /// ==============================================
+    ///
+    /// 【运行说明】
+    ///
+    /// 1. 开机 → 红灯，软件已连接ZMC/轴已使能，但未复位
+    /// 2. 按 IN3 或点"清除报警" → 黄灯(复位中) → 回零完成 → 绿灯(就绪)
+    /// 3. 点"启动自动测试" → 绿灯(运行中) → 状态机进入 WaitStart
+    /// 4. 同时按下 IN6(左启动)+IN7(右启动) → 执行一次检测流程
+    /// 5. 每轮完成后必须松开双手再按，才能触发下一轮（安全规范）
+    ///
+    /// 【检测流程（11步）】
+    ///   WaitStart → CylinderExtend → LightOn → ZAxisMove → CameraCapture
+    ///   → VisionProcess → SaveResult → LightOff → ZAxisReturn → CylinderRetract
+    ///   → Completed → 松开双手 → 下一轮 WaitStart
+    ///
+    /// 【安全机制】
+    ///   - 光栅遮挡(IN0) → 立即报警，停止所有动作
+    ///   - 急停(IN2) → 硬件急停 + 报警
+    ///   - 限位触发 → 停止轴 + 报警，反向点动退出
+    ///   - 报警后必须人工复位(IN3或软件按钮)才能继续
+    ///   - 报警→复位：气缸缩回 + Z轴回零 → 回到就绪
+    ///
+    /// 【屏蔽功能（界面复选框，即时生效无需重启）】
+    ///   屏蔽相机    = 跳过拍照，用虚拟图像
+    ///   屏蔽蜂鸣器  = 报警时蜂鸣器不响
+    ///   屏蔽光栅    = 遮挡不触发报警
+    ///   气缸屏蔽    = 跳过气缸传感器检测
+    ///
+    /// 【三层架构】
+    ///   顶层状态机 (StationState) = 控制运行模式：Idle / AutoRun / Paused / Alarm / Resetting
+    ///   流程状态机 (InspectionFlowState) = 控制检测步骤序列
+    ///   抽象设备接口 = IAxis / ICamera / ICylinder / ILightCurtain / IAlarmHandler
+    /// </summary>
+    public class StationController : IInspectionStation
+    {
+        // ================================================================
+        // 设备接口（硬件抽象，仿真/真实硬件一键切换）
+        // ================================================================
+        private readonly IMotionController _motion;   // ZMC 运动控制器
+        private readonly ICamera _camera;             // 工业相机
+        private readonly IVisionProcessor _vision;    // VisionMaster 视觉处理器
+        private readonly ICylinder _cylinder;         // 气缸
+        private readonly IAlarmHandler _alarm;        // 报警处理器
+        private readonly ILightCurtain _lightCurtain; // 安全光栅
+        private readonly StatisticsService _stats;    // 生产统计
+        private readonly AppConfig _config;           // 应用配置（轴参数/相机/检测设置）
+        private readonly IConfigService _configService; // JSON配置读写（运行时读最新屏蔽设置）
+
+        // ================================================================
+        // 双层状态机
+        // ================================================================
+        /// <summary>顶层状态机 — 控制运行模式</summary>
+        private readonly StateMachine<StationState> _topSM;
+        /// <summary>流程状态机 — 控制检测步骤序列</summary>
+        private readonly StateMachine<InspectionFlowState> _flowSM;
+
+        // ================================================================
+        // 运行时状态
+        // ================================================================
+        /// <summary>停止标志，为true时AutoRun循环和流程handler会退出</summary>
+        private volatile bool _stopRequested;
+        /// <summary>当前检测的产品配置（Z轴高度、视觉方案路径等）</summary>
+        private ProductConfig _currentProduct;
+        /// <summary>用于取消等待中的异步操作</summary>
+        private CancellationTokenSource _cycleCts;
+
+        // ================================================================
+        // 信号量（替代传统死循环轮询，减少CPU占用）
+        // ================================================================
+        /// <summary>Idle状态退出信号 — StartAsync/StopAsync 唤醒</summary>
+        private TaskCompletionSource<bool> _idleSignal;
+        /// <summary>Paused状态退出信号 — 恢复或停止时唤醒</summary>
+        private TaskCompletionSource<bool> _pausedSignal;
+        /// <summary>Alarm状态退出信号</summary>
+        private TaskCompletionSource<bool> _alarmSignal;
+
+        /// <summary>最近一次检测记录</summary>
+        public InspectionRecord LastRecord { get; private set; }
+        /// <summary>当前工位顶层状态</summary>
+        public StationState CurrentState => _topSM.CurrentState;
+
+        // ================================================================
+        // 外部事件（UI订阅）
+        // ================================================================
+        /// <summary>单次检测完成事件</summary>
+        public event Action<InspectionRecord> OnInspectionCompleted;
+        /// <summary>状态变更事件（"复位中"/"复位完成"/"自动运行"等）</summary>
+        public event Action<string> OnStatusChanged;
+        /// <summary>报警事件（报警码, 报警消息）</summary>
+        public event Action<string, string> OnAlarm;
+
+        // ================================================================
+        // 运行时读取最新屏蔽配置 — 每次访问都从JSON文件读取
+        // 界面勾选 → SaveOptionalConfig()写JSON → 此处读取 → 毫秒级生效
+        // ================================================================
+        private FeaturesConfig Features => _configService.Load()?.Features ?? _config.Features;
+
+        /// <summary>
+        /// 构造函数 — 注入所有设备接口和配置
+        /// </summary>
+        public StationController(IMotionController motion, ICamera camera, IVisionProcessor vision,
+            ICylinder cylinder, IAlarmHandler alarm, ILightCurtain lightCurtain, StatisticsService stats,
+            AppConfig config, IConfigService configService)
+        {
+            _motion = motion;
+            _camera = camera;
+            _vision = vision;
+            _cylinder = cylinder;
+            _alarm = alarm;
+            _lightCurtain = lightCurtain;
+            _stats = stats;
+            _config = config;
+            _configService = configService;
+
+            // 始终订阅光栅事件，运行时根据屏蔽配置决定是否报警（支持界面动态切换）
+            _lightCurtain.OnBlocked += () =>
+            {
+                if (Features.ShieldLightCurtain)
+                {
+                    LogService.Information("[诊断-光栅] 光栅遮挡(已屏蔽，不报警)");
+                    return;
+                }
+                if (_motion?.IsConnected != true)
+                {
+                    LogService.Warning("[诊断-光栅] 忽略遮挡事件(设备已断开)");
+                    return;
+                }
+                _ = TriggerAlarmAsync("LIGHT_CURTAIN", "安全光栅被遮挡");
+            };
+
+            // 初始化信号量
+            _idleSignal = new TaskCompletionSource<bool>();
+            _pausedSignal = new TaskCompletionSource<bool>();
+            _alarmSignal = new TaskCompletionSource<bool>();
+
+            // 创建双层状态机
+            _topSM = new StateMachine<StationState>(StationState.Idle);
+            _flowSM = new StateMachine<InspectionFlowState>(InspectionFlowState.Completed); // ≠Init，保证第一次 TransitionToAsync(Init) 执行
+
+            // 诊断：记录所有状态切换
+            _topSM.OnStateChanged += (old, cur) =>
+                LogService.Information("[诊断-状态机] 顶层 {Old} → {New}", old, cur);
+            _flowSM.OnStateChanged += (old, cur) =>
+                LogService.Information("[诊断-状态机] 流程 {Old} → {New}", old, cur);
+
+            // 注册所有状态的处理函数
+            RegisterStates();
+            // 初始状态是 Idle，但 Handler 不会自动运行。手动启动 IdleHandler 后台轮询，
+            // 这样开机红灯状态下按 IN3（复位）或 IN1（启动）就能响应。
+            _ = Task.Run(IdleHandler);
+        }
+
+        /// <summary>注册两层状态机的所有状态处理函数</summary>
+        private void RegisterStates()
+        {
+            // —— 顶层状态（5个） ——
+            _topSM.Register(StationState.Idle, IdleHandler);
+            _topSM.Register(StationState.Paused, PausedHandler);
+            _topSM.Register(StationState.AutoRun, AutoRunHandler);
+            _topSM.Register(StationState.Alarm, AlarmHandler);
+            _topSM.Register(StationState.Resetting, ResettingHandler);
+
+            // —— 流程状态（12步） ——
+            _flowSM.Register(InspectionFlowState.Init, InitFlowHandler);
+            _flowSM.Register(InspectionFlowState.WaitStart, WaitStartHandler);
+            _flowSM.Register(InspectionFlowState.CylinderExtend, CylinderExtendHandler);
+            _flowSM.Register(InspectionFlowState.LightOn, LightOnHandler);
+            _flowSM.Register(InspectionFlowState.ZAxisMove, ZAxisMoveHandler);
+            _flowSM.Register(InspectionFlowState.CameraCapture, CameraCaptureHandler);
+            _flowSM.Register(InspectionFlowState.VisionProcess, VisionProcessHandler);
+            _flowSM.Register(InspectionFlowState.SaveResult, SaveResultHandler);
+            _flowSM.Register(InspectionFlowState.LightOff, LightOffHandler);
+            _flowSM.Register(InspectionFlowState.ZAxisReturn, ZAxisReturnHandler);
+            _flowSM.Register(InspectionFlowState.CylinderRetract, CylinderRetractHandler);
+            _flowSM.Register(InspectionFlowState.Completed, CompletedHandler);
+        }
+
+        // ================================================================
+        // 顶层状态处理器
+        // ================================================================
+
+        /// <summary>
+        /// Idle（空闲）— 等待启动信号或硬件按钮
+        ///   出口1: StartAsync 调用 → 去 AutoRun（软件启动按钮或IN1硬件启动按钮）
+        ///   出口2: 检测到 IN1 按下 → 去 AutoRun（物理启动按钮）
+        ///   出口3: 检测到 IN3 按下 → 去 Resetting（物理复位按钮）
+        /// </summary>
+        private async Task IdleHandler()
+        {
+            LogService.Information("[状态机] 进入 Idle 空闲状态");
+            while (_topSM.CurrentState.Equals(StationState.Idle) && !_stopRequested)
+            {
+                var completed = await Task.WhenAny(_idleSignal.Task, Task.Delay(100));
+
+                if (_idleSignal.Task.IsCompleted)
+                {
+                    _idleSignal = new TaskCompletionSource<bool>();
+                    return; // StartAsync 唤醒 → 外部会切到 AutoRun
+                }
+
+                // 硬件启动按钮 IN1 — 等同于界面点"启动自动测试"
+                if (_motion.ReadInput(IOMapping.IN_StartButton))
+                {
+                    await Task.Delay(50);
+                    if (_motion.ReadInput(IOMapping.IN_StartButton))
+                    {
+                        LogService.Information("[状态机] Idle状态下检测到IN1，启动自动运行");
+                        _idleSignal = new TaskCompletionSource<bool>();
+                        await _topSM.TransitionToAsync(StationState.AutoRun);
+                        return;
+                    }
+                }
+
+                // 硬件复位按钮 IN3 — 回零
+                if (_motion.ReadInput(IOMapping.IN_Reset))
+                {
+                    await Task.Delay(50);
+                    if (_motion.ReadInput(IOMapping.IN_Reset))
+                    {
+                        LogService.Information("[状态机] Idle状态下检测到IN3，触发复位");
+                        _idleSignal = new TaskCompletionSource<bool>();
+                        await _topSM.TransitionToAsync(StationState.Resetting);
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Paused（暂停）— 等待恢复或停止
+        ///   出口1: 恢复信号 → 去 AutoRun
+        ///   出口2: _stopRequested → 外部切到 Idle
+        /// </summary>
+        private async Task PausedHandler()
+        {
+            LogService.Warning("[状态机] 进入 Paused 暂停状态");
+            ReportStatus("已暂停");
+            await _pausedSignal.Task;
+            _pausedSignal = new TaskCompletionSource<bool>();
+
+            if (!_stopRequested)
+                await _topSM.TransitionToAsync(StationState.AutoRun);
+        }
+
+        /// <summary>
+        /// AutoRun（自动运行）— 循环执行检测流程
+        ///   while循环每轮: WaitStart → ... → Completed
+        ///   每轮结束后等双手松开（安全规范），避免一直导通导致死循环
+        /// </summary>
+        private async Task AutoRunHandler()
+        {
+            ReportStatus("自动运行");
+            LogService.Information("[诊断] AutoRunHandler 进入 | Motion={M} ZAxis={Z}",
+                _motion?.IsConnected, _motion?.ZAxis != null ? "OK" : "NULL");
+
+            while (!_stopRequested && _topSM.CurrentState.Equals(StationState.AutoRun))
+            {
+                await _flowSM.TransitionToAsync(InspectionFlowState.Init);
+
+                // 等双手松开（IN6+IN7都断开）才能进下一轮
+                while (_motion.ReadInput(IOMapping.IN_LeftStart) || _motion.ReadInput(IOMapping.IN_RightStart))
+                {
+                    if (_stopRequested || !_topSM.CurrentState.Equals(StationState.AutoRun)) break;
+                    await Task.Delay(50);
+                }
+            }
+            LogService.Information("[诊断] AutoRunHandler 退出 | stopReq={S} curState={C}",
+                _stopRequested, _topSM.CurrentState);
+        }
+
+        /// <summary>
+        /// Alarm（报警）— 停轴，等待人工复位
+        ///   清除方式1: IN3 硬件复位按钮
+        ///   清除方式2: 软件 ResetAsync() → ClearAlarm
+        ///   清除后自动进入 Resetting
+        /// </summary>
+        private async Task AlarmHandler()
+        {
+            LogService.Error("[状态机] 进入 Alarm 报警状态");
+            _motion.ZAxis?.Stop();
+            ReportStatus("报警中...等待复位(IN3或软件复位)");
+
+            // 轮询等待报警清除
+            while (_alarm.IsAlarming && !_stopRequested)
+            {
+                if (_motion.ReadInput(IOMapping.IN_Reset))
+                {
+                    LogService.Information("[状态机] 检测到IN3复位信号，清除报警");
+                    _alarm.ClearAlarm();
+                    break;
+                }
+                await Task.Delay(100);
+            }
+            if (_alarm.IsAlarming)
+            {
+                LogService.Information("[状态机] 强制清除报警(停止请求)");
+                _alarm.ClearAlarm();
+            }
+
+            LogService.Information("[状态机] 报警已清除，进入 Resetting");
+            await _topSM.TransitionToAsync(StationState.Resetting);
+        }
+
+        /// <summary>
+        /// Resetting（复位）— 气缸缩回 + Z轴回零
+        ///   完成后自动进入 Idle
+        /// </summary>
+        private async Task ResettingHandler()
+        {
+            LogService.Information("[状态机] 进入 Resetting 复位状态");
+            ReportStatus("复位中...");
+
+            // 气缸缩回（屏蔽时跳过，避免无气缸时等20秒超时）
+            if (!Features.ShieldCylinder)
+                await _cylinder.RetractAsync(_config.Inspection.CylinderTimeoutMs);
+
+            // Z轴回零
+            if (_motion.ZAxis != null)
+            {
+                LogService.Information("[状态机] 回零中...");
+                await _motion.ZAxis.Home(_config.Axis);
+            }
+
+            LogService.Information("[状态机] 复位完成 → Idle");
+            ReportStatus("复位完成");
+            await _topSM.TransitionToAsync(StationState.Idle);
+        }
+
+        // ================================================================
+        // 流程状态处理器（12步自动检测序列）
+        // ================================================================
+
+        /// <summary>第0步：初始化 → 直接进入等待启动</summary>
+        private async Task InitFlowHandler() => await SafeFlowNext(InspectionFlowState.WaitStart);
+
+        /// <summary>第1步：等待双手启动 — IN6(左)+IN7(右) 必须同时按下</summary>
+        private async Task WaitStartHandler()
+        {
+            ReportStatus("双手同时按左启动+右启动");
+            LogService.Information("[诊断] WaitStart 等待双手 IN6={L} IN7={R}",
+                _motion.ReadInput(IOMapping.IN_LeftStart), _motion.ReadInput(IOMapping.IN_RightStart));
+
+            // 等待两个按钮同时导通
+            while (!(_motion.ReadInput(IOMapping.IN_LeftStart) && _motion.ReadInput(IOMapping.IN_RightStart)))
+            {
+                if (_stopRequested) return;
+                await Task.Delay(30);
+            }
+            // 100ms防抖确认
+            await Task.Delay(100);
+            if (!(_motion.ReadInput(IOMapping.IN_LeftStart) && _motion.ReadInput(IOMapping.IN_RightStart)))
+                return;
+            await SafeFlowNext(InspectionFlowState.CylinderExtend);
+        }
+
+        /// <summary>第2步：气缸伸出 — 电磁阀通电 → 等待伸出到位传感器</summary>
+        private async Task CylinderExtendHandler()
+        {
+            ReportStatus("气缸伸出");
+            if (Features.ShieldCylinder)
+            {
+                ReportStatus("气缸已屏蔽，跳过伸出检测");
+                await SafeFlowNext(InspectionFlowState.LightOn);
+                return;
+            }
+            if (!await _cylinder.ExtendAsync(_config.Inspection.CylinderTimeoutMs))
+            {
+                _alarm.RaiseAlarm("CYL", "气缸伸出失败");
+                await _topSM.TransitionToAsync(StationState.Alarm);
+                return;
+            }
+            await SafeFlowNext(InspectionFlowState.LightOn);
+        }
+
+        /// <summary>第3步：光源开启 — OUT2通电 → 延时稳定</summary>
+        private async Task LightOnHandler()
+        {
+            _motion.WriteOutput(IOMapping.OUT_Light, false);
+            _motion.WriteOutput(IOMapping.OUT_Light2, false);
+            await Task.Delay(_config.Inspection.LightOnDelayMs);
+            await SafeFlowNext(InspectionFlowState.ZAxisMove);
+        }
+
+        /// <summary>第4步：Z轴移动到检测高度 — 根据产品配置的ZHeight绝对定位</summary>
+        private async Task ZAxisMoveHandler()
+        {
+            float z = _currentProduct?.ZHeight ??50;
+            ReportStatus($"Z轴→{z}mm");
+            if (_motion.ZAxis == null || !await _motion.ZAxis.MoveAbs(z))
+            {
+                _alarm.RaiseAlarm("Z", "Z轴失败");
+                await _topSM.TransitionToAsync(StationState.Alarm);
+                return;
+            }
+            await SafeFlowNext(InspectionFlowState.CameraCapture);
+        }
+
+        /// <summary>当前检测图像（每次拍照前释放旧图，防止内存泄漏）</summary>
+        private Bitmap _capturedImage;
+
+        /// <summary>第5步：相机拍照 — 软触发拍照，失败记NG</summary>
+        private async Task CameraCaptureHandler()
+        {
+            _capturedImage?.Dispose();
+            _capturedImage = null;
+
+            if (Features.ShieldCamera)
+            {
+                ReportStatus("相机已屏蔽，使用虚拟图像");
+                _capturedImage = new Bitmap(100, 100);
+                await SafeFlowNext(InspectionFlowState.VisionProcess);
+                return;
+            }
+
+            if (!_camera.Trigger(out _capturedImage))
+            {
+                LastRecord = NewRecord("NG", "拍照失败");
+                await SafeFlowNext(InspectionFlowState.SaveResult);
+                return;
+            }
+            await SafeFlowNext(InspectionFlowState.VisionProcess);
+        }
+
+        /// <summary>第6步：VM视觉处理 — 未加载方案时直接OK</summary>
+        private async Task VisionProcessHandler()
+        {
+            if (!_vision.IsLoaded)
+            {
+                ReportStatus("VM未加载，跳过视觉处理→OK");
+                LastRecord = NewRecord("OK", "");
+                await SafeFlowNext(InspectionFlowState.SaveResult);
+                return;
+            }
+            bool ok; string reason;
+            _vision.Run(_capturedImage, out ok, out reason);
+            LastRecord = NewRecord(ok ? "OK" : "NG", reason);
+            await SafeFlowNext(InspectionFlowState.SaveResult);
+        }
+
+        /// <summary>第7步：保存结果 — 统计计数 + 触发UI更新</summary>
+        private async Task SaveResultHandler()
+        {
+        
+
+            if (LastRecord.Result == "OK") _stats.RecordOK();
+            else _stats.RecordNG(LastRecord.NgReason);
+            OnInspectionCompleted?.Invoke(LastRecord);
+            await SafeFlowNext(InspectionFlowState.LightOff);
+        }
+
+        /// <summary>第8步：光源关闭 — OUT2断电</summary>
+        private async Task LightOffHandler()
+        {
+            _motion.WriteOutput(IOMapping.OUT_Light, true);
+            _motion.WriteOutput(IOMapping.OUT_Light2, true);
+            await SafeFlowNext(InspectionFlowState.ZAxisReturn);
+        }
+
+        /// <summary>第9步：Z轴回零 — 回到原点位置0</summary>
+        private async Task ZAxisReturnHandler()
+        {
+            if (_motion.ZAxis != null)
+                await _motion.ZAxis.MoveAbs(0);
+            await SafeFlowNext(InspectionFlowState.CylinderRetract);
+        }
+
+        /// <summary>第10步：气缸缩回 — 电磁阀断电 → 等待缩回到位传感器</summary>
+        private async Task CylinderRetractHandler()
+        {
+            if (Features.ShieldCylinder)
+            {
+                ReportStatus("气缸已屏蔽，跳过缩回检测");
+                await SafeFlowNext(InspectionFlowState.Completed);
+                return;
+            }
+            if (!await _cylinder.RetractAsync(_config.Inspection.CylinderTimeoutMs))
+            {
+                _alarm.RaiseAlarm("CYL", "气缸缩回失败");
+                await _topSM.TransitionToAsync(StationState.Alarm);
+                return;
+            }
+            await SafeFlowNext(InspectionFlowState.Completed);
+        }
+
+        /// <summary>第11步：完成 — 报告结果，由AutoRunHandler的while循环驱动下一轮</summary>
+        private async Task CompletedHandler()
+        {
+            ReportStatus(LastRecord?.Result == "OK" ? "OK" : $"NG:{LastRecord?.NgReason}");
+            // 不主动跳下一步 — 由 AutoRunHandler 的 while 循环负责
+        }
+
+        // ================================================================
+        // 辅助方法
+        // ================================================================
+
+        /// <summary>
+        /// 安全流转到流程状态机的下一个状态
+        /// 只有顶层状态为 AutoRun 时才允许，防止报警/暂停时流程乱跑
+        /// </summary>
+        private async Task SafeFlowNext(InspectionFlowState next)
+        {
+            if (_topSM.CurrentState.Equals(StationState.AutoRun))
+            {
+                await _flowSM.TransitionToAsync(next);
+            }
+            else
+            {
+                LogService.Warning("[诊断-状态机] SafeFlowNext 阻止 | 顶层状态={S}≠AutoRun 跳过→{N}",
+                    _topSM.CurrentState, next);
+            }
+        }
+
+        // ================================================================
+        // IInspectionStation 接口实现 — 外部控制入口
+        // ================================================================
+
+        /// <summary>启动自动运行 — 加载产品方案 → 唤醒Idle → 切到AutoRun</summary>
+        public async Task StartAsync(ProductConfig product, CancellationToken ct = default)
+        {
+            LogService.Information("[诊断-状态机] StartAsync 调用 | 当前状态={S}", _topSM.CurrentState);
+            // Alarm 状态禁止直接启动，必须先复位
+            if (_topSM.CurrentState.Equals(StationState.Alarm))
+            {
+                LogService.Warning("[诊断-状态机] StartAsync 被阻止: 当前处于Alarm状态，请先复位");
+                return;
+            }
+            _currentProduct = product;
+            _stopRequested = false;
+            _cycleCts = new CancellationTokenSource();
+
+            if (!string.IsNullOrEmpty(product?.SolPath))
+                _vision.LoadSolution(product.SolPath);
+
+            ct.Register(() => _cycleCts?.Cancel());
+
+            LogService.Information("[诊断-状态机] 唤醒 Idle TCS");
+            _idleSignal?.TrySetResult(true);
+
+            await _topSM.TransitionToAsync(StationState.AutoRun);
+            LogService.Information("[诊断-状态机] StartAsync 完成 | 当前状态={S}", _topSM.CurrentState);
+        }
+
+        /// <summary>停止 — 设停止标志 → 唤醒所有信号 → 切回Idle</summary>
+        public async Task StopAsync()
+        {
+            LogService.Information("[诊断-状态机] StopAsync 调用 | 当前状态={S}", _topSM.CurrentState);
+            _stopRequested = true;
+            _cycleCts?.Cancel();
+            _cycleCts?.Dispose();
+            _cycleCts = null;
+
+            // 唤醒所有可能正在阻塞的Handler
+            _idleSignal?.TrySetResult(true);
+            _pausedSignal?.TrySetResult(true);
+            _alarmSignal?.TrySetResult(true);
+
+            await _topSM.TransitionToAsync(StationState.Idle);
+            LogService.Information("[诊断-状态机] StopAsync 完成 | 当前状态={S}", _topSM.CurrentState);
+        }
+
+        /// <summary>软件复位 — 清除报警 → 去Resetting</summary>
+        public async Task ResetAsync()
+        {
+            LogService.Information("[诊断-状态机] ResetAsync 调用 | 当前状态={S} IsAlarming={A}",
+                _topSM.CurrentState, _alarm.IsAlarming);
+            _alarm.ClearAlarm();
+            _alarmSignal?.TrySetResult(true);
+            await _topSM.TransitionToAsync(StationState.Resetting);
+            LogService.Information("[诊断-状态机] ResetAsync 完成 | 当前状态={S}", _topSM.CurrentState);
+        }
+
+        /// <summary>触发报警 — 任何异常统一入口，切到Alarm状态</summary>
+        public async Task TriggerAlarmAsync(string code, string msg)
+        {
+            LogService.Error("[诊断-状态机] TriggerAlarmAsync | Code={C} Msg={M} 当前状态={S}",
+                code, msg, _topSM.CurrentState);
+            _alarm.RaiseAlarm(code, msg);
+            OnAlarm?.Invoke(code, msg);
+            await _topSM.TransitionToAsync(StationState.Alarm);
+        }
+
+        /// <summary>创建检测记录</summary>
+        private InspectionRecord NewRecord(string r, string reason) => new InspectionRecord
+        {
+            Time = DateTime.Now,
+            ProductIndex = _currentProduct?.Index ?? "?",
+            Result = r,
+            NgReason = reason
+        };
+
+        /// <summary>报告状态变更（UI订阅显示）</summary>
+        private void ReportStatus(string msg) => OnStatusChanged?.Invoke(msg);
+    }
+}
