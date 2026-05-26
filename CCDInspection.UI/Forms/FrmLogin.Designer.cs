@@ -41,6 +41,8 @@ namespace CCDInspection.UI.Forms
             this.btn_Cancel = new Sunny.UI.UIButton();
             this.uiComboBox_Productmodel = new Sunny.UI.UIComboBox();
             this.uiLabel5 = new Sunny.UI.UILabel();
+            this.com_Product_code = new Sunny.UI.UIComboBox();
+            this.uiLabel6 = new Sunny.UI.UILabel();
             this.SuspendLayout();
             // 
             // cmb_ProductType
@@ -97,16 +99,16 @@ namespace CCDInspection.UI.Forms
             this.txt_Password.Text = "123456";
             this.txt_Password.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.txt_Password.Watermark = "";
-            // 
+            //
             // txt_Account
-            // 
+            //
             this.txt_Account.ButtonSymbol = 61761;
             this.txt_Account.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_Account.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_Account.DoubleValue = 1D;
             this.txt_Account.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_Account.IntValue = 1;
-            this.txt_Account.Location = new System.Drawing.Point(356, 211);
+            this.txt_Account.Location = new System.Drawing.Point(356, 255);
             this.txt_Account.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_Account.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_Account.Name = "txt_Account";
@@ -147,11 +149,11 @@ namespace CCDInspection.UI.Forms
             this.uiLabel3.TabIndex = 273;
             this.uiLabel3.Text = "权限：";
             this.uiLabel3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
+            //
             // uiLabel2
-            // 
+            //
             this.uiLabel2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel2.Location = new System.Drawing.Point(251, 216);
+            this.uiLabel2.Location = new System.Drawing.Point(251, 260);
             this.uiLabel2.Name = "uiLabel2";
             this.uiLabel2.Size = new System.Drawing.Size(100, 23);
             this.uiLabel2.TabIndex = 274;
@@ -159,10 +161,10 @@ namespace CCDInspection.UI.Forms
             this.uiLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btn_Login
-            // 
+            //
             this.btn_Login.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_Login.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Login.Location = new System.Drawing.Point(299, 270);
+            this.btn_Login.Location = new System.Drawing.Point(299, 315);
             this.btn_Login.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_Login.Name = "btn_Login";
             this.btn_Login.Size = new System.Drawing.Size(86, 42);
@@ -172,10 +174,10 @@ namespace CCDInspection.UI.Forms
             this.btn_Login.Click += new System.EventHandler(this.btn_Login_Click);
             // 
             // btn_Cancel
-            // 
+            //
             this.btn_Cancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_Cancel.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Cancel.Location = new System.Drawing.Point(448, 270);
+            this.btn_Cancel.Location = new System.Drawing.Point(448, 315);
             this.btn_Cancel.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_Cancel.Name = "btn_Cancel";
             this.btn_Cancel.Size = new System.Drawing.Size(86, 42);
@@ -201,7 +203,7 @@ namespace CCDInspection.UI.Forms
             this.uiComboBox_Productmodel.SelectedIndexChanged += new System.EventHandler(this.uiComboBox_Productmodel_SelectedIndexChanged);
             // 
             // uiLabel5
-            // 
+            //
             this.uiLabel5.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiLabel5.Location = new System.Drawing.Point(259, 175);
             this.uiLabel5.Name = "uiLabel5";
@@ -209,12 +211,39 @@ namespace CCDInspection.UI.Forms
             this.uiLabel5.TabIndex = 279;
             this.uiLabel5.Text = "产品型号：";
             this.uiLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
+            //
+            // com_Product_code
+            //
+            this.com_Product_code.DataSource = null;
+            this.com_Product_code.FillColor = System.Drawing.Color.White;
+            this.com_Product_code.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.com_Product_code.Location = new System.Drawing.Point(356, 211);
+            this.com_Product_code.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.com_Product_code.MinimumSize = new System.Drawing.Size(63, 0);
+            this.com_Product_code.Name = "com_Product_code";
+            this.com_Product_code.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
+            this.com_Product_code.Size = new System.Drawing.Size(178, 27);
+            this.com_Product_code.TabIndex = 280;
+            this.com_Product_code.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.com_Product_code.Watermark = "";
+            //
+            // uiLabel6
+            //
+            this.uiLabel6.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiLabel6.Location = new System.Drawing.Point(259, 216);
+            this.uiLabel6.Name = "uiLabel6";
+            this.uiLabel6.Size = new System.Drawing.Size(90, 23);
+            this.uiLabel6.TabIndex = 281;
+            this.uiLabel6.Text = "产品编码：";
+            this.uiLabel6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // FrmLogin
-            // 
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(551, 330);
+            this.ClientSize = new System.Drawing.Size(551, 380);
             this.Controls.Add(this.uiComboBox_Productmodel);
+            this.Controls.Add(this.com_Product_code);
+            this.Controls.Add(this.uiLabel6);
             this.Controls.Add(this.uiLabel5);
             this.Controls.Add(this.btn_Cancel);
             this.Controls.Add(this.btn_Login);
@@ -248,5 +277,7 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIButton btn_Cancel;
         private Sunny.UI.UIComboBox uiComboBox_Productmodel;
         private Sunny.UI.UILabel uiLabel5;
+        private Sunny.UI.UIComboBox com_Product_code;
+        private Sunny.UI.UILabel uiLabel6;
     }
 }

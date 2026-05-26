@@ -27,6 +27,12 @@ using CCDInspection.Device.IO;
 using CCDInspection.UI.Assisat;
 using CCDInspection.Device.Vision;
 using CCDInspection.Core;
+using FreeSql;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NpoiAlign = NPOI.SS.UserModel.HorizontalAlignment;
+using NpoiBorder = NPOI.SS.UserModel.BorderStyle;
 
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
 using VMControls.Winform.Release.ExportControl;
@@ -87,6 +93,7 @@ namespace CCDInspection.UI.Forms
         //从login传来的当前登录用户、产品型号和端口 更具名称加载解决方案和轴配置
         public string _currentProductPort;
         public string _currentProductModel;
+        public string _currentProductCode;
         public bool _needLoadRecipe; // FrmLogin标记：初始化完成后加载配方
 
         public string _operatorId;
@@ -95,6 +102,7 @@ namespace CCDInspection.UI.Forms
         ProductTypeConfig.ProductType _currentProduct;//当前产品型号
         string _productIndex;
         List<InspectionRecord> _inspectionRecords = new List<InspectionRecord>();//检测记录
+        IFreeSql _db; // FreeSql SQLite数据库
         System.Drawing.Bitmap[] images = new System.Drawing.Bitmap[3];
         int index;
         Stopwatch sw = new Stopwatch();
@@ -215,12 +223,21 @@ namespace CCDInspection.UI.Forms
                 _stationController = new StationController(
                     motion, vision,
                     cylinder, alarmHandler, lightCurtain, _statsService, _config, _configService);
+
+                // 订阅状态机完成事件
+
                 _stationController.OnInspectionCompleted += record =>
                     SafeBeginInvoke(() =>
                     {
+                        // VM结果解析已移至 StationController.VisionProcessHandler
+
+
                         lbl_TotalResult.Text = record.Result;
                         lbl_TotalResult.BackColor = record.Result == "OK" ? Color.LightGreen : Color.Red;
                         UpdateStatsUI(_statsService.Current);
+                        // 显示在 rtb_TestResult 并写入 SQLite
+                        bool isOk = record.Result == "OK";
+                        SaveInspectionRecord(isOk, record.Reason, record.ProductCode, record.ProductColor);
                     });
                 _stationController.OnStatusChanged += msg =>
                     SafeBeginInvoke(() =>
@@ -259,7 +276,7 @@ namespace CCDInspection.UI.Forms
                 ckb_CylinderShield.Checked = f.ShieldCylinder;
                 ckb_SaveSourceImage.Checked = f.SaveOkImage;
                 ckb_SaveNGSourceImage.Checked = f.SaveNgImage;
-    
+
                 _ioInputs = new IO_In[] { iO_In0, iO_In1, iO_In2, iO_In3, iO_In4, iO_In5, iO_In6, iO_In7, iO_In8, iO_In9, iO_In10, iO_In11, iO_In12, iO_In13, iO_In14, iO_In15 };
                 _ioOutputs = new IO_Out[] { iO_Out0, iO_Out1, iO_Out2, iO_Out3, iO_Out4, iO_Out5, iO_Out6, iO_Out7, iO_Out8, iO_Out9, iO_Out10, iO_Out11, iO_Out12, iO_Out13, iO_Out14, iO_Out15 };
                 string[] inNames = { "门禁", "设备启动", "急停", "复位", "气缸伸出到位", "气缸缩回到位", "保留", "流程启动", "停止", "IN9", "IN10", "IN11", "IN12", "IN13", "IN14", "IN15" };
@@ -277,7 +294,7 @@ namespace CCDInspection.UI.Forms
                 LogService.Information("[初始化] 轴卡连接结果 | Connected={C} | Handle={H}",
                     _deviceManager.Motion?.IsConnected, _axisHandle);
 
-                cmb_TriggerModel.SelectedIndex = 0;
+
                 if (_buzzerThread?.ThreadState != System.Threading.ThreadState.Running)
                 {
                     _buzzerThread = new Thread(new ThreadStart(Buzzer)) { IsBackground = true };
@@ -292,6 +309,8 @@ namespace CCDInspection.UI.Forms
                 LoadProductGrid();
                 InitProductCombo();
                 comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+                InitDatabase();
+                InitDbFilterControls();
                 _initFinished = true;
                 _initSuccess = true;
                 // 开机保持红灯（安全状态），等待用户手动复位后才变绿灯
@@ -300,7 +319,11 @@ namespace CCDInspection.UI.Forms
                 _stationController.StartIdlePolling();
                 // 延迟加载配方（FrmLogin时DeviceManager尚未创建）
                 if (_needLoadRecipe && !string.IsNullOrEmpty(_currentProductPort))
+                {
+                    var prod = _productModels?.FirstOrDefault(p => p.Product_port == _currentProductPort && p.Product_model == _currentProductModel);
+                    UpdateCurrentProduct(_currentProductPort, _currentProductModel, prod);
                     LoadRecipeInfo(_currentProductPort, _currentProductModel);
+                }
                 LogService.Information("[初始化] ====== 初始化完成 Initialed ======");
             }
             catch (Exception ex)
@@ -780,67 +803,10 @@ namespace CCDInspection.UI.Forms
             }
         }
 
-        private void btn_LoadSetImage_Click_1(object sender, EventArgs e)
-        {
-            index = 0;
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Multiselect = true;
-            dialog.Title = "请选择图片文件";
-            dialog.Filter = "图片文件(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp|所有文件(*.*)|*.*";
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                _imageFiles = dialog.FileNames.ToArray();
-                if (_imageFiles != null && _imageFiles.Length > 0)
-                {
-                    ShowImage(index);
-                    WriteMsg("已加载 " + _imageFiles.Length + " 张图片", UserTheadStatus.SoftOptStatus);
-                }
-                else
-                {
-                    WriteMsg("未选择任何图片文件", UserTheadStatus.SoftOptStatus);
-                }
-            }
-        }
 
-        private void ShowImage(int imageIndex)
-        {
-            if (_imageFiles == null || _imageFiles.Length == 0)
-                return;
 
-            if (imageIndex < 0 || imageIndex >= _imageFiles.Length)
-                return;
 
-            try
-            {
-                string filePath = _imageFiles[imageIndex];
-                index = imageIndex;
-                if (hWindow_Camera != null && File.Exists(filePath))
-                {
-                    hWindow_Camera.Image?.Dispose();
-                    hWindow_Camera.Image = Image.FromFile(filePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteMsg("加载图片失败: " + ex.Message, UserTheadStatus.SoftOptStatus);
-            }
-        }
 
-        private void btn_Preview_Click_1(object sender, EventArgs e)
-        {
-            if (_imageFiles == null || _imageFiles.Length == 0)
-            {
-                WriteMsg("请先读取图片", UserTheadStatus.SoftOptStatus);
-                return;
-            }
-
-            index--;
-            if (index < 0)
-                index = _imageFiles.Length - 1;
-
-            WriteMsg("上一张: " + (index + 1) + "/" + _imageFiles.Length, UserTheadStatus.SoftOptStatus);
-            ShowImage(index);
-        }
 
 
         private void btn_AllHome_Click(object sender, EventArgs e)
@@ -1190,7 +1156,8 @@ namespace CCDInspection.UI.Forms
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _deviceManager.Dispose();
+            _deviceManager?.Dispose();
+            _db?.Dispose();
             Application.Exit();
         }
 
@@ -1276,7 +1243,7 @@ namespace CCDInspection.UI.Forms
         /// </summary>
         private bool CanStartAutomation()
         {
-            if (cmb_TriggerModel.SelectedIndex != 0) { WriteNGMsg("请将相机触发模式改为软触发", UserTheadStatus.SoftOptStatus); return false; }
+
             if (!_initSuccess) { WriteNGMsg("初始化失败，无法启动机台", UserTheadStatus.SoftOptStatus); return false; }
             if (!_isAxisHomed) { WriteNGMsg("复位未完成，请复位", UserTheadStatus.SoftOptStatus); return false; }
 
@@ -1298,7 +1265,7 @@ namespace CCDInspection.UI.Forms
             {
                 gb_AxisSet.Enabled = !isRunning;
                 btn_GoHome.Enabled = !isRunning;
-                cmb_TriggerModel.Enabled = !isRunning;
+
                 btn_StartAutoTest.Enabled = !isRunning;
                 btn_StopAutoTest.Enabled = isRunning;
                 // 自动运行中禁止手动点动，防止轴位置被推偏
@@ -1352,7 +1319,7 @@ namespace CCDInspection.UI.Forms
         private void btn_ZHome_Click(object sender, EventArgs e)
         {
 
-            
+
 
         }
 
@@ -1417,29 +1384,23 @@ namespace CCDInspection.UI.Forms
             }
         }
 
-        /// <summary>
-        /// 加载方案
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btn_ManualPlan_Click(object sender, EventArgs e)
-        {
-           
-        }
+
 
         /// <summary>
         /// 保存并显示检测记录
         /// </summary>
         /// <param name="isOK">检测结果 true=OK false=NG</param>
         /// <param name="ngReason">NG原因</param>
-        private void SaveInspectionRecord(bool isOK, string ngReason = "")
+        private void SaveInspectionRecord(bool isOK, string ngReason = "", string productCode = "", string productColor = "")
         {
             var record = new CCDInspection.Core.Models.InspectionRecord
             {
                 Time = DateTime.Now,
                 Result = isOK ? "OK" : "NG",
-                ProductIndex = _currentProduct.ProductIndex ?? "?",
-                NgReason = ngReason
+
+                Reason = ngReason,
+                ProductCode = productCode,
+                ProductColor = productColor
             };
 
             _inspectionRecords.Add(record);
@@ -1448,6 +1409,27 @@ namespace CCDInspection.UI.Forms
                 _inspectionRecords.RemoveAt(0);
 
             ShowInspectionResult(record);
+
+            // 同步保存到 SQLite 数据库
+            try
+            {
+                if (_db == null) { LogService.Error("[DB] _db为null"); return; }
+                LogService.Debug("[DB] 准备插入...");
+                    var res = _db.Insert(new InspectionRecordEntity
+                    {
+                        Time = record.Time,
+                        ProductModel = _currentProduct.ProductName ,
+                        ProductPort = _currentProductPort,
+                        ProductColor = record.ProductColor,
+                        ProductCode = record.ProductCode,
+                        Result = record.Result,
+                        NgReason = record.Reason
+                    }).ExecuteAffrows();
+
+
+                   LogService.Debug("[DB] 写入成功");
+            }
+            catch (Exception ex) { LogService.Error(ex, "[DB] 保存记录失败"); }
         }
 
         private void ShowInspectionResult(CCDInspection.Core.Models.InspectionRecord record)
@@ -1455,8 +1437,8 @@ namespace CCDInspection.UI.Forms
             bool isOK = record.Result == "OK";
             string resultText = $"[{record.Time:HH:mm:ss}] 检测结果:{(isOK ? "OK" : "NG")} 产品:{record.ProductIndex}";
 
-            if (!isOK && !string.IsNullOrEmpty(record.NgReason))
-                resultText += $" NG原因:{record.NgReason}";
+            if (!isOK && !string.IsNullOrEmpty(record.Reason))
+                resultText += $" NG原因:{record.Reason}";
 
             resultText += $" CT:{record.CycleTimeMs}ms";
 
@@ -1476,33 +1458,311 @@ namespace CCDInspection.UI.Forms
             }
         }
 
-        private void MoveAxis(int axisIndex, int direction)
+        #region 数据库查询
+
+        /// <summary>初始化 SQLite 数据库和 FreeSql</summary>
+        private void InitDatabase()
         {
-            if (_deviceManager?.Motion?.IsConnected != true)
+            try
             {
-                WriteNGMsg("未连接到控制器", UserTheadStatus.AxisStatus);
-                return;
+                var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "Inspection.db");
+                var dir = Path.GetDirectoryName(dbPath);
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                _db = new FreeSqlBuilder()
+                    .UseConnectionString(FreeSql.DataType.Sqlite, $"Data Source={dbPath}")
+                    .UseAutoSyncStructure(true)
+                    .Build();
+                // 仅在表不存在时同步，避免每次启动重建
+                var tbl = _db.Ado.ExecuteScalar("select count(*) from sqlite_master where type='table' and name='InspectionRecordEntity'");
+                if (tbl?.ToString() != "1")
+                {
+                    try { _db.CodeFirst.SyncStructure<InspectionRecordEntity>(); }
+                    catch (Exception syncEx) { LogService.Error(syncEx, "[DB] 表结构同步失败"); _db.Dispose(); _db = null; return; }
+                }
+                LogService.Information("[DB] SQLite数据库初始化完成: {Path}", dbPath);
             }
-            if (_axisHandle == IntPtr.Zero)
-            {
-                WriteNGMsg("轴句柄无效", UserTheadStatus.AxisStatus);
-                return;
-            }
-            if (!float.TryParse(txt_ManualSpeed.Text.Trim(), out float speed) || speed <= 0)
-            {
-                WriteNGMsg("手动速度无效", UserTheadStatus.AxisStatus);
-                return;
-            }
-
-            float stepDist = _configService?.Load()?.Axis?.ManualDistance ?? 10f;
-            float distance = direction * stepDist;
-
-            Task.Run(async () =>
-            {
-                if (!await _deviceManager.Motion.ZAxis.MoveRel(distance, speed))
-                    WriteNGMsg("轴移动失败", UserTheadStatus.SoftOptStatus);
-            });
+            catch (Exception ex) { LogService.Error(ex, "[DB] 数据库初始化失败"); }
         }
+
+        /// <summary>初始化数据库查询筛选控件 — 端口→型号→编码 三级联动 + 查询按钮</summary>
+        private void InitDbFilterControls()
+        {
+            // 端口选择填充
+            com_sqllPort.Items.Clear();
+            if (_productModels != null)
+            {
+                var ports = _productModels.Select(p => p.Product_port).Distinct().ToList();
+                foreach (var port in ports) com_sqllPort.Items.Add(port);
+                if (com_sqllPort.Items.Count > 0) com_sqllPort.SelectedIndex = 0;
+            }
+
+            // 端口变化 → 筛选型号+编码
+            com_sqllPort.SelectedIndexChanged += com_sqllPort_SelectedIndexChanged;
+            // 型号变化 → 筛选编码
+            cob_sqlProduct_model.SelectedIndexChanged += (s, e) => FilterDbProductCodes();
+
+            // 手动触发一次
+            if (com_sqllPort.Items.Count > 0)
+                com_sqllPort_SelectedIndexChanged(com_sqllPort, EventArgs.Empty);
+
+            // 查询按钮 — 由设计器绑定 sql_select_Click_1，不重复注册
+            btn_print.Click += btn_print_Click;
+            btn_open.Click += btn_open_Click;
+        }
+
+        private void com_sqllPort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cob_sqlProduct_model?.Items.Clear();
+            com_product_code?.Items.Clear();
+            var selPort = com_sqllPort.SelectedItem?.ToString() ?? "";
+            if (_productModels == null) return;
+            var models = _productModels
+                .Where(p => p.Product_port == selPort)
+                .Select(p => p.Product_model)
+                .Distinct().ToList();
+            foreach (var m in models) cob_sqlProduct_model.Items.Add(m);
+            if (cob_sqlProduct_model.Items.Count > 0) cob_sqlProduct_model.SelectedIndex = 0;
+        }
+
+        /// <summary>根据端口+型号筛选编码</summary>
+        private void FilterDbProductCodes()
+        {
+            if (com_product_code == null) return;
+            com_product_code.Items.Clear();
+            var selPort = com_sqllPort.SelectedItem?.ToString() ?? "";
+            var selModel = cob_sqlProduct_model.SelectedItem?.ToString() ?? "";
+            if (_productModels == null) return;
+            var codes = _productModels
+                .Where(p => p.Product_port == selPort && p.Product_model == selModel)
+                .Select(p => p.Product_code)
+                .Distinct().ToList();
+            foreach (var c in codes) com_product_code.Items.Add(c);
+            if (com_product_code.Items.Count > 0) com_product_code.SelectedIndex = 0;
+        }
+
+        /// <summary>查询按钮 — 根据筛选条件从 SQLite 查询并填充 dataGridView1</summary>
+        private void sql_select_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_db == null) { LogService.Error("[DB] 查询失败: _db为null"); MessageBox.Show("数据库未初始化"); return; }
+                var port = com_sqllPort.SelectedItem?.ToString() ?? "";
+                var model = cob_sqlProduct_model.SelectedItem?.ToString() ?? "";
+                var dateFrom = dateTimePicker1.Value.Date;
+                var dateTo = dateTimePicker2.Value.Date.AddDays(1);
+
+                var query = _db.Select<InspectionRecordEntity>()
+                    .Where(r => r.Time >= dateFrom && r.Time < dateTo);
+                if (!string.IsNullOrEmpty(port))
+                    query = query.Where(r => r.ProductPort == port);
+                if (!string.IsNullOrEmpty(model))
+                    query = query.Where(r => r.ProductModel == model);
+                var code = com_product_code.SelectedItem?.ToString() ?? "";
+                if (!string.IsNullOrEmpty(code))
+                    query = query.Where(r => r.ProductCode == code);
+
+                var list = query.OrderByDescending(r => r.Time).Take(1000).ToList();
+                dataGridView1.Rows.Clear();
+                foreach (var r in list)
+                    dataGridView1.Rows.Add(
+                        r.Time.ToString("yyyy-MM-dd HH:mm:ss"),
+                        r.ProductModel ?? "",
+                        r.ProductPort ?? "",
+                        r.ProductColor ?? "",
+                        r.ProductCode ?? "",
+                        r.Result ?? "");
+            }
+            catch (Exception ex) { LogService.Error(ex, "[DB] 查询失败"); }
+        }
+
+        /// <summary>导出 dataGridView1 数据到 Excel 报表（NPOI .xlsx）</summary>
+        private void btn_print_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataGridView1.Rows.Count == 0) { MessageBox.Show("无数据可导出"); return; }
+
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                var file = Path.Combine(dir, $"检测报表_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+
+                var workbook = new XSSFWorkbook();
+                var sheet = workbook.CreateSheet("检测记录");
+                int colCount = dataGridView1.Columns.Count;
+
+                // ═══ 字体 ═══
+                var titleFont = workbook.CreateFont();
+                titleFont.FontHeightInPoints = 16;
+                titleFont.IsBold = true;
+                titleFont.Color = IndexedColors.DarkBlue.Index;
+
+                var headerFont = workbook.CreateFont();
+                headerFont.IsBold = true;
+                headerFont.FontHeightInPoints = 11;
+                headerFont.Color = IndexedColors.White.Index;
+
+                var dataFont = workbook.CreateFont();
+                dataFont.FontHeightInPoints = 10;
+
+                var okFont = workbook.CreateFont();
+                okFont.FontHeightInPoints = 10;
+                okFont.Color = IndexedColors.DarkGreen.Index;
+                okFont.IsBold = true;
+
+                var ngFont = workbook.CreateFont();
+                ngFont.FontHeightInPoints = 10;
+                ngFont.Color = IndexedColors.Red.Index;
+                ngFont.IsBold = true;
+
+                // ═══ 样式 ═══
+                var titleStyle = workbook.CreateCellStyle();
+                titleStyle.SetFont(titleFont);
+                titleStyle.Alignment = NpoiAlign.Center;
+                titleStyle.VerticalAlignment = VerticalAlignment.Center;
+
+                var headerStyle = workbook.CreateCellStyle();
+                headerStyle.SetFont(headerFont);
+                headerStyle.FillForegroundColor = IndexedColors.DarkBlue.Index;
+                headerStyle.FillPattern = FillPattern.SolidForeground;
+                headerStyle.Alignment = NpoiAlign.Center;
+                headerStyle.VerticalAlignment = VerticalAlignment.Center;
+                headerStyle.BorderBottom = NpoiBorder.Thin;
+                headerStyle.BorderTop = NpoiBorder.Thin;
+                headerStyle.BorderLeft = NpoiBorder.Thin;
+                headerStyle.BorderRight = NpoiBorder.Thin;
+
+                var evenStyle = workbook.CreateCellStyle();
+                evenStyle.SetFont(dataFont);
+                evenStyle.FillForegroundColor = IndexedColors.LightTurquoise.Index;
+                evenStyle.FillPattern = FillPattern.SolidForeground;
+                evenStyle.BorderBottom = NpoiBorder.Thin;
+                evenStyle.BorderTop = NpoiBorder.Thin;
+                evenStyle.BorderLeft = NpoiBorder.Thin;
+                evenStyle.BorderRight = NpoiBorder.Thin;
+
+                var oddStyle = workbook.CreateCellStyle();
+                oddStyle.SetFont(dataFont);
+                oddStyle.BorderBottom = NpoiBorder.Thin;
+                oddStyle.BorderTop = NpoiBorder.Thin;
+                oddStyle.BorderLeft = NpoiBorder.Thin;
+                oddStyle.BorderRight = NpoiBorder.Thin;
+
+                var okStyle = workbook.CreateCellStyle();
+                okStyle.SetFont(okFont);
+                okStyle.FillForegroundColor = IndexedColors.LightGreen.Index;
+                okStyle.FillPattern = FillPattern.SolidForeground;
+                okStyle.Alignment = NpoiAlign.Center;
+                okStyle.BorderBottom = NpoiBorder.Thin;
+                okStyle.BorderTop = NpoiBorder.Thin;
+                okStyle.BorderLeft = NpoiBorder.Thin;
+                okStyle.BorderRight = NpoiBorder.Thin;
+
+                var ngStyle = workbook.CreateCellStyle();
+                ngStyle.SetFont(ngFont);
+                ngStyle.FillForegroundColor = IndexedColors.Rose.Index;
+                ngStyle.FillPattern = FillPattern.SolidForeground;
+                ngStyle.Alignment = NpoiAlign.Center;
+                ngStyle.BorderBottom = NpoiBorder.Thin;
+                ngStyle.BorderTop = NpoiBorder.Thin;
+                ngStyle.BorderLeft = NpoiBorder.Thin;
+                ngStyle.BorderRight = NpoiBorder.Thin;
+
+                int rowIdx = 0;
+
+                // ═══ 标题行 ═══
+                var titleRow = sheet.CreateRow(rowIdx++);
+                titleRow.HeightInPoints = 30;
+                var titleCell = titleRow.CreateCell(0);
+                titleCell.SetCellValue("CCD 视觉检测报表");
+                titleCell.CellStyle = titleStyle;
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(0, 0, 0, colCount - 1));
+
+                // ═══ 信息行 ═══
+                var infoRow = sheet.CreateRow(rowIdx++);
+                infoRow.HeightInPoints = 20;
+                var infoCell = infoRow.CreateCell(0);
+                var infoStyle = workbook.CreateCellStyle();
+                infoStyle.Alignment = NpoiAlign.Left;
+                infoStyle.SetFont(dataFont);
+                infoCell.CellStyle = infoStyle;
+                infoCell.SetCellValue($"导出时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}    筛选条件: 端口={com_sqllPort.Text} 型号={cob_sqlProduct_model.Text} 编码={com_product_code.Text} 日期={dateTimePicker1.Value:yyyy-MM-dd} ~ {dateTimePicker2.Value:yyyy-MM-dd}");
+                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIdx - 1, rowIdx - 1, 0, colCount - 1));
+
+                // 空一行
+                rowIdx++;
+
+                // ═══ 表头行 ═══
+                var headerRow = sheet.CreateRow(rowIdx++);
+                headerRow.HeightInPoints = 24;
+                for (int i = 0; i < colCount; i++)
+                {
+                    var cell = headerRow.CreateCell(i);
+                    cell.SetCellValue(dataGridView1.Columns[i].HeaderText);
+                    cell.CellStyle = headerStyle;
+                }
+
+                // ═══ 数据行 ═══
+                int dataStart = rowIdx;
+                foreach (DataGridViewRow gridRow in dataGridView1.Rows)
+                {
+                    if (gridRow.IsNewRow) continue;
+                    var excelRow = sheet.CreateRow(rowIdx);
+                    excelRow.HeightInPoints = 18;
+                    bool isOk = false;
+                    for (int j = 0; j < gridRow.Cells.Count; j++)
+                    {
+                        var val = gridRow.Cells[j].Value?.ToString() ?? "";
+                        var cell = excelRow.CreateCell(j);
+                        cell.SetCellValue(val);
+                        // 结果列 (最后一列) 特殊着色
+                        if (j == colCount - 1)
+                        {
+                            isOk = val == "OK";
+                            cell.CellStyle = isOk ? okStyle : ngStyle;
+                        }
+                        else
+                        {
+                            cell.CellStyle = (rowIdx - dataStart) % 2 == 0 ? evenStyle : oddStyle;
+                        }
+                    }
+                    rowIdx++;
+                }
+
+                // ═══ 列宽 ═══
+                for (int i = 0; i < colCount; i++)
+                {
+                    sheet.AutoSizeColumn(i);
+                    int width = sheet.GetColumnWidth(i);
+                    sheet.SetColumnWidth(i, Math.Min(width + 1024, 65280)); // +256px 边距, 最大255字符
+                }
+
+                // ═══ 冻结表头 ═══
+                sheet.CreateFreezePane(0, dataStart);
+
+                using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+                    workbook.Write(fs);
+
+                LogService.Information("[报表] 导出成功: {File}", file);
+                MessageBox.Show($"导出成功: {file}", "报表导出");
+            }
+            catch (Exception ex) { LogService.Error(ex, "[报表] 导出失败"); MessageBox.Show($"导出失败: {ex.Message}"); }
+        }
+
+        /// <summary>打开报表文件夹</summary>
+        private void btn_open_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                System.Diagnostics.Process.Start("explorer.exe", dir);
+            }
+            catch (Exception ex) { LogService.Error(ex, "[报表] 打开文件夹失败"); }
+        }
+
+        #endregion
+
+
 
 
         /// <summary>从 ProductConfig.json 加载产品数据到 dataGridView3</summary>
@@ -1529,6 +1789,7 @@ namespace CCDInspection.UI.Forms
         }
 
         /// <summary>初始化产品下拉框 — 从 ProductConfig.json 加载</summary>
+        /// <summary>初始化产品下拉框 — cob_ProductType筛选 + comboBox1显示</summary>
         private void InitProductCombo()
         {
             try
@@ -1536,20 +1797,38 @@ namespace CCDInspection.UI.Forms
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ProductConfig.json");
                 if (!File.Exists(path)) return;
                 var json = File.ReadAllText(path);
-                var list = JsonConvert.DeserializeObject<List<ProductModel>>(json);
-                comboBox1.Items.Clear();
-                comboBox1.DisplayMember = null;
-                foreach (var p in list)
-                    comboBox1.Items.Add($"{p.Product_port}-{p.Product_model}");
-                // 选中当前产品
-                if (!string.IsNullOrEmpty(_currentProductPort) && !string.IsNullOrEmpty(_currentProductModel))
-                {
-                    var cur = $"{_currentProductPort}-{_currentProductModel}";
-                    var idx = comboBox1.Items.Cast<string>().ToList().IndexOf(cur);
-                    if (idx >= 0) comboBox1.SelectedIndex = idx;
-                }
+                _productModels = JsonConvert.DeserializeObject<List<ProductModel>>(json) ?? new List<ProductModel>();
+
+                // 端口类型下拉（公端/母端）
+                cob_ProductType.Items.Clear();
+                var ports = _productModels.Select(p => p.Product_port).Distinct().ToList();
+                foreach (var port in ports) cob_ProductType.Items.Add(port);
+                if (cob_ProductType.Items.Count > 0) cob_ProductType.SelectedIndex = 0;
+
+                // cob_ProductType 变化时筛选 comboBox1
+                cob_ProductType.SelectedIndexChanged += (s, e) => FilterProductList();
+                FilterProductList();
             }
             catch { }
+        }
+
+        private void FilterProductList()
+        {
+            if (_productModels == null) return;
+            var filter = cob_ProductType.SelectedItem?.ToString() ?? "";
+            comboBox1.Items.Clear();
+            var filtered = string.IsNullOrEmpty(filter)
+                ? _productModels
+                : _productModels.Where(p => p.Product_port == filter).ToList();
+            foreach (var p in filtered)
+                comboBox1.Items.Add($"{p.Product_port}-{p.Product_model}");
+            // 选中当前产品
+            if (!string.IsNullOrEmpty(_currentProductPort) && !string.IsNullOrEmpty(_currentProductModel))
+            {
+                var cur = $"{_currentProductPort}-{_currentProductModel}";
+                var idx = comboBox1.Items.Cast<string>().ToList().IndexOf(cur);
+                if (idx >= 0) comboBox1.SelectedIndex = idx;
+            }
         }
 
         /// <summary>切换产品方案 — 安全状态下才能切换，切换后轴移到配方高度</summary>
@@ -1574,11 +1853,25 @@ namespace CCDInspection.UI.Forms
 
             _currentProductPort = port;
             _currentProductModel = model;
+            // 从 ProductConfig 获取产品编码
+            var prod = _productModels?.FirstOrDefault(p => p.Product_port == port && p.Product_model == model);
+            _currentProductCode = prod?.Product_code ?? "";
+            // 同步更新 _currentProduct（用于 SaveInspectionRecord 获取 ProductName/ProductIndex 等）
+            UpdateCurrentProduct(port, model, prod);
             LoadRecipeInfo(port, model);
             WriteMsg($"已切换方案: {sel}", UserTheadStatus.SoftOptStatus);
         }
 
         /// <summary>统一加载配方信息和VM方案 — 登录和切换共用</summary>
+        /// <summary>更新当前产品信息（供登录和切换方案时调用）</summary>
+        private void UpdateCurrentProduct(string port, string model, ProductModel prod)
+        {
+            _currentProduct.ProductName = model;
+            _currentProduct.ProductIndex = prod?.Product_code ?? _currentProductCode ?? "?";
+            _currentProduct.ProductColor = prod?.Product_color ?? "";
+            _currentProduct.ZHeight = float.TryParse(prod?.Product_zHeight, out var zh) ? zh : 0f;
+        }
+
         public void LoadRecipeInfo(string port, string model)
         {
             // 1. 读产品Z高度 → 更新JSON配置 → Z轴移动
@@ -1598,24 +1891,23 @@ namespace CCDInspection.UI.Forms
                 }
             }
 
-            // 2. 加载VM视觉方案 + 绑定渲染控件
+            // 2. 直接加载VM方案 + 绑定渲染
             var solPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VmSol", port, model + ".sol");
-            LogService.Information("[配方加载] 搜索VM方案: {Path} | Vision={V}", solPath, _deviceManager?.Vision != null ? "OK" : "NULL");
+            LogService.Information("[配方加载] VM方案路径: {Path}", solPath);
             vmRenderControl1.ModuleSource = null;
-            if (!File.Exists(solPath))
-            {
-                LogService.Warning("[配方加载] VM方案不存在: {Path}", solPath);
-                return;
-            }
+            if (!File.Exists(solPath)) { LogService.Warning("[配方加载] VM方案不存在"); return; }
             try
             {
-                var vision = _deviceManager?.Vision;
-                if (vision == null) { LogService.Error("[配方加载] Vision为null，无法加载方案"); return; }
-                bool ok = vision.LoadSolution(solPath);
-                LogService.Information("[配方加载] LoadSolution返回={R} IsLoaded={L}", ok, vision.IsLoaded);
-                var proc = (vision as VmVisionProcessor)?.Procedure;
+                var oldDir = Environment.CurrentDirectory;
+                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                VmSolution.Load(solPath);
+                Environment.CurrentDirectory = oldDir;
+                VmProcedure proc = VmSolution.Instance["流程1"] as VmProcedure;
                 if (proc != null) vmRenderControl1.ModuleSource = proc;
-                LogService.Information("[配方加载] VM方案已加载并绑定渲染: {Path}", solPath);
+                // 直接传递Procedure给VmVisionProcessor，不再重复调用VmSolution.Load
+                if (_deviceManager.Vision is VmVisionProcessor vmVision)
+                    vmVision.SetProcedure(proc);
+                LogService.Information("[配方加载] VM方案已加载: {Path}", solPath);
             }
             catch (Exception ex) { LogService.Error(ex, "[配方加载] VM方案加载异常"); }
         }
@@ -1653,10 +1945,10 @@ namespace CCDInspection.UI.Forms
                             DataGridViewRow row = dataGridView3.Rows[i];
                             if (row.IsNewRow) continue;
                             var model = row.Cells[0].Value?.ToString() ?? "";
-                            var port  = row.Cells[1].Value?.ToString() ?? "";
+                            var port = row.Cells[1].Value?.ToString() ?? "";
                             var color = row.Cells[2].Value?.ToString() ?? "";
-                            var code  = row.Cells[3].Value?.ToString() ?? "";
-                            var zH    = row.Cells.Count > 4 ? row.Cells[4].Value?.ToString() ?? "20" : "20";
+                            var code = row.Cells[3].Value?.ToString() ?? "";
+                            var zH = row.Cells.Count > 4 ? row.Cells[4].Value?.ToString() ?? "20" : "20";
                             _productModels.Add(new ProductModel
                             {
                                 Product_model = model,
@@ -1773,6 +2065,8 @@ namespace CCDInspection.UI.Forms
                 this.Invoke(action);
             else
                 action();
+
+
         }
 
         /// <summary>
@@ -1789,7 +2083,48 @@ namespace CCDInspection.UI.Forms
 
         private void uiTabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-           
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 测试按钮，预留接口，暂时无功能
+        /// </summary
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void uiButton1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_db == null) { LogService.Error("[DB] 测试查询失败: _db为null"); MessageBox.Show("数据库未初始化"); return; }
+
+                var all = _db.Select<InspectionRecordEntity>().Take(1000).ToList();
+                var msg = $"总记录数: {all.Count}\n";
+                if (all.Count > 0)
+                {
+                    // 显示第一条的列名和值
+                    var first = all[0];
+                    msg += $"Id={first.Id}\n";
+                    msg += $"Time={first.Time}\n";
+                    msg += $"ProductModel={first.ProductModel}\n";
+                    msg += $"ProductPort={first.ProductPort}\n";
+                    msg += $"ProductColor={first.ProductColor}\n";
+                    msg += $"ProductCode={first.ProductCode}\n";
+                    msg += $"Result={first.Result}\n";
+                   
+                }
+                MessageBox.Show(msg, "测试查询");
+            }
+            catch (Exception ex) { MessageBox.Show($"查询失败: {ex.Message}"); }
+        }
+
+        private void btn_print_Click_1(object sender, EventArgs e)
+        {
+
         }
 
         private void SafeBeginInvoke(Action action)

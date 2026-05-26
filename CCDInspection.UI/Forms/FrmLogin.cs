@@ -42,7 +42,7 @@ namespace CCDInspection.UI.Forms
                     m_product.m_products.Add(new ProductTypeConfig.ProductType
                     {
                         ProductIndex = p.Product_code,
-                        ProductName = p.Product_port,
+                        ProductName = p.Product_model,
                         ProductColor = p.Product_color,
                         SnapCount = 1,
                         RoutePlanIndex = 1,
@@ -106,6 +106,7 @@ namespace CCDInspection.UI.Forms
             //}
             m_FrmMain._currentProductPort = cmb_ProductType.Text.ToString();
             m_FrmMain._currentProductModel = uiComboBox_Productmodel.Text.ToString();
+            m_FrmMain._currentProductCode = com_Product_code.Text.ToString();
             m_FrmMain._operatorId = txt_Account.Text.Trim();
             m_FrmMain._currentUser = cmb_UserName.Text.ToString();
             m_FrmMain.StartPosition = FormStartPosition.CenterScreen;
@@ -160,7 +161,7 @@ namespace CCDInspection.UI.Forms
 
         private void uiComboBox_Productmodel_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            FilterProductCodes();
         }
 
         private void cmb_ProductType_SelectedIndexChanged(object sender, EventArgs e)
@@ -170,16 +171,34 @@ namespace CCDInspection.UI.Forms
             if (string.IsNullOrEmpty(selectedPort)) return;
 
             uiComboBox_Productmodel.Items.Clear();
+            com_Product_code.Items.Clear();
             for (int i = 0; i < productModels.Count; i++)
             {
                 var item = productModels[i];
                 if (item.Product_port == selectedPort)
                 {
                     uiComboBox_Productmodel.Items.Add(item.Product_model);
-                   
-                    
                 }
             }
+            if (uiComboBox_Productmodel.Items.Count > 0)
+                uiComboBox_Productmodel.SelectedIndex = 0;
+        }
+
+        /// <summary>根据选中的端口+型号，筛选产品编码</summary>
+        private void FilterProductCodes()
+        {
+            com_Product_code.Items.Clear();
+            var selectedPort = cmb_ProductType.SelectedItem?.ToString();
+            var selectedModel = uiComboBox_Productmodel.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(selectedPort) || string.IsNullOrEmpty(selectedModel)) return;
+
+            foreach (var p in productModels)
+            {
+                if (p.Product_port == selectedPort && p.Product_model == selectedModel)
+                    com_Product_code.Items.Add(p.Product_code);
+            }
+            if (com_Product_code.Items.Count > 0)
+                com_Product_code.SelectedIndex = 0;
         }
     }
 }

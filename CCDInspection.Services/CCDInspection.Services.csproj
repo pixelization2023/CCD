@@ -589,8 +589,8 @@
   <ItemGroup>
     <Compile Include="AlarmHandler.cs" />
     <Compile Include="ConfigService.cs" />
-    <Compile Include="DeviceManager.cs" />
     <Compile Include="StationController.cs" />
+    <Compile Include="DeviceManager.cs" />
     <Compile Include="StatisticsService.cs" />
   </ItemGroup>
   <ItemGroup>

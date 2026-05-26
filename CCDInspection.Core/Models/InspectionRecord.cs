@@ -1,4 +1,5 @@
 using System;
+using System.Security.Permissions;
 using Newtonsoft.Json;
 
 namespace CCDInspection.Core.Models
@@ -17,10 +18,16 @@ namespace CCDInspection.Core.Models
         [JsonProperty("result")]
         public string Result { get; set; }
 
-        [JsonProperty("ngReason")]
-        public string NgReason { get; set; }
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
 
         [JsonProperty("cycleTimeMs")]
         public long CycleTimeMs { get; set; }
+
+        [JsonProperty("productColor")]
+        public string    ProductColor { get; set; }
+
+        [JsonProperty("productCode")]
+        public string ProductCode { get; set; }
     }
 }
