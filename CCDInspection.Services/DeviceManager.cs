@@ -4,7 +4,6 @@ using CCDInspection.Core.Interfaces;
 using CCDInspection.Core.Interfaces.Hardware;
 using CCDInspection.Core.Models;
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
-using CCDInspection.Device.Camera;
 using CCDInspection.Device.IO;
 using CCDInspection.Device.Motion;
 using CCDInspection.Device.Vision;
@@ -19,7 +18,6 @@ namespace CCDInspection.Services
     public class DeviceManager : IDisposable
     {
         public IMotionController Motion { get; set; }
-        public ICamera Camera { get; set; }
         public IVisionProcessor Vision { get; set; }
         public IAlarmHandler Alarm { get; set; }
         public ILightCurtain LightCurtain { get; set; }
@@ -29,7 +27,6 @@ namespace CCDInspection.Services
         /// </summary>
         public bool IsAllReady =>
             Motion?.IsConnected == true &&
-            Camera?.IsConnected == true &&
             Vision?.IsLoaded == true;
 
         /// <summary>
@@ -61,14 +58,6 @@ namespace CCDInspection.Services
                     return false;
                 }
 
-                Camera = new HkCamera(config.Camera);
-                if (!Camera.Connect())
-                {
-                    LogService.Error("相机初始化失败");
-                    SetStatus(MachineStatus.Alarm);
-                    return false;
-                }
-
                 Vision = new VmVisionProcessor();
 
                 SetStatus(MachineStatus.Initialed);
@@ -87,8 +76,6 @@ namespace CCDInspection.Services
         {
             SetStatus(MachineStatus.Stop);
             Vision?.Unload();
-            Camera?.Disconnect();
-            Camera?.Dispose();
             Motion?.Disconnect();
             Motion?.Dispose();
             LogService.Information("所有设备已关闭");

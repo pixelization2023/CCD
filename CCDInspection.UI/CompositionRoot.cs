@@ -4,7 +4,6 @@ using CCDInspection.Core.Interfaces.Hardware;
 using CCDInspection.Core.Interfaces.Services;
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
 using CCDInspection.Core.Models;
-using CCDInspection.Device.Camera;
 using CCDInspection.Device.IO;
 using CCDInspection.Device.Motion;
 using CCDInspection.Device.Vision;
@@ -33,12 +32,6 @@ namespace CCDInspection.UI
 
             // === 设备 ===
             builder.RegisterType<DeviceManager>().SingleInstance();
-
-            builder.Register(ctx =>
-            {
-                var config = ctx.Resolve<AppConfig>();
-                return new HkCamera(config.Camera);
-            }).As<ICamera>().SingleInstance();
 
             builder.Register(ctx =>
             {

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+using CCDInspection.Core;
 using CCDInspection.Core.Models;
 
 
@@ -20,12 +22,13 @@ namespace CCDInspection.UI.Forms
             InitializeComponent();
         }
 
-        private void FrmLogin_Load(object sender, EventArgs e)
+        private void FrmLogin_Load(object sender, EventArgs e) => ReloadProducts();
+
+        /// <summary>从 ProductConfig.json 重新加载产品数据 — 保存配方后无需重启</summary>
+        public void ReloadProducts()
         {
             try
             {
-
-                // 从 ProductConfig.json 加载产品型号和端口
                 cmb_ProductType.Items.Clear();
                 Init_uiComboBox_Productmodel();
                 var ports = new HashSet<string>();
@@ -33,7 +36,6 @@ namespace CCDInspection.UI.Forms
                 foreach (var port in ports) cmb_ProductType.Items.Add(port);
                 if (cmb_ProductType.Items.Count > 0) cmb_ProductType.SelectedIndex = 0;
 
-                // 从 JSON 数据构建 m_product 供主程序使用
                 m_product.m_products.Clear();
                 foreach (var p in productModels)
                 {
@@ -45,25 +47,25 @@ namespace CCDInspection.UI.Forms
                         SnapCount = 1,
                         RoutePlanIndex = 1,
                         SnapParamIndex = 1,
-                        ZHeight = p.Product_port == "公端" ? 20.0f : 25.0f
+                        ZHeight = float.TryParse(p.Product_zHeight, out var zh) ? zh : 0f
                     });
                 }
                 cmb_UserName.SelectedIndex = 0;
 
-                // 从JSON配置加载登录信息，无配置文件时使用默认值
                 if (m_LoginConfigs.m_Logins.Count == 0)
-                {
                     m_LoginConfigs.m_Logins.Add(new LoginConfig { UserName = "管理员", PassWord = "123456" });
-                }
-
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
                 this.Close();
             }
+        }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            ReloadProducts(); // 每次显示时刷新，加载最新配方数据
         }
         List<ProductModel> productModels;
         private void Init_uiComboBox_Productmodel()
@@ -97,16 +99,17 @@ namespace CCDInspection.UI.Forms
             m_FrmMain._loginConfigs = m_LoginConfigs;
             m_FrmMain._productConfig = m_product;
             // 设置当前选中的端口类型
-            if (cmb_ProductType.SelectedItem == null || uiComboBox_Productmodel.SelectedItem == null)
-            {
-                MessageBox.Show("请选择产品类型和型号");
-                return;
-            }
-            m_FrmMain._currentProductPort = cmb_ProductType.SelectedItem.ToString();
-            m_FrmMain._currentProductModel = uiComboBox_Productmodel.SelectedItem.ToString();
+            //if (cmb_ProductType.SelectedItem == null || uiComboBox_Productmodel.SelectedItem == null)
+            //{
+            //    MessageBox.Show("请选择产品类型和型号");
+            //    return;
+            //}
+            m_FrmMain._currentProductPort = cmb_ProductType.Text.ToString();
+            m_FrmMain._currentProductModel = uiComboBox_Productmodel.Text.ToString();
             m_FrmMain._operatorId = txt_Account.Text.Trim();
-            m_FrmMain._currentUser = cmb_UserName.SelectedItem.ToString();
+            m_FrmMain._currentUser = cmb_UserName.Text.ToString();
             m_FrmMain.StartPosition = FormStartPosition.CenterScreen;
+            m_FrmMain._needLoadRecipe = true; // 标记需要在FrmMain初始化后加载配方
             m_FrmMain.Show();
             this.Hide();
 

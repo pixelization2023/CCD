@@ -23,13 +23,9 @@ namespace CCDInspection.Core.Enums
         /// </summary>
         ZAxisMove,          // Z轴移动到检测高度
         /// <summary>
-        /// 拍照状态：Z轴移动到位后，进入 CameraCapture 状态。此时会触发相机拍照，并将图像数据传递给视觉处理模块进行分析和检测。
+        /// 视觉处理状态：VM方案内部触发相机拍照+算法分析，输出OK/NG结果
         /// </summary>
-        CameraCapture,      // 拍照
-        /// <summary>
-        /// 视觉处理状态：拍照完成后，进入 VisionProcess 状态。此时视觉处理模块会对拍摄的图像进行分析，判断被检测物体是否合格，并生成检测结果。
-        /// </summary>
-        VisionProcess,      // 视觉处理
+        VisionProcess,      // 视觉处理（含拍照）
         /// <summary>
         /// 保存结果状态：视觉处理完成后，进入 SaveResult 状态。此时会将检测结果保存到数据库或文件系统中，并准备进行下一步的流程操作（如光源关闭、Z轴复位等）。
         /// </summary>

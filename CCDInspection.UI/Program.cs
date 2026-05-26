@@ -12,7 +12,7 @@ namespace CCDInspection.UI
         [STAThread]
         static void Main()
         {
-            var logDir = Path.Combine(Application.StartupPath, "Logs");
+            var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
             LogService.Init(logDir);
 
             Application.EnableVisualStyles();

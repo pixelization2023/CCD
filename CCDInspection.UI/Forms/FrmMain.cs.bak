@@ -87,7 +87,6 @@ namespace CCDInspection.UI.Forms
         //从login传来的当前登录用户、产品型号和端口 更具名称加载解决方案和轴配置
         public string _currentProductPort;
         public string _currentProductModel;
-        public bool _needLoadRecipe; // FrmLogin标记：初始化完成后加载配方
 
         public string _operatorId;
         public string _currentUser;
@@ -151,8 +150,8 @@ namespace CCDInspection.UI.Forms
                     _configService = new ConfigService();
                 }
                 AppConfig _config = _configService.Load();
-                LogService.Information("[初始化] 配置加载完成 | AxisIP={IP}",
- _config.Axis.IpAddress);
+                LogService.Information("[初始化] 配置加载完成 | AxisIP={IP} | CameraSN={SN}",
+ _config.Axis.IpAddress, _config.Camera.SerialNumber);
 
                 // 2. 从 DI 获取已连接好的设备（避免重复连接 ZMC 控制器导致第二次连接失败）
                 LogService.Information("[初始化] 步骤2 创建服务层...");
@@ -165,8 +164,9 @@ namespace CCDInspection.UI.Forms
                     _statsService = new StatisticsService(_configService);
                 }
 
-                // 关键：使用 DI 中已连接的 ZmcController，不重新 InitializeAll
+                // 关键：使用 DI 中已连接的 ZmcController / HkCamera，不重新 InitializeAll
                 IMotionController motion;
+                ICamera camera;
                 IVisionProcessor vision;
                 try
                 {
@@ -178,8 +178,16 @@ namespace CCDInspection.UI.Forms
                 }
                 try
                 {
+                    camera = CompositionRoot.Resolve<ICamera>();
+                }
+                catch
+                {
+                    camera = new HkCamera(_config.Camera); camera.Connect();
+                }
+                try
+                {
                     vision = CompositionRoot.Resolve<IVisionProcessor>();
-
+                   
                 }
                 catch
                 {
@@ -189,13 +197,14 @@ namespace CCDInspection.UI.Forms
                 _deviceManager = new DeviceManager
                 {
                     Motion = motion,
+                    Camera = camera,
                     Vision = vision
                 };
 
                 // 配置轴参数（ZmcController 已在 DI 中完成连接，这里只配轴不重复连接）
                 motion.ConfigureAxis(0, _config.Axis);
-                LogService.Information("[初始化] DeviceManager就绪 | Motion={M} Vision={V}",
-                    motion.IsConnected, vision.IsLoaded);
+                LogService.Information("[初始化] DeviceManager就绪 | Motion={M} Camera={C} Vision={V}",
+                    motion.IsConnected, camera.IsConnected, vision.IsLoaded);
 
                 SetMachineStatus(MachineStatus.Initial);
 
@@ -277,6 +286,12 @@ namespace CCDInspection.UI.Forms
                 LogService.Information("[初始化] 轴卡连接结果 | Connected={C} | Handle={H}",
                     _deviceManager.Motion?.IsConnected, _axisHandle);
 
+                // 7. 连接相机
+                LogService.Information("[初始化] 步骤6 连接相机...");
+                if (!InitialCamera()) { _initSuccess = false; LogService.Error("[初始化] 相机连接失败"); }
+                else LogService.Information("[初始化] 相机连接成功");
+
+                cmb_CameraSet.SelectedIndex = 0;
                 cmb_TriggerModel.SelectedIndex = 0;
                 if (_buzzerThread?.ThreadState != System.Threading.ThreadState.Running)
                 {
@@ -288,19 +303,12 @@ namespace CCDInspection.UI.Forms
                     uiTabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
                 }
 
-                // 加载产品配方到 dataGridView3 和 comboBox1
-                LoadProductGrid();
-                InitProductCombo();
-                comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
                 _initFinished = true;
                 _initSuccess = true;
                 // 开机保持红灯（安全状态），等待用户手动复位后才变绿灯
                 SetMachineStatus(MachineStatus.SoftwareOpen);
                 CheckSafeStartupCondition();
-                _stationController.StartIdlePolling();
-                // 延迟加载配方（FrmLogin时DeviceManager尚未创建）
-                if (_needLoadRecipe && !string.IsNullOrEmpty(_currentProductPort))
-                    LoadRecipeInfo(_currentProductPort, _currentProductModel);
+                _stationController.StartIdlePolling(); // 窗口就绪后才启动硬件IO轮询
                 LogService.Information("[初始化] ====== 初始化完成 Initialed ======");
             }
             catch (Exception ex)
@@ -492,18 +500,97 @@ namespace CCDInspection.UI.Forms
         #region 初始化
         private void SaveCameraSet()
         {
-            // 相机功能已移除
+            // 从 UI 控件读取参数 → 写入 JSON → 同步到 DI 的 HkCamera
+            var config = _configService?.Load() ?? new AppConfig();
+            var cam = config.Camera;
+            cam.SerialNumber = txt_CameraSN1.Text.Trim();
+            cam.ExposureTime = Convert.ToInt32(txt_Exposure.Text.Trim());
+            cam.Gain = Convert.ToInt32(txt_Gain.Text.Trim());
+            var triggerText = cmb_TriggerModel.SelectedItem?.ToString() ?? "软触发";
+            if (triggerText.Contains("硬触发")) cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Hardware;
+            else if (triggerText.Contains("连续")) cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Continuous;
+            else cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Software;
+
+            _configService?.Save(config);
+            // 同步到 DI 的 HkCamera（StationController 实际使用的）
+            var diCamera = _deviceManager?.Camera as HkCamera;
+            if (diCamera != null)
+            {
+                diCamera.Config = config.Camera;
+                diCamera.ApplyConfig();
+            }
+            LogService.Information("[相机] 参数已保存 SN={SN} Exp={Exp} Gain={Gain} Trig={Trig}",
+                cam.SerialNumber, cam.ExposureTime, cam.Gain, cam.TriggerMode);
         }
 
         private bool InitialCamera()
         {
-            LogService.Information("[初始化] 相机功能已移除，跳过相机连接");
-            return true;
+            try
+            {
+                var camCfg = _configService?.Load()?.Camera ?? new CCDInspection.Core.Models.CameraConfig();
+                _cameraInfo = new MyCameraInfo(camCfg.SerialNumber)
+                {
+                    ExposeTime = camCfg.ExposureTime,
+                    Gain = camCfg.Gain,
+                    TrigerModel = camCfg.TriggerMode == CCDInspection.Core.Enums.TriggerMode.Software ? MyTriger.Software : MyTriger.External
+                };
+                _camera = new MyHKCamera(_cameraInfo);
+                if (!_camera.Connect())
+                {
+                    WriteNGMsg("相机连接失败", UserTheadStatus.Initial, new Exception());
+                    return false;
+                }
+                WriteMsg("相机连接成功", UserTheadStatus.Initial);
+                ConfigToUICamera();
+                AddCameraEvent();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                WriteNGMsg("相机初始化失败" + ex.Message, UserTheadStatus.Initial, ex);
+                return false;
+            }
         }
+
+
 
         private void ConfigToUICamera()
         {
-            // 相机功能已移除
+            txt_CameraSN1.Text = _cameraInfo.SerialNumber;
+            txt_Exposure.Text = _cameraInfo.ExposeTime.ToString();
+            txt_Gain.Text = _cameraInfo.Gain.ToString();
+            if (_cameraInfo.TrigerModel == MyTriger.External)
+            {
+                for (int i = 0; i < cmb_TriggerModel.Items.Count; i++)
+                {
+                    if (cmb_TriggerModel.Items[i].ToString() == "硬触发")
+                    {
+                        cmb_TriggerModel.SelectedIndex = i;
+                    }
+                }
+            }
+            else if (_cameraInfo.TrigerModel == MyTriger.Software)
+            {
+                for (int i = 0; i < cmb_TriggerModel.Items.Count; i++)
+                {
+                    if (cmb_TriggerModel.Items[i].ToString() == "软触发")
+                    {
+                        cmb_TriggerModel.SelectedIndex = i;
+                    }
+                }
+            }
+            else if (_cameraInfo.TrigerModel == MyTriger.Continue)
+            {
+                for (int i = 0; i < cmb_TriggerModel.Items.Count; i++)
+                {
+                    if (cmb_TriggerModel.Items[i].ToString() == "连续触发")
+                    {
+                        cmb_TriggerModel.SelectedIndex = i;
+                    }
+                }
+            }
+            switch_Gama.Active = _cameraInfo.Gamable ? true : false;
+            txt_Gama.Text = _cameraInfo.Gama.ToString();
         }
 
         #endregion
@@ -670,26 +757,26 @@ namespace CCDInspection.UI.Forms
         // JSON AxisConfig → UI 文本框
         private void AxisConfigToUI(AxisConfig cfg)
         {
-            try { txt_ManualSpeed.Text = cfg.ManualSpeed.ToString(); } catch { }
-            try { txt_PulseEquivalent.Text = cfg.PulseEquivalent.ToString(); } catch { }
-            try { txt_AutoSpeed.Text = cfg.AutoSpeed.ToString(); } catch { }
-            try { txt_Acceleration.Text = cfg.Acceleration.ToString(); } catch { }
-            try { txt_Deceleration.Text = cfg.Deceleration.ToString(); } catch { }
-            try { txt_PositiveSoftLimit.Text = cfg.PositiveSoftLimit.ToString(); } catch { }
-            try { txt_NegativeSoftLimit.Text = cfg.NegativeSoftLimit.ToString(); } catch { }
-            try { txt_HomeSpeed.Text = cfg.HomeSpeed.ToString(); } catch { }
-            try { txt_SlowSpeed.Text = cfg.CreepSpeed.ToString(); } catch { }
-            try { txt_PositivePoint.Text = cfg.PosLimitIo.ToString(); } catch { }
-            try { txt_NegtivePoint.Text = cfg.NegLimitIo.ToString(); } catch { }
-            try { txt_OriginPoint.Text = cfg.OriginIo.ToString(); } catch { }
-            try { txt_AlarmPoint.Text = cfg.AlarmIo.ToString(); } catch { }
             try
             {
+                txt_ManualSpeed.Text = cfg.ManualSpeed.ToString();
+                txt_PulseEquivalent.Text = cfg.PulseEquivalent.ToString();
+                txt_AutoSpeed.Text = cfg.AutoSpeed.ToString();
+                txt_Acceleration.Text = cfg.Acceleration.ToString();
+                txt_Deceleration.Text = cfg.Deceleration.ToString();
+                txt_PositiveSoftLimit.Text = cfg.PositiveSoftLimit.ToString();
+                txt_NegativeSoftLimit.Text = cfg.NegativeSoftLimit.ToString();
+                txt_HomeSpeed.Text = cfg.HomeSpeed.ToString();
+                txt_SlowSpeed.Text = cfg.CreepSpeed.ToString();
+                txt_PositivePoint.Text = cfg.PosLimitIo.ToString();
+                txt_NegtivePoint.Text = cfg.NegLimitIo.ToString();
+                txt_OriginPoint.Text = cfg.OriginIo.ToString();
+                txt_AlarmPoint.Text = cfg.AlarmIo.ToString();
                 for (int i = 0; i < cmb_HomeModel.Items.Count; i++)
                     if (Convert.ToInt32(cmb_HomeModel.Items[i].ToString()) == cfg.HomeModel)
                         cmb_HomeModel.SelectedIndex = i;
             }
-            catch { }
+            catch (Exception ex) { WriteNGMsg(ex.Message, UserTheadStatus.SoftOptStatus, ex); }
         }
 
         // UI 文本框 → JSON AxisConfig
@@ -761,6 +848,7 @@ namespace CCDInspection.UI.Forms
         {
             LogService.Information("[诊断-界面] btn_StopAutoTest 点击 | 当前状态机={S}",
                 _stationController?.CurrentState);
+            AddCameraEvent();
             _isRunning = false;
             _isAutoRun = false;
             _transferTask?.Stop();
@@ -936,10 +1024,14 @@ namespace CCDInspection.UI.Forms
             _deviceManager.Motion.ClearAlarm(0);
             timer_Axis.Enabled = true; // 重新开启轴状态监控
             LogService.Information("[诊断-急停] 报警已清除 timer=恢复");
-            // 同步清除状态机报警（只清报警不回零，保持轴位不变）
-            _deviceManager?.Alarm?.ClearAlarm();
-            _stationController?.ClearAlarmOnly();
             WriteMsg("轴报警已清除", UserTheadStatus.AxisStatus);
+
+            // 同步清除状态机报警并复位
+            Task.Run(async () =>
+            {
+                try { if (_stationController != null) await _stationController.ResetAsync(); }
+                catch (Exception ex) { LogService.Error(ex, "软件复位异常"); }
+            });
         }
 
 
@@ -984,7 +1076,17 @@ namespace CCDInspection.UI.Forms
 
         private void AddCameraEvent()
         {
-            // 相机功能已移除
+            if (_camera != null)
+            {
+                _camera.BitmapCallevent += _Camera_BitmapCallevent;
+                _camera.RawImageCallevent += _Camera_RawImageCallevent;
+            }
+        }
+        private void _Camera_BitmapCallevent(Bitmap bitmap) { hWindow_Camera.Image = bitmap; }
+        private void _Camera_RawImageCallevent(IntPtr pData, int w, int h, int fmt)
+        {
+            try { _deviceManager?.Vision?.FeedRawImage(pData, w, h, fmt); }
+            catch (Exception ex) { WriteMsg("图像传递失败: " + ex.Message, UserTheadStatus.SoftOptStatus); }
         }
 
         uint[] _ioStates = new uint[16];
@@ -1060,8 +1162,6 @@ namespace CCDInspection.UI.Forms
                 ? (atPosLimit ? "正向限位" : atNegLimit ? "负向限位" : (st & 0x0200) != 0 ? "运动中" : (st & 0x0040) != 0 ? "报警" : "就绪")
                 : "未使能";
             this.Invoke(new Action(() => { tslb_actionInfo.Text = $"Z:{_currentZPosition:F1} [{text}]"; tslb_img.Text = text; }));
-            // 实时更新Z轴位置显示
-            SafeBeginInvoke(() => { if (uiTextBox1 != null) uiTextBox1.Text = _currentZPosition.ToString("F2"); });
             // 读取轴停止原因
             float stopReason = 0;
             ZmcApi.ZAux_Direct_GetParam(_axisHandle, "AXIS_STOPREASON", ZMC_ZAXIS_INDEX, ref stopReason);
@@ -1190,6 +1290,12 @@ namespace CCDInspection.UI.Forms
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (cmb_TriggerModel.SelectedIndex != 0)
+            {
+                //MessageBox.Show("请将相机触发模式选择到软触发");
+            }
+            _deviceManager?.Camera?.Disconnect();
+            _camera?.DisConnect();
             _deviceManager.Dispose();
             Application.Exit();
         }
@@ -1202,44 +1308,44 @@ namespace CCDInspection.UI.Forms
 
         private void iO_In0_StatusChanged(object sender, StatusEventArgs e)
         {
-            //if (e.Status)
-            //{
-            //    _ioFlags[e.Id] = true;
-            //}
-            //switch (e.Id)
-            //{
-            //    case IOMapping.IN_CylinderExtendOk: // IN4 气缸伸出到位 — 光栅检测
-            //        if (!e.Status && _ioFlags[IOMapping.IN_CylinderExtendOk])
-            //        {
-            //            _ioFlags[IOMapping.IN_CylinderExtendOk] = false;
-            //            _buzzerEnabled = true;
-            //            _deviceManager?.Motion?.ZAxis?.Stop();
-            //        }
-            //        break;
+            if (e.Status)
+            {
+                _ioFlags[e.Id] = true;
+            }
+            switch (e.Id)
+            {
+                case IOMapping.IN_CylinderExtendOk: // IN4 气缸伸出到位 — 光栅检测
+                    if (!e.Status && _ioFlags[IOMapping.IN_CylinderExtendOk])
+                    {
+                        _ioFlags[IOMapping.IN_CylinderExtendOk] = false;
+                        _buzzerEnabled = true;
+                        _deviceManager?.Motion?.ZAxis?.Stop();
+                    }
+                    break;
 
-            //    case IOMapping.IN_CylinderRetractOk: // IN5 气缸缩回到位
-            //        if (e.Status && _ioFlags[IOMapping.IN_CylinderRetractOk])
-            //        {
-            //            _ioFlags[IOMapping.IN_CylinderRetractOk] = false;
-            //            btn_StartAutoTest_Click(null, null);
-            //            SetMachineStatus(MachineStatus.Start);
-            //        }
-            //        break;
+                case IOMapping.IN_CylinderRetractOk: // IN5 气缸缩回到位
+                    if (e.Status && _ioFlags[IOMapping.IN_CylinderRetractOk])
+                    {
+                        _ioFlags[IOMapping.IN_CylinderRetractOk] = false;
+                        btn_StartAutoTest_Click(null, null);
+                        SetMachineStatus(MachineStatus.Start);
+                    }
+                    break;
 
-            //    case IOMapping.IN_EmergencyStop: // IN2 急停（常闭，LOW=按下）
-            //        if (!e.Status && !_hwEmgTriggered)
-            //        {
-            //            _hwEmgTriggered = true;
-            //            _buzzerEnabled = true;
-            //            EmergencyStopAll();
-            //        }
-            //        else if (e.Status)
-            //        {
-            //            _hwEmgTriggered = false;
-            //            _buzzerEnabled = false;
-            //        }
-            //        break;
-            //}
+                case IOMapping.IN_EmergencyStop: // IN2 急停（常闭，LOW=按下）
+                    if (!e.Status && !_hwEmgTriggered)
+                    {
+                        _hwEmgTriggered = true;
+                        _buzzerEnabled = true;
+                        EmergencyStopAll();
+                    }
+                    else if (e.Status)
+                    {
+                        _hwEmgTriggered = false;
+                        _buzzerEnabled = false;
+                    }
+                    break;
+            }
         }
 
         private void EmergencyStopAll()
@@ -1358,7 +1464,37 @@ namespace CCDInspection.UI.Forms
 
         private void cmb_TriggerModel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // 相机功能已移除
+            if (_initFinished)
+            {
+                try
+                {
+                    if (cmb_TriggerModel.SelectedItem.ToString() == "软触发")
+                    {
+                        _cameraInfo.TrigerModel = MyTriger.Software;
+                        btnSoftTriOnce.Enabled = true;
+                    }
+                    else if (cmb_TriggerModel.SelectedItem.ToString() == "硬触发")
+                    {
+                        _cameraInfo.TrigerModel = MyTriger.External;
+                        btnSoftTriOnce.Enabled = false;
+                    }
+                    else if (cmb_TriggerModel.SelectedItem.ToString() == "连续触发")
+                    {
+                        _cameraInfo.TrigerModel = MyTriger.Continue;
+                        btnSoftTriOnce.Enabled = false;
+                    }
+                    _cameraInfo.ExposeTime = Convert.ToInt32(txt_Exposure.Text.Trim());
+                    _cameraInfo.Gain = Convert.ToInt32(txt_Gain.Text.Trim());
+                    _cameraInfo.Gamable = switch_Gama.Active;
+                    _cameraInfo.Gama = float.Parse(txt_Gama.Text);
+                    _camera.UpDateCameraInfo(_cameraInfo);
+                    SaveCameraSet(); // 同时保存到 JSON 并同步到 HkCamera
+                }
+                catch (Exception ex)
+                {
+                    WriteNGMsg("相机参数设置失败", UserTheadStatus.SoftOptStatus, ex);
+                }
+            }
         }
 
         private void txt_SoftOptStatus_MouseDown(object sender, MouseEventArgs e)
@@ -1424,7 +1560,31 @@ namespace CCDInspection.UI.Forms
         /// <param name="e"></param>
         private void btn_ManualPlan_Click(object sender, EventArgs e)
         {
-           
+            try
+            {
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Filter = "VM方案文件|*.sol";
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    WriteMsg($"正在加载方案: {openFile.FileName}", UserTheadStatus.SoftOptStatus);
+
+                    bool loadok = _deviceManager.Vision.LoadSolution(openFile.FileName);
+
+                    if (loadok)
+                    {
+                        WriteMsg("方案加载成功", UserTheadStatus.SoftOptStatus);
+                    }
+                    else
+                    {
+                        string errorMsg = "方案加载失败";
+                        WriteNGMsg("方案加载失败: " + errorMsg, UserTheadStatus.SoftOptStatus);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteNGMsg("方案加载异常: " + ex.Message, UserTheadStatus.SoftOptStatus, ex);
+            }
         }
 
         /// <summary>
@@ -1505,121 +1665,6 @@ namespace CCDInspection.UI.Forms
         }
 
 
-        /// <summary>从 ProductConfig.json 加载产品数据到 dataGridView3</summary>
-        private void LoadProductGrid()
-        {
-            try
-            {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ProductConfig.json");
-                if (!File.Exists(path)) return;
-                var json = File.ReadAllText(path);
-                _productModels = JsonConvert.DeserializeObject<List<ProductModel>>(json) ?? new List<ProductModel>();
-                dataGridView3.Rows.Clear();
-                foreach (var p in _productModels)
-                {
-                    int idx = dataGridView3.Rows.Add(
-                        p.Product_model ?? "",
-                        p.Product_port ?? "",
-                        p.Product_color ?? "",
-                        p.Product_code ?? "",
-                        p.Product_zHeight ?? "20");
-                }
-            }
-            catch (Exception ex) { LogService.Error(ex, "加载产品配方失败"); }
-        }
-
-        /// <summary>初始化产品下拉框 — 从 ProductConfig.json 加载</summary>
-        private void InitProductCombo()
-        {
-            try
-            {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ProductConfig.json");
-                if (!File.Exists(path)) return;
-                var json = File.ReadAllText(path);
-                var list = JsonConvert.DeserializeObject<List<ProductModel>>(json);
-                comboBox1.Items.Clear();
-                comboBox1.DisplayMember = null;
-                foreach (var p in list)
-                    comboBox1.Items.Add($"{p.Product_port}-{p.Product_model}");
-                // 选中当前产品
-                if (!string.IsNullOrEmpty(_currentProductPort) && !string.IsNullOrEmpty(_currentProductModel))
-                {
-                    var cur = $"{_currentProductPort}-{_currentProductModel}";
-                    var idx = comboBox1.Items.Cast<string>().ToList().IndexOf(cur);
-                    if (idx >= 0) comboBox1.SelectedIndex = idx;
-                }
-            }
-            catch { }
-        }
-
-        /// <summary>切换产品方案 — 安全状态下才能切换，切换后轴移到配方高度</summary>
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!_initFinished) return;
-            var sel = comboBox1.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(sel)) return;
-            var parts = sel.Split('-');
-            if (parts.Length < 2) return;
-            var port = parts[0];
-            var model = string.Join("-", parts.Skip(1));
-
-            // 安全状态检查
-            if (_stationController?.CurrentState != StationState.Idle)
-            {
-                WriteMsg("请在空闲状态下切换方案", UserTheadStatus.SoftOptStatus);
-                if (!string.IsNullOrEmpty(_currentProductPort))
-                    comboBox1.SelectedItem = $"{_currentProductPort}-{_currentProductModel}";
-                return;
-            }
-
-            _currentProductPort = port;
-            _currentProductModel = model;
-            LoadRecipeInfo(port, model);
-            WriteMsg($"已切换方案: {sel}", UserTheadStatus.SoftOptStatus);
-        }
-
-        /// <summary>统一加载配方信息和VM方案 — 登录和切换共用</summary>
-        public void LoadRecipeInfo(string port, string model)
-        {
-            // 1. 读产品Z高度 → 更新JSON配置 → Z轴移动
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ProductConfig.json");
-            if (File.Exists(path))
-            {
-                var list = JsonConvert.DeserializeObject<List<ProductModel>>(File.ReadAllText(path));
-                var p = list?.FirstOrDefault(x => x.Product_model == model && x.Product_port == port);
-                if (p != null && float.TryParse(p.Product_zHeight, out float zh) && zh != 0)
-                {
-                    var cfgSvc = new ConfigService();
-                    var cfg = cfgSvc.Load();
-                    cfg.Inspection.DetectZHeight = zh;
-                    cfgSvc.Save(cfg);
-                    LogService.Information("[配方加载] {Port}-{Model} | Z高度={Z:F1}mm", port, model, zh);
-                    _deviceManager?.Motion?.ZAxis?.MoveAbs(zh);
-                }
-            }
-
-            // 2. 加载VM视觉方案 + 绑定渲染控件
-            var solPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VmSol", port, model + ".sol");
-            LogService.Information("[配方加载] 搜索VM方案: {Path} | Vision={V}", solPath, _deviceManager?.Vision != null ? "OK" : "NULL");
-            vmRenderControl1.ModuleSource = null;
-            if (!File.Exists(solPath))
-            {
-                LogService.Warning("[配方加载] VM方案不存在: {Path}", solPath);
-                return;
-            }
-            try
-            {
-                var vision = _deviceManager?.Vision;
-                if (vision == null) { LogService.Error("[配方加载] Vision为null，无法加载方案"); return; }
-                bool ok = vision.LoadSolution(solPath);
-                LogService.Information("[配方加载] LoadSolution返回={R} IsLoaded={L}", ok, vision.IsLoaded);
-                var proc = (vision as VmVisionProcessor)?.Procedure;
-                if (proc != null) vmRenderControl1.ModuleSource = proc;
-                LogService.Information("[配方加载] VM方案已加载并绑定渲染: {Path}", solPath);
-            }
-            catch (Exception ex) { LogService.Error(ex, "[配方加载] VM方案加载异常"); }
-        }
-
         private void Begin_AddPlcPoint_Btm_Click(object sender, EventArgs e)
         {
             try
@@ -1651,26 +1696,17 @@ namespace CCDInspection.UI.Forms
                         for (int i = 0; i < dataGridView3.RowCount; i++)
                         {
                             DataGridViewRow row = dataGridView3.Rows[i];
-                            if (row.IsNewRow) continue;
-                            var model = row.Cells[0].Value?.ToString() ?? "";
-                            var port  = row.Cells[1].Value?.ToString() ?? "";
-                            var color = row.Cells[2].Value?.ToString() ?? "";
-                            var code  = row.Cells[3].Value?.ToString() ?? "";
-                            var zH    = row.Cells.Count > 4 ? row.Cells[4].Value?.ToString() ?? "20" : "20";
-                            _productModels.Add(new ProductModel
-                            {
-                                Product_model = model,
-                                Product_port = port,
-                                Product_color = color,
-                                Product_code = code,
-                                Product_zHeight = zH
-                            });
+                            var item1 = row.Cells[0].Value.ToString();
+                            var item2 = row.Cells[1].Value.ToString();
+                            var item3 = row.Cells[2].Value.ToString();
+                            var item4 = row.Cells[3].Value.ToString();
+                            _productModels.Add(new ProductModel() { Product_model = item1, Product_port = item2, Product_color = item3, Product_code = item4 });
+                            var json = JsonConvert.SerializeObject(_productModels);
+                            var configDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
+                            if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
+                            File.WriteAllText(Path.Combine(configDir, "ProductConfig.json"), json);
                         }
-                        // 全量写入一次，不再每行重复写
-                        var json = JsonConvert.SerializeObject(_productModels);
-                        var configDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
-                        if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
-                        File.WriteAllText(Path.Combine(configDir, "ProductConfig.json"), json);
+
                         MessageBox.Show("数据保存成功！");
                         break;
                 }

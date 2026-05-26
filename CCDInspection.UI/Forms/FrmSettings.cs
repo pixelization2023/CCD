@@ -33,12 +33,6 @@ namespace CCDInspection.UI.Forms
             num_PosLimit.Value = (decimal)_config.Axis.PositiveSoftLimit;
             num_NegLimit.Value = (decimal)_config.Axis.NegativeSoftLimit;
 
-            // 相机配置
-            txt_CameraSN.Text = _config.Camera.SerialNumber;
-            num_Exposure.Value = _config.Camera.ExposureTime;
-            num_Gain.Value = _config.Camera.Gain;
-            cmb_TriggerMode.SelectedIndex = (int)_config.Camera.TriggerMode;
-
             // 检测配置
             txt_SolDir.Text = _config.Inspection.SolDirectory;
             txt_ImagePath.Text = _config.Inspection.ImageSavePath;
@@ -61,12 +55,6 @@ namespace CCDInspection.UI.Forms
                 _config.Axis.HomeModel = (int)num_HomeModel.Value;
                 _config.Axis.PositiveSoftLimit = (float)num_PosLimit.Value;
                 _config.Axis.NegativeSoftLimit = (float)num_NegLimit.Value;
-
-                // 相机配置
-                _config.Camera.SerialNumber = txt_CameraSN.Text.Trim();
-                _config.Camera.ExposureTime = (int)num_Exposure.Value;
-                _config.Camera.Gain = (int)num_Gain.Value;
-                _config.Camera.TriggerMode = (TriggerMode)cmb_TriggerMode.SelectedIndex;
 
                 // 检测配置
                 _config.Inspection.SolDirectory = txt_SolDir.Text.Trim();

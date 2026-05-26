@@ -27,10 +27,9 @@ namespace CCDInspection.Services
     /// 4. 同时按下 IN6(左启动)+IN7(右启动) → 执行一次检测流程
     /// 5. 每轮完成后必须松开双手再按，才能触发下一轮（安全规范）
     ///
-    /// 【检测流程（S0→S5，11步）】
-    ///   S0 Idle: 气缸伸出(IN4=1) 等待启动
-    ///   S1 WaitStart: 按 IN6 → S2 CylinderRetract: 气缸缩回(IN5) → S3 LightOn+ZAxisMove+Camera+Vision+Save+LightOff+ZAxisReturn
-    ///   → S4 CylinderExtend: 气缸伸出(IN4) → S5 Completed → 松开IN6 → 下一轮 S1
+    /// 【检测流程（10步，VM内置拍照）】
+    ///   S1 WaitStart(IN7) → S2 CylinderRetract → S3 LightOn+ZAxisMove+Vision(Run拍照+检测)+Save+LightOff+ZAxisReturn
+    ///   → S4 CylinderExtend → S5 Completed → 等IN7松开 → 下一轮 S1
     ///
     /// 【安全机制】
     ///   - 光栅遮挡(IN0) → 立即报警，停止所有动作
@@ -56,8 +55,7 @@ namespace CCDInspection.Services
         // 设备接口（硬件抽象，仿真/真实硬件一键切换）
         // ================================================================
         private readonly IMotionController _motion;   // ZMC 运动控制器
-        private readonly ICamera _camera;             // 工业相机
-        private readonly IVisionProcessor _vision;    // VisionMaster 视觉处理器
+        private readonly IVisionProcessor _vision;    // VisionMaster 视觉处理器（自带相机触发）
         private readonly ICylinder _cylinder;         // 气缸
         private readonly IAlarmHandler _alarm;        // 报警处理器
         private readonly ILightCurtain _lightCurtain; // 安全光栅
@@ -117,12 +115,11 @@ namespace CCDInspection.Services
         /// <summary>
         /// 构造函数 — 注入所有设备接口和配置
         /// </summary>
-        public StationController(IMotionController motion, ICamera camera, IVisionProcessor vision,
+        public StationController(IMotionController motion, IVisionProcessor vision,
             ICylinder cylinder, IAlarmHandler alarm, ILightCurtain lightCurtain, StatisticsService stats,
             AppConfig config, IConfigService configService)
         {
             _motion = motion;
-            _camera = camera;
             _vision = vision;
             _cylinder = cylinder;
             _alarm = alarm;
@@ -185,7 +182,6 @@ namespace CCDInspection.Services
             _flowSM.Register(InspectionFlowState.CylinderRetract, CylinderRetractHandler);
             _flowSM.Register(InspectionFlowState.LightOn, LightOnHandler);
             _flowSM.Register(InspectionFlowState.ZAxisMove, ZAxisMoveHandler);
-            _flowSM.Register(InspectionFlowState.CameraCapture, CameraCaptureHandler);
             _flowSM.Register(InspectionFlowState.VisionProcess, VisionProcessHandler);
             _flowSM.Register(InspectionFlowState.SaveResult, SaveResultHandler);
             _flowSM.Register(InspectionFlowState.LightOff, LightOffHandler);
@@ -295,13 +291,14 @@ namespace CCDInspection.Services
         ///   清除方式2: 软件 ResetAsync() → ClearAlarm
         ///   清除后自动进入 Resetting
         /// </summary>
+        private bool _skipReset; // ClearAlarmOnly时跳过回零
         private async Task AlarmHandler()
         {
             LogService.Error("[状态机] 进入 Alarm 报警状态");
             _motion.ZAxis?.Stop();
             ReportStatus("报警中...等待复位(IN3或软件复位)");
+            _skipReset = false;
 
-            // 轮询等待报警清除
             while (_alarm.IsAlarming && !_stopRequested)
             {
                 if (_motion.ReadInput(IOMapping.IN_Reset))
@@ -318,8 +315,16 @@ namespace CCDInspection.Services
                 _alarm.ClearAlarm();
             }
 
-            LogService.Information("[状态机] 报警已清除，进入 Resetting");
-            await _topSM.TransitionToAsync(StationState.Resetting);
+            if (_skipReset)
+            {
+                LogService.Information("[状态机] 报警已清除(软件)，跳过回零 → Idle");
+                await _topSM.TransitionToAsync(StationState.Idle);
+            }
+            else
+            {
+                LogService.Information("[状态机] 报警已清除，进入 Resetting");
+                await _topSM.TransitionToAsync(StationState.Resetting);
+            }
         }
 
         /// <summary>
@@ -348,6 +353,13 @@ namespace CCDInspection.Services
             {
                 LogService.Information("[状态机] 回零中...");
                 await _motion.ZAxis.Home(_config.Axis);
+                // 回零后移动到配方检测高度（读最新JSON，支持界面切换方案后生效）
+                float recipeZ = _configService.Load()?.Inspection?.DetectZHeight ?? _config.Inspection.DetectZHeight;
+                if (recipeZ != 0)
+                {
+                    LogService.Information("[复位] Z轴→配方高度 {Z:F1}mm", recipeZ);
+                    await _motion.ZAxis.MoveAbs(recipeZ);
+                }
             }
 
             LogService.Information("[状态机] 复位完成 → Idle");
@@ -400,9 +412,8 @@ namespace CCDInspection.Services
         /// <summary>S3：光源开启 — OUT2通电</summary>
         private async Task LightOnHandler()
         {
-            // OT=0时灯亮，OT=1时灯灭（反逻辑）
-            _motion.WriteOutput(IOMapping.OUT_Light, false);
-            _motion.WriteOutput(IOMapping.OUT_Light2, false);
+            _motion.WriteOutput(IOMapping.OUT_Light, true);
+            _motion.WriteOutput(IOMapping.OUT_Light2, true);
             await Task.Delay(_config.Inspection.LightOnDelayMs);
             await SafeFlowNext(InspectionFlowState.ZAxisMove);
         }
@@ -418,33 +429,10 @@ namespace CCDInspection.Services
                 await _topSM.TransitionToAsync(StationState.Alarm);
                 return;
             }
-            await SafeFlowNext(InspectionFlowState.CameraCapture);
-        }
-
-        private Bitmap _capturedImage;
-
-        /// <summary>S3：相机拍照</summary>
-        private async Task CameraCaptureHandler()
-        {
-            _capturedImage?.Dispose();
-            _capturedImage = null;
-            if (Features.ShieldCamera)
-            {
-                ReportStatus("相机已屏蔽，使用虚拟图像");
-                _capturedImage = new Bitmap(100, 100);
-                await SafeFlowNext(InspectionFlowState.VisionProcess);
-                return;
-            }
-            if (!_camera.Trigger(out _capturedImage))
-            {
-                LastRecord = NewRecord("NG", "拍照失败");
-                await SafeFlowNext(InspectionFlowState.SaveResult);
-                return;
-            }
             await SafeFlowNext(InspectionFlowState.VisionProcess);
         }
 
-        /// <summary>S3：VM视觉处理</summary>
+        /// <summary>S3：VM视觉处理 — 调Run触发拍照检测，读Outputs解析结果</summary>
         private async Task VisionProcessHandler()
         {
             if (!_vision.IsLoaded)
@@ -454,9 +442,17 @@ namespace CCDInspection.Services
                 await SafeFlowNext(InspectionFlowState.SaveResult);
                 return;
             }
-            bool ok; string reason;
-            _vision.Run(_capturedImage, out ok, out reason);
-            LastRecord = NewRecord(ok ? "OK" : "NG", reason);
+            try
+            {
+                bool ok; string reason;
+                _vision.Run(null, out ok, out reason);
+                LastRecord = NewRecord(ok ? "OK" : "NG", reason);
+            }
+            catch (Exception ex)
+            {
+                LogService.Error(ex, "VM流程运行异常");
+                LastRecord = NewRecord("NG", ex.Message);
+            }
             await SafeFlowNext(InspectionFlowState.SaveResult);
         }
 
@@ -472,8 +468,8 @@ namespace CCDInspection.Services
         /// <summary>S3：光源关闭</summary>
         private async Task LightOffHandler()
         {
-            _motion.WriteOutput(IOMapping.OUT_Light, true);
-            _motion.WriteOutput(IOMapping.OUT_Light2, true);
+            _motion.WriteOutput(IOMapping.OUT_Light, false);
+            _motion.WriteOutput(IOMapping.OUT_Light2, false);
             await SafeFlowNext(InspectionFlowState.ZAxisReturn);
         }
 
@@ -593,6 +589,15 @@ namespace CCDInspection.Services
         }
 
         /// <summary>软件复位 — 清除报警 → 去Resetting</summary>
+        /// <summary>仅清除报警，不回零 — 软件"清除报警"按钮专用</summary>
+        public void ClearAlarmOnly()
+        {
+            _skipReset = true;
+            _alarm.ClearAlarm();
+            _alarmSignal?.TrySetResult(true);
+            LogService.Information("[诊断-状态机] ClearAlarmOnly 仅清报警，不回零");
+        }
+
         public async Task ResetAsync()
         {
             LogService.Information("[诊断-状态机] ResetAsync 调用 | 当前状态={S} IsAlarming={A}",

@@ -29,7 +29,6 @@ namespace CCDInspection.UI.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmLogin));
             this.cmb_ProductType = new Sunny.UI.UIComboBox();
             this.cmb_UserName = new Sunny.UI.UIComboBox();
             this.txt_Password = new Sunny.UI.UITextBox();
@@ -38,12 +37,10 @@ namespace CCDInspection.UI.Forms
             this.uiLabel4 = new Sunny.UI.UILabel();
             this.uiLabel3 = new Sunny.UI.UILabel();
             this.uiLabel2 = new Sunny.UI.UILabel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btn_Login = new Sunny.UI.UIButton();
             this.btn_Cancel = new Sunny.UI.UIButton();
             this.uiComboBox_Productmodel = new Sunny.UI.UIComboBox();
             this.uiLabel5 = new Sunny.UI.UILabel();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // cmb_ProductType
@@ -161,18 +158,6 @@ namespace CCDInspection.UI.Forms
             this.uiLabel2.Text = "管理员ID：";
             this.uiLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.ErrorImage = null;
-            this.pictureBox1.Image = global::CCDInspection.UI.Properties.Resources.log;
-            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(25, 48);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(218, 201);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 267;
-            this.pictureBox1.TabStop = false;
-            // 
             // btn_Login
             // 
             this.btn_Login.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -241,12 +226,10 @@ namespace CCDInspection.UI.Forms
             this.Controls.Add(this.uiLabel4);
             this.Controls.Add(this.uiLabel3);
             this.Controls.Add(this.uiLabel2);
-            this.Controls.Add(this.pictureBox1);
             this.Name = "FrmLogin";
             this.Text = "FrmLogin";
             this.ZoomScaleRect = new System.Drawing.Rectangle(15, 15, 558, 383);
             this.Load += new System.EventHandler(this.FrmLogin_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -261,7 +244,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UILabel uiLabel4;
         private Sunny.UI.UILabel uiLabel3;
         private Sunny.UI.UILabel uiLabel2;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private Sunny.UI.UIButton btn_Login;
         private Sunny.UI.UIButton btn_Cancel;
         private Sunny.UI.UIComboBox uiComboBox_Productmodel;

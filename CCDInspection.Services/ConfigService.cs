@@ -103,7 +103,6 @@ namespace CCDInspection.Services
             return new AppConfig
             {
                 Axis = new AxisConfig(),
-                Camera = new CameraConfig(),
                 Inspection = new InspectionSettings()
             };
         }

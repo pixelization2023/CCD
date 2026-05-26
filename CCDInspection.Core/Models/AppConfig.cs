@@ -10,10 +10,6 @@ namespace CCDInspection.Core.Models
     {
         [JsonProperty("axis")]
         public AxisConfig Axis { get; set; } = new AxisConfig();
-
-        [JsonProperty("camera")]
-        public CameraConfig Camera { get; set; } = new CameraConfig();
-
         [JsonProperty("products")]
         public List<ProductConfig> Products { get; set; } = new List<ProductConfig>();
 

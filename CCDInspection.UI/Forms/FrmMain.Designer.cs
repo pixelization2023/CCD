@@ -32,11 +32,11 @@ namespace CCDInspection.UI.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.uiGroupBox3 = new Sunny.UI.UIGroupBox();
             this.uiGroupBox8 = new Sunny.UI.UIGroupBox();
             this.lbl_TotalResult = new Sunny.UI.UILabel();
@@ -53,10 +53,8 @@ namespace CCDInspection.UI.Forms
             this.btn_StartAutoTest = new Sunny.UI.UIButton();
             this.btn_StopAutoTest = new Sunny.UI.UIButton();
             this.btn_Login = new Sunny.UI.UIButton();
-            this.label_ProductPort = new System.Windows.Forms.Label();
             this.Product_Label = new Sunny.UI.UILabel();
             this.lbl_MachineStatus = new Sunny.UI.UILabel();
-            this.btn_ManualPlan = new Sunny.UI.UIButton();
             this.uiGroupBox1 = new Sunny.UI.UIGroupBox();
             this.txt_SoftOptStatus = new System.Windows.Forms.RichTextBox();
             this.timer_IO = new System.Windows.Forms.Timer(this.components);
@@ -103,6 +101,8 @@ namespace CCDInspection.UI.Forms
             this.txt_Deceleration = new Sunny.UI.UITextBox();
             this.txt_NegativeSoftLimit = new Sunny.UI.UITextBox();
             this.uiGroupBox20 = new Sunny.UI.UIGroupBox();
+            this.uiTextBox1 = new Sunny.UI.UITextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.ckb_AxisEnable = new Sunny.UI.UICheckBox();
             this.btn_GoHome = new Sunny.UI.UIButton();
             this.txt_ManualSpeed = new Sunny.UI.UITextBox();
@@ -132,6 +132,7 @@ namespace CCDInspection.UI.Forms
             this.cmb_CameraSet = new Sunny.UI.UIComboBox();
             this.uiLabel52 = new Sunny.UI.UILabel();
             this.uiGroupBox24 = new Sunny.UI.UIGroupBox();
+            this.vmFrontendControl1 = new VMControls.Winform.Release.VmFrontendControl();
             this.hWindow_Camera = new System.Windows.Forms.PictureBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.uiTabControl3 = new Sunny.UI.UITabControl();
@@ -145,6 +146,7 @@ namespace CCDInspection.UI.Forms
             this.dataGridViewComboBoxColumn1 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.uiGroupBox16 = new Sunny.UI.UIGroupBox();
             this.btn_CancelModyPassWord = new Sunny.UI.UIButton();
@@ -269,7 +271,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox15 = new Sunny.UI.UIGroupBox();
             this.vmRenderControl1 = new VMControls.Winform.Release.VmRenderControl();
             this.uiTabControl1 = new Sunny.UI.UITabControl();
-            this.vmFrontendControl1 = new VMControls.Winform.Release.VmFrontendControl();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.uiGroupBox3.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.uiGroupBox2.SuspendLayout();
@@ -430,11 +432,10 @@ namespace CCDInspection.UI.Forms
             // 
             // uiGroupBox2
             // 
+            this.uiGroupBox2.Controls.Add(this.comboBox1);
             this.uiGroupBox2.Controls.Add(this.uiGroupBox4);
-            this.uiGroupBox2.Controls.Add(this.label_ProductPort);
             this.uiGroupBox2.Controls.Add(this.Product_Label);
             this.uiGroupBox2.Controls.Add(this.lbl_MachineStatus);
-            this.uiGroupBox2.Controls.Add(this.btn_ManualPlan);
             this.uiGroupBox2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiGroupBox2.Location = new System.Drawing.Point(1041, 38);
             this.uiGroupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -501,19 +502,10 @@ namespace CCDInspection.UI.Forms
             this.btn_Login.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btn_Login.Click += new System.EventHandler(this.btn_Login_Click);
             // 
-            // label_ProductPort
-            // 
-            this.label_ProductPort.AutoSize = true;
-            this.label_ProductPort.Location = new System.Drawing.Point(102, 77);
-            this.label_ProductPort.Name = "label_ProductPort";
-            this.label_ProductPort.Size = new System.Drawing.Size(64, 21);
-            this.label_ProductPort.TabIndex = 268;
-            this.label_ProductPort.Text = "label12";
-            // 
             // Product_Label
             // 
             this.Product_Label.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Product_Label.Location = new System.Drawing.Point(14, 76);
+            this.Product_Label.Location = new System.Drawing.Point(5, 76);
             this.Product_Label.Name = "Product_Label";
             this.Product_Label.Size = new System.Drawing.Size(82, 17);
             this.Product_Label.TabIndex = 266;
@@ -523,25 +515,12 @@ namespace CCDInspection.UI.Forms
             // lbl_MachineStatus
             // 
             this.lbl_MachineStatus.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lbl_MachineStatus.Location = new System.Drawing.Point(14, 33);
+            this.lbl_MachineStatus.Location = new System.Drawing.Point(4, 33);
             this.lbl_MachineStatus.Name = "lbl_MachineStatus";
-            this.lbl_MachineStatus.Size = new System.Drawing.Size(72, 28);
+            this.lbl_MachineStatus.Size = new System.Drawing.Size(254, 28);
             this.lbl_MachineStatus.TabIndex = 264;
             this.lbl_MachineStatus.Text = "机台状态";
-            this.lbl_MachineStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // btn_ManualPlan
-            // 
-            this.btn_ManualPlan.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_ManualPlan.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ManualPlan.Location = new System.Drawing.Point(99, 32);
-            this.btn_ManualPlan.MinimumSize = new System.Drawing.Size(1, 1);
-            this.btn_ManualPlan.Name = "btn_ManualPlan";
-            this.btn_ManualPlan.Size = new System.Drawing.Size(107, 32);
-            this.btn_ManualPlan.TabIndex = 0;
-            this.btn_ManualPlan.Text = "加载方案";
-            this.btn_ManualPlan.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ManualPlan.Click += new System.EventHandler(this.btn_ManualPlan_Click);
+            this.lbl_MachineStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // uiGroupBox1
             // 
@@ -1135,6 +1114,8 @@ namespace CCDInspection.UI.Forms
             // 
             // uiGroupBox20
             // 
+            this.uiGroupBox20.Controls.Add(this.uiTextBox1);
+            this.uiGroupBox20.Controls.Add(this.label4);
             this.uiGroupBox20.Controls.Add(this.ckb_AxisEnable);
             this.uiGroupBox20.Controls.Add(this.btn_GoHome);
             this.uiGroupBox20.Controls.Add(this.txt_ManualSpeed);
@@ -1155,6 +1136,36 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox20.TabIndex = 3;
             this.uiGroupBox20.Text = "手动";
             this.uiGroupBox20.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // uiTextBox1
+            // 
+            this.uiTextBox1.ButtonSymbol = 61761;
+            this.uiTextBox1.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
+            this.uiTextBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.uiTextBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiTextBox1.Location = new System.Drawing.Point(89, 157);
+            this.uiTextBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.uiTextBox1.MinimumSize = new System.Drawing.Size(1, 16);
+            this.uiTextBox1.Name = "uiTextBox1";
+            this.uiTextBox1.Padding = new System.Windows.Forms.Padding(5);
+            this.uiTextBox1.ShowText = false;
+            this.uiTextBox1.Size = new System.Drawing.Size(88, 35);
+            this.uiTextBox1.TabIndex = 384;
+            this.uiTextBox1.Text = "0";
+            this.uiTextBox1.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.uiTextBox1.Watermark = "";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(7, 166);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(74, 20);
+            this.label4.TabIndex = 383;
+            this.label4.Text = "Z轴高度：";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ckb_AxisEnable
             // 
@@ -1273,7 +1284,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.label65.AutoSize = true;
             this.label65.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label65.Location = new System.Drawing.Point(6, 36);
+            this.label65.Location = new System.Drawing.Point(7, 35);
             this.label65.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label65.Name = "label65";
             this.label65.Size = new System.Drawing.Size(68, 20);
@@ -1296,7 +1307,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage5.Controls.Add(this.uiGroupBox18);
             this.tabPage5.Location = new System.Drawing.Point(0, 40);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage5.Size = new System.Drawing.Size(200, 60);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "图像处理";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1566,6 +1577,15 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox24.Text = "显示区";
             this.uiGroupBox24.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // vmFrontendControl1
+            // 
+            this.vmFrontendControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vmFrontendControl1.Location = new System.Drawing.Point(0, 32);
+            this.vmFrontendControl1.Margin = new System.Windows.Forms.Padding(430128, 536384, 430128, 536384);
+            this.vmFrontendControl1.Name = "vmFrontendControl1";
+            this.vmFrontendControl1.Size = new System.Drawing.Size(792, 443);
+            this.vmFrontendControl1.TabIndex = 1;
+            // 
             // hWindow_Camera
             // 
             this.hWindow_Camera.BackColor = System.Drawing.Color.Transparent;
@@ -1583,7 +1603,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage4.Controls.Add(this.uiTabControl3);
             this.tabPage4.Location = new System.Drawing.Point(0, 40);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(200, 60);
+            this.tabPage4.Size = new System.Drawing.Size(1034, 560);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "参数设置";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1676,7 +1696,8 @@ namespace CCDInspection.UI.Forms
             this.dataGridViewTextBoxColumn10,
             this.dataGridViewComboBoxColumn1,
             this.dataGridViewTextBoxColumn11,
-            this.dataGridViewTextBoxColumn12});
+            this.dataGridViewTextBoxColumn12,
+            this.Column4});
             this.dataGridView3.Location = new System.Drawing.Point(2, 32);
             this.dataGridView3.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView3.Name = "dataGridView3";
@@ -1714,7 +1735,12 @@ namespace CCDInspection.UI.Forms
             this.dataGridViewTextBoxColumn12.HeaderText = "产品编码";
             this.dataGridViewTextBoxColumn12.MinimumWidth = 8;
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
-            this.dataGridViewTextBoxColumn12.Width = 208;
+            this.dataGridViewTextBoxColumn12.Width = 188;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Z轴高度";
+            this.Column4.Name = "Column4";
             // 
             // tabPage10
             // 
@@ -2007,52 +2033,52 @@ namespace CCDInspection.UI.Forms
             // 
             this.dgv_CheckItem.AllowUserToAddRows = false;
             this.dgv_CheckItem.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
             this.dgv_CheckItem.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.dgv_CheckItem.ColumnHeadersHeight = 32;
             this.dgv_CheckItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgv_CheckItem.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3});
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle13;
             this.dgv_CheckItem.EnableHeadersVisualStyles = false;
             this.dgv_CheckItem.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dgv_CheckItem.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(173)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.Location = new System.Drawing.Point(3, 29);
             this.dgv_CheckItem.Name = "dgv_CheckItem";
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.dgv_CheckItem.RowHeadersWidth = 62;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle15.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle15;
             this.dgv_CheckItem.RowTemplate.Height = 23;
             this.dgv_CheckItem.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.SelectedIndex = -1;
@@ -2090,7 +2116,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage3.Controls.Add(this.gb_Optional);
             this.tabPage3.Location = new System.Drawing.Point(0, 40);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(200, 60);
+            this.tabPage3.Size = new System.Drawing.Size(1034, 560);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "功能与屏蔽";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -2105,6 +2131,7 @@ namespace CCDInspection.UI.Forms
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(236, 375);
             this.tabControl1.TabIndex = 264;
+            this.tabControl1.Visible = false;
             // 
             // tabPage14
             // 
@@ -3234,7 +3261,7 @@ namespace CCDInspection.UI.Forms
             this.vmRenderControl1.ImageSource = null;
             this.vmRenderControl1.IsShowCustomROIMenu = false;
             this.vmRenderControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(3441, 3620, 3441, 3620);
+            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(6117, 6436, 6117, 6436);
             this.vmRenderControl1.ModuleSource = null;
             this.vmRenderControl1.Name = "vmRenderControl1";
             this.vmRenderControl1.Size = new System.Drawing.Size(851, 527);
@@ -3246,8 +3273,8 @@ namespace CCDInspection.UI.Forms
             this.uiTabControl1.Controls.Add(this.tabPage2);
             this.uiTabControl1.Controls.Add(this.tabPage3);
             this.uiTabControl1.Controls.Add(this.tabPage4);
-            this.uiTabControl1.Controls.Add(this.tabPage5);
             this.uiTabControl1.Controls.Add(this.tabPage6);
+            this.uiTabControl1.Controls.Add(this.tabPage5);
             this.uiTabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.uiTabControl1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiTabControl1.ItemSize = new System.Drawing.Size(150, 40);
@@ -3261,14 +3288,13 @@ namespace CCDInspection.UI.Forms
             this.uiTabControl1.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiTabControl1.SelectedIndexChanged += new System.EventHandler(this.uiTabControl1_SelectedIndexChanged);
             // 
-            // vmFrontendControl1
+            // comboBox1
             // 
-            this.vmFrontendControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vmFrontendControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmFrontendControl1.Margin = new System.Windows.Forms.Padding(241947, 301716, 241947, 301716);
-            this.vmFrontendControl1.Name = "vmFrontendControl1";
-            this.vmFrontendControl1.Size = new System.Drawing.Size(792, 443);
-            this.vmFrontendControl1.TabIndex = 1;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(93, 70);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(155, 29);
+            this.comboBox1.TabIndex = 270;
             // 
             // FrmMain
             // 
@@ -3289,7 +3315,6 @@ namespace CCDInspection.UI.Forms
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.uiGroupBox2.ResumeLayout(false);
-            this.uiGroupBox2.PerformLayout();
             this.uiGroupBox4.ResumeLayout(false);
             this.uiGroupBox1.ResumeLayout(false);
             this.cms_PathPlan.ResumeLayout(false);
@@ -3353,7 +3378,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIGroupBox uiGroupBox2;
         private Sunny.UI.UIButton btn_StopAutoTest;
         private Sunny.UI.UIButton btn_StartAutoTest;
-        private Sunny.UI.UIButton btn_ManualPlan;
         private Sunny.UI.UIButton btn_Login;
 
 
@@ -3381,7 +3405,6 @@ namespace CCDInspection.UI.Forms
 
         private Sunny.UI.UILabel lbl_MachineStatus;
         private Sunny.UI.UILabel Product_Label;
-        private System.Windows.Forms.Label label_ProductPort;
         private Sunny.UI.UIGroupBox uiGroupBox4;
         private System.Windows.Forms.TabPage tabPage6;
         private Sunny.UI.UIGroupBox uiGroupBox17;
@@ -3452,10 +3475,6 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.Button Btn_DelConfig;
         private System.Windows.Forms.Button Begin_AddPoint_Btm;
         private System.Windows.Forms.DataGridView dataGridView3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
         private System.Windows.Forms.TabPage tabPage10;
         private Sunny.UI.UIGroupBox uiGroupBox16;
         private Sunny.UI.UIButton btn_CancelModyPassWord;
@@ -3581,6 +3600,14 @@ namespace CCDInspection.UI.Forms
         private VMControls.Winform.Release.VmRenderControl vmRenderControl1;
         private Sunny.UI.UITabControl uiTabControl1;
         private VMControls.Winform.Release.VmFrontendControl vmFrontendControl1;
+        private Sunny.UI.UITextBox uiTextBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 

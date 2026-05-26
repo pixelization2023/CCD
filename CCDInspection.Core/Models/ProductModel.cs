@@ -27,5 +27,10 @@ namespace CCDInspection.Core.Models
         /// 产品编码
         /// </summary>
         public string Product_code { get; set; }
+
+        /// <summary>
+        /// Z轴检测高度(mm)
+        /// </summary>
+        public string Product_zHeight { get; set; }
     }
 }
