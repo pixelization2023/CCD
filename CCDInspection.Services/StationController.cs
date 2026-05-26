@@ -164,10 +164,10 @@ namespace CCDInspection.Services
 
             // 注册所有状态的处理函数
             RegisterStates();
-            // 初始状态是 Idle，但 Handler 不会自动运行。手动启动 IdleHandler 后台轮询，
-            // 这样开机红灯状态下按 IN3（复位）或 IN1（启动）就能响应。
-            _ = Task.Run(IdleHandler);
         }
+
+        /// <summary>启动 IdleHandler 后台轮询 — 由 FrmMain 在窗口就绪后调用</summary>
+        public void StartIdlePolling() => _ = Task.Run(IdleHandler);
 
         /// <summary>注册两层状态机的所有状态处理函数</summary>
         private void RegisterStates()
@@ -276,21 +276,14 @@ namespace CCDInspection.Services
             {
                 await _flowSM.TransitionToAsync(InspectionFlowState.Init);
 
-                // IN8停止按钮检测
-                if (_motion.ReadInput(IOMapping.IN_Stop))
-                {
-                    LogService.Warning("[状态机] IN8停止按钮按下，中断流程");
-                    ReportStatus("已停止");
-                    await _topSM.TransitionToAsync(StationState.Idle);
-                    return;
-                }
-
-                // 等 IN7(流程启动) 松开才能进下一轮
+                // 等 IN7(流程启动) 松开才能进下一轮，同时检测 IN8
                 while (_motion.ReadInput(IOMapping.IN_FlowStart))
                 {
+                    if (CheckStop()) return;
                     if (_stopRequested || !_topSM.CurrentState.Equals(StationState.AutoRun)) break;
                     await Task.Delay(50);
                 }
+                if (CheckStop()) return;
             }
             LogService.Information("[诊断] AutoRunHandler 退出 | stopReq={S} curState={C}",
                 _stopRequested, _topSM.CurrentState);
@@ -377,7 +370,7 @@ namespace CCDInspection.Services
             LogService.Information("[诊断] WaitStart 等待IN7流程启动");
             while (!_motion.ReadInput(IOMapping.IN_FlowStart))
             {
-                if (_stopRequested) return;
+                if (_stopRequested || CheckStop()) return;
                 await Task.Delay(30);
             }
             await Task.Delay(100);
@@ -407,7 +400,9 @@ namespace CCDInspection.Services
         /// <summary>S3：光源开启 — OUT2通电</summary>
         private async Task LightOnHandler()
         {
-            _motion.WriteOutput(IOMapping.OUT_Light, true);
+            // OT=0时灯亮，OT=1时灯灭（反逻辑）
+            _motion.WriteOutput(IOMapping.OUT_Light, false);
+            _motion.WriteOutput(IOMapping.OUT_Light2, false);
             await Task.Delay(_config.Inspection.LightOnDelayMs);
             await SafeFlowNext(InspectionFlowState.ZAxisMove);
         }
@@ -477,7 +472,8 @@ namespace CCDInspection.Services
         /// <summary>S3：光源关闭</summary>
         private async Task LightOffHandler()
         {
-            _motion.WriteOutput(IOMapping.OUT_Light, false);
+            _motion.WriteOutput(IOMapping.OUT_Light, true);
+            _motion.WriteOutput(IOMapping.OUT_Light2, true);
             await SafeFlowNext(InspectionFlowState.ZAxisReturn);
         }
 
@@ -521,8 +517,21 @@ namespace CCDInspection.Services
         /// 安全流转到流程状态机的下一个状态
         /// 只有顶层状态为 AutoRun 时才允许，防止报警/暂停时流程乱跑
         /// </summary>
+        /// <summary>IN8停止按钮检测，返回true表示已触发停止</summary>
+        private bool CheckStop()
+        {
+            if (_motion.ReadInput(IOMapping.IN_Stop))
+            {
+                LogService.Warning("[状态机] IN8停止按钮按下");
+                _ = TriggerAlarmAsync("STOP", "停止按钮按下");
+                return true;
+            }
+            return false;
+        }
+
         private async Task SafeFlowNext(InspectionFlowState next)
         {
+            if (CheckStop()) return;
             if (_topSM.CurrentState.Equals(StationState.AutoRun))
             {
                 await _flowSM.TransitionToAsync(next);

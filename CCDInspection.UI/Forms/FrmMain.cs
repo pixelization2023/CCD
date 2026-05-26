@@ -29,6 +29,8 @@ using CCDInspection.Device.Vision;
 using CCDInspection.Core;
 using CCDInspection.UI.Assisat;
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
+using VMControls.Winform.Release.ExportControl;
+using Sunny.UI;
 
 namespace CCDInspection.UI.Forms
 {
@@ -225,14 +227,14 @@ namespace CCDInspection.UI.Forms
                     motion, camera, vision,
                     cylinder, alarmHandler, lightCurtain, _statsService, _config, _configService);
                 _stationController.OnInspectionCompleted += record =>
-                    this.Invoke(new Action(() =>
+                    SafeBeginInvoke(() =>
                     {
                         lbl_TotalResult.Text = record.Result;
                         lbl_TotalResult.BackColor = record.Result == "OK" ? Color.LightGreen : Color.Red;
                         UpdateStatsUI(_statsService.Current);
-                    }));
+                    });
                 _stationController.OnStatusChanged += msg =>
-                    this.Invoke(new Action(() =>
+                    SafeBeginInvoke(() =>
                     {
                         WriteMsg(msg, UserTheadStatus.SoftOptStatus);
                         if (msg.Contains("复位中"))
@@ -244,17 +246,15 @@ namespace CCDInspection.UI.Forms
                         }
                         else if (msg.Contains("自动运行"))
                             SetMachineStatus(MachineStatus.Start);
-                        else if (msg.Contains("已停止"))
-                            SetThreeColorLight(MachineStatus.Stop);
-                    }));
+                    });
                 _stationController.OnAlarm += (code, msg) =>
                 {
                     LogService.Error("[诊断-界面] 收到状态机报警 | {Code}: {Msg}", code, msg);
-                    this.Invoke(new Action(() =>
+                    SafeBeginInvoke(() =>
                     {
                         SetThreeColorLight(MachineStatus.Alarm);
                         WriteNGMsg($"[{code}] {msg}", UserTheadStatus.AxisStatus);
-                    }));
+                    });
                 };
                 LogService.Information("[初始化] 状态机创建完成 | 当前状态={State}", _stationController.CurrentState);
                 LoadProductInfo();
@@ -310,6 +310,7 @@ namespace CCDInspection.UI.Forms
                 // 开机保持红灯（安全状态），等待用户手动复位后才变绿灯
                 SetMachineStatus(MachineStatus.SoftwareOpen);
                 CheckSafeStartupCondition();
+                _stationController.StartIdlePolling(); // 窗口就绪后才启动硬件IO轮询
                 LogService.Information("[初始化] ====== 初始化完成 Initialed ======");
             }
             catch (Exception ex)
@@ -501,7 +502,27 @@ namespace CCDInspection.UI.Forms
         #region 初始化
         private void SaveCameraSet()
         {
-            _configService?.Save(_configService.Load());
+            // 从 UI 控件读取参数 → 写入 JSON → 同步到 DI 的 HkCamera
+            var config = _configService?.Load() ?? new AppConfig();
+            var cam = config.Camera;
+            cam.SerialNumber = txt_CameraSN1.Text.Trim();
+            cam.ExposureTime = Convert.ToInt32(txt_Exposure.Text.Trim());
+            cam.Gain = Convert.ToInt32(txt_Gain.Text.Trim());
+            var triggerText = cmb_TriggerModel.SelectedItem?.ToString() ?? "软触发";
+            if (triggerText.Contains("硬触发")) cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Hardware;
+            else if (triggerText.Contains("连续")) cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Continuous;
+            else cam.TriggerMode = CCDInspection.Core.Enums.TriggerMode.Software;
+
+            _configService?.Save(config);
+            // 同步到 DI 的 HkCamera（StationController 实际使用的）
+            var diCamera = _deviceManager?.Camera as HkCamera;
+            if (diCamera != null)
+            {
+                diCamera.Config = config.Camera;
+                diCamera.ApplyConfig();
+            }
+            LogService.Information("[相机] 参数已保存 SN={SN} Exp={Exp} Gain={Gain} Trig={Trig}",
+                cam.SerialNumber, cam.ExposureTime, cam.Gain, cam.TriggerMode);
         }
 
         private bool InitialCamera()
@@ -522,6 +543,7 @@ namespace CCDInspection.UI.Forms
                     return false;
                 }
                 WriteMsg("相机连接成功", UserTheadStatus.Initial);
+                ConfigToUICamera();
                 AddCameraEvent();
                 return true;
             }
@@ -1468,8 +1490,7 @@ namespace CCDInspection.UI.Forms
                     _cameraInfo.Gamable = switch_Gama.Active;
                     _cameraInfo.Gama = float.Parse(txt_Gama.Text);
                     _camera.UpDateCameraInfo(_cameraInfo);
-                    SaveCameraSet();
-                    //InitialCamera();
+                    SaveCameraSet(); // 同时保存到 JSON 并同步到 HkCamera
                 }
                 catch (Exception ex)
                 {
@@ -1803,6 +1824,11 @@ namespace CCDInspection.UI.Forms
         private void ckb_SaveSourceImage_CheckedChanged(object sender, EventArgs e) => SaveOptionalConfig();
         private void ckb_SaveNGSourceImage_CheckedChanged(object sender, EventArgs e) => SaveOptionalConfig();
         private void ckb_CameraShieldI_CheckedChanged(object sender, EventArgs e) => SaveOptionalConfig();
+
+        private void uiTabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+        }
 
         private void SafeBeginInvoke(Action action)
         {

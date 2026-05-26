@@ -32,11 +32,11 @@ namespace CCDInspection.UI.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.uiGroupBox3 = new Sunny.UI.UIGroupBox();
             this.uiGroupBox8 = new Sunny.UI.UIGroupBox();
             this.lbl_TotalResult = new Sunny.UI.UILabel();
@@ -132,7 +132,6 @@ namespace CCDInspection.UI.Forms
             this.cmb_CameraSet = new Sunny.UI.UIComboBox();
             this.uiLabel52 = new Sunny.UI.UILabel();
             this.uiGroupBox24 = new Sunny.UI.UIGroupBox();
-            this.vmFrontendControl1 = new VMControls.Winform.Release.VmFrontendControl();
             this.hWindow_Camera = new System.Windows.Forms.PictureBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.uiTabControl3 = new Sunny.UI.UITabControl();
@@ -270,6 +269,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox15 = new Sunny.UI.UIGroupBox();
             this.vmRenderControl1 = new VMControls.Winform.Release.VmRenderControl();
             this.uiTabControl1 = new Sunny.UI.UITabControl();
+            this.vmFrontendControl1 = new VMControls.Winform.Release.VmFrontendControl();
             this.uiGroupBox3.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.uiGroupBox2.SuspendLayout();
@@ -1296,7 +1296,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage5.Controls.Add(this.uiGroupBox18);
             this.tabPage5.Location = new System.Drawing.Point(0, 40);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(200, 60);
+            this.tabPage5.Size = new System.Drawing.Size(1034, 560);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "图像处理";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1565,15 +1565,6 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox24.TabIndex = 376;
             this.uiGroupBox24.Text = "显示区";
             this.uiGroupBox24.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // vmFrontendControl1
-            // 
-            this.vmFrontendControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vmFrontendControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmFrontendControl1.Margin = new System.Windows.Forms.Padding(81657, 96980, 81657, 96980);
-            this.vmFrontendControl1.Name = "vmFrontendControl1";
-            this.vmFrontendControl1.Size = new System.Drawing.Size(792, 443);
-            this.vmFrontendControl1.TabIndex = 1;
             // 
             // hWindow_Camera
             // 
@@ -2016,52 +2007,52 @@ namespace CCDInspection.UI.Forms
             // 
             this.dgv_CheckItem.AllowUserToAddRows = false;
             this.dgv_CheckItem.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dgv_CheckItem.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.dgv_CheckItem.ColumnHeadersHeight = 32;
             this.dgv_CheckItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgv_CheckItem.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle8;
             this.dgv_CheckItem.EnableHeadersVisualStyles = false;
             this.dgv_CheckItem.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dgv_CheckItem.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(173)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.Location = new System.Drawing.Point(3, 29);
             this.dgv_CheckItem.Name = "dgv_CheckItem";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.dgv_CheckItem.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.dgv_CheckItem.RowTemplate.Height = 23;
             this.dgv_CheckItem.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.SelectedIndex = -1;
@@ -2099,7 +2090,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage3.Controls.Add(this.gb_Optional);
             this.tabPage3.Location = new System.Drawing.Point(0, 40);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage3.Size = new System.Drawing.Size(200, 60);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "功能与屏蔽";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -2776,7 +2767,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage2.Controls.Add(this.uiGroupBox9);
             this.tabPage2.Location = new System.Drawing.Point(0, 40);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage2.Size = new System.Drawing.Size(200, 60);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "IO界面";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -3243,7 +3234,7 @@ namespace CCDInspection.UI.Forms
             this.vmRenderControl1.ImageSource = null;
             this.vmRenderControl1.IsShowCustomROIMenu = false;
             this.vmRenderControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(1936, 2036, 1936, 2036);
+            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(3441, 3620, 3441, 3620);
             this.vmRenderControl1.ModuleSource = null;
             this.vmRenderControl1.Name = "vmRenderControl1";
             this.vmRenderControl1.Size = new System.Drawing.Size(851, 527);
@@ -3268,6 +3259,16 @@ namespace CCDInspection.UI.Forms
             this.uiTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.uiTabControl1.TabIndex = 0;
             this.uiTabControl1.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiTabControl1.SelectedIndexChanged += new System.EventHandler(this.uiTabControl1_SelectedIndexChanged);
+            // 
+            // vmFrontendControl1
+            // 
+            this.vmFrontendControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vmFrontendControl1.Location = new System.Drawing.Point(0, 32);
+            this.vmFrontendControl1.Margin = new System.Windows.Forms.Padding(241947, 301716, 241947, 301716);
+            this.vmFrontendControl1.Name = "vmFrontendControl1";
+            this.vmFrontendControl1.Size = new System.Drawing.Size(792, 443);
+            this.vmFrontendControl1.TabIndex = 1;
             // 
             // FrmMain
             // 
@@ -3442,7 +3443,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIComboBox cmb_CameraSet;
         private Sunny.UI.UILabel uiLabel52;
         private Sunny.UI.UIGroupBox uiGroupBox24;
-        private VMControls.Winform.Release.VmFrontendControl vmFrontendControl1;
         private System.Windows.Forms.PictureBox hWindow_Camera;
         private System.Windows.Forms.TabPage tabPage4;
         private Sunny.UI.UITabControl uiTabControl3;
@@ -3580,6 +3580,7 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIGroupBox uiGroupBox15;
         private VMControls.Winform.Release.VmRenderControl vmRenderControl1;
         private Sunny.UI.UITabControl uiTabControl1;
+        private VMControls.Winform.Release.VmFrontendControl vmFrontendControl1;
     }
 }
 

@@ -92,7 +92,21 @@ namespace CCDInspection.Device.Camera
 
         private void OnImageCallback(IntPtr pData, ref MyCamera.MV_FRAME_OUT_INFO_EX frameInfo, IntPtr pUser)
         {
-            try { int w = (int)frameInfo.nWidth, h = (int)frameInfo.nHeight; var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb); var bd = bmp.LockBits(new Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.WriteOnly, bmp.PixelFormat); var bytes = new byte[bd.Stride * h]; Marshal.Copy(pData, bytes, 0, bytes.Length); Marshal.Copy(bytes, 0, bd.Scan0, bytes.Length); bmp.UnlockBits(bd); _currentImage = bmp; _imageSignal.Set(); OnImageCaptured?.Invoke(new ImageCaptureResult { Success = true, Image = bmp }); } catch { }
+            try
+            {
+                int w = (int)frameInfo.nWidth, h = (int)frameInfo.nHeight;
+                var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                var bd = bmp.LockBits(new Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.WriteOnly, bmp.PixelFormat);
+                var bytes = new byte[bd.Stride * h];
+                Marshal.Copy(pData, bytes, 0, bytes.Length);
+                Marshal.Copy(bytes, 0, bd.Scan0, bytes.Length);
+                bmp.UnlockBits(bd);
+                var old = Interlocked.Exchange(ref _currentImage, bmp);
+                old?.Dispose(); // 释放旧图，防止内存泄漏
+                _imageSignal.Set();
+                OnImageCaptured?.Invoke(new ImageCaptureResult { Success = true, Image = bmp });
+            }
+            catch (Exception ex) { LogService.Error(ex, "相机回调异常"); }
         }
 
         private void OnException(uint msgType, IntPtr pUser) { if (msgType == MyCamera.MV_EXCEPTION_DEV_DISCONNECT) { IsConnected = false; LogService.Warning("相机断线"); } }
