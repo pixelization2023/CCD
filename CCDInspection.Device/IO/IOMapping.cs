@@ -1,7 +1,8 @@
 namespace CCDInspection.Device.IO
 {
     /// <summary>
-    /// IO 引脚集中映射（与 ZMC 控制器实际接线对应）
+    /// IO 引脚集中映射
+    /// in0=门禁 in1=设备启动 in2=急停 in3=复位 in4=伸出到位 in5=缩回到位 in6=保留 in7=流程启动 in8=停止
     /// </summary>
     public static class IOMapping
     {
@@ -15,13 +16,13 @@ namespace CCDInspection.Device.IO
         public const int OUT_Buzzer = 8;         // 蜂鸣器
 
         // === 输入引脚 ===
-        public const int IN_StartButton = 1;     // 启动按钮（单次）
-        public const int IN_EmergencyStop = 2;   // 急停
-        public const int IN_Reset = 3;           // 复位按钮
-        public const int IN_CylinderExtendOk = 4;// 气缸伸出到位传感器
-        public const int IN_CylinderRetractOk = 5;// 气缸缩回到位传感器
-        public const int IN_LeftStart = 6;       // 左启动（双手安全）
-        public const int IN_RightStart = 7;      // 右启动（双手安全）
-        public const int IN_LightCurtain = 0;    // 安全光栅/门禁
+        public const int IN_LightCurtain = 0;    // 门禁/安全光栅（常闭）
+        public const int IN_MachineStart = 1;    // 设备启动（进入AutoRun模式）
+        public const int IN_EmergencyStop = 2;   // 急停（常闭）
+        public const int IN_Reset = 3;           // 复位
+        public const int IN_CylinderExtendOk = 4;// 气缸伸出到位
+        public const int IN_CylinderRetractOk = 5;// 气缸缩回到位
+        public const int IN_FlowStart = 7;       // 流程启动（触发单次检测）
+        public const int IN_Stop = 8;            // 停止（中断流程）
     }
 }

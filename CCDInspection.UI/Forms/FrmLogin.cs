@@ -1,29 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using CCDInspection.Core.Models;
-using CCDInspection.Device.Vision;
-using Sunny.UI.Win32;
-using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
-using CCDInspection.Core.Enums;
-using CCDInspection.Core.Interfaces.Hardware;
-using CCDInspection.Core.Models;
-using CCDInspection.Services;
-using CCDInspection.Device.Motion;
-using CCDInspection.Device.Camera;
-using CCDInspection.Device.IO;
-using CCDInspection.Device.Vision;
-using CCDInspection.Core;
 
 
 
@@ -127,10 +107,6 @@ namespace CCDInspection.UI.Forms
             m_FrmMain._operatorId = txt_Account.Text.Trim();
             m_FrmMain._currentUser = cmb_UserName.SelectedItem.ToString();
             m_FrmMain.StartPosition = FormStartPosition.CenterScreen;
-            var vision = CompositionRoot.Resolve<IVisionProcessor>();
-
-            var path_str = Application.StartupPath + "\\" + $"VmSol\\{cmb_ProductType.Text.Trim()}\\{uiComboBox_Productmodel.Text}.sol";
-            vision.LoadSolution(path_str);
             m_FrmMain.Show();
             this.Hide();
 

@@ -195,11 +195,12 @@ namespace CCDInspection.Device.Motion
                             Index, exitWait * 100, CurrentPosition);
                     }
 
-                    // 退出限位成功后，先反向走一小段确保不再触发限位
+                    // 退出限位成功后，先反向走一小段确保不再触发限位（仅在确实触发过限位时）
                     float exitPos = 0;
                     ZmcApi.ZAux_Direct_GetDpos(_handle, Index, ref exitPos);
                     float safeOffset = config.CreepSpeed > 0 ? config.CreepSpeed : 20f;
-                    if (ast != 0)
+                    bool wasInLimit = ((ast & 0x0010) != 0 || (ast & 0x0020) != 0);
+                    if (wasInLimit)
                     {
                         int safeDir = (ast & 0x0010) != 0 ? -1 : 1; // 正限位往负走，反之
                         LogService.Information("[回零] 限位安全偏移 dir={Dir} 距离={Dist:F1}", safeDir, safeOffset);

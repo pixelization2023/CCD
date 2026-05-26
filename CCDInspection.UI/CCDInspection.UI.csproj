@@ -228,24 +228,17 @@
     <None Include="App.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="VmSol\母端\奶油白-公端.sol">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="VmSol\母端\深黑-母端.sol">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="VmSol\母端\深黑-公端.sol">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="VmSol\公端\" />
   </ItemGroup>
-  <Target Name="CopyConfigToOutput" AfterTargets="Build">
+  <Target Name="CopyConfigToOutput" AfterTargets="CoreBuild">
     <MakeDir Directories="$(OutputPath)Config\ParaConfig" />
     <MakeDir Directories="$(OutputPath)Config\Logs" />
     <Copy SourceFiles="$(ProjectDir)..\Config\appsettings.json" DestinationFolder="$(OutputPath)Config" ContinueOnError="true" />
     <Copy SourceFiles="$(OutputPath)ProductConfig.json" DestinationFolder="$(OutputPath)Config" ContinueOnError="true" />
+    <!-- 复制 VmSol 目录到输出 -->
+    <Exec Command="xcopy &quot;$(ProjectDir)VmSol&quot; &quot;$(OutputPath)VmSol&quot; /E /I /Y" ContinueOnError="true" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

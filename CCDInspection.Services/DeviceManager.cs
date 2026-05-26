@@ -99,11 +99,11 @@ namespace CCDInspection.Services
         // ================================================================
 
         public bool IsDualStartPressed() =>
-            Motion.ReadInput(IOMapping.IN_LeftStart) && Motion.ReadInput(IOMapping.IN_RightStart);
+            Motion.ReadInput(IOMapping.IN_FlowStart);
 
         public void CylinderExtend(int timeoutMs = 20000)
         {
-            Motion.WriteOutput(IOMapping.OUT_Cylinder, true);
+            Motion.WriteOutput(IOMapping.OUT_Cylinder, false);
             int elapsed = 0;
             while (!Motion.ReadInput(IOMapping.IN_CylinderExtendOk))
             {
@@ -115,7 +115,7 @@ namespace CCDInspection.Services
 
         public void CylinderRetract(int timeoutMs = 20000)
         {
-            Motion.WriteOutput(IOMapping.OUT_Cylinder, false);
+            Motion.WriteOutput(IOMapping.OUT_Cylinder, true);
             int elapsed = 0;
             while (!Motion.ReadInput(IOMapping.IN_CylinderRetractOk))
             {
@@ -127,7 +127,7 @@ namespace CCDInspection.Services
 
         public void LightOn() => Motion.WriteOutput(IOMapping.OUT_Light, true);
         public void LightOff() => Motion.WriteOutput(IOMapping.OUT_Light, false);
-        public bool IsStartPressed() => Motion.ReadInput(IOMapping.IN_StartButton);
+        public bool IsStartPressed() => Motion.ReadInput(IOMapping.IN_MachineStart);
 
         public void SetTowerLight(bool green, bool red, bool yellow, bool buzzer = false)
         {

@@ -86,7 +86,6 @@ namespace CCDInspection.UI.Forms
         public string _currentProductPort;
         public string _currentProductModel;
 
-
         public string _operatorId;
         public string _currentUser;
 
@@ -245,6 +244,8 @@ namespace CCDInspection.UI.Forms
                         }
                         else if (msg.Contains("自动运行"))
                             SetMachineStatus(MachineStatus.Start);
+                        else if (msg.Contains("已停止"))
+                            SetThreeColorLight(MachineStatus.Stop);
                     }));
                 _stationController.OnAlarm += (code, msg) =>
                 {
@@ -272,7 +273,7 @@ namespace CCDInspection.UI.Forms
     
                 _ioInputs = new IO_In[] { iO_In0, iO_In1, iO_In2, iO_In3, iO_In4, iO_In5, iO_In6, iO_In7, iO_In8, iO_In9, iO_In10, iO_In11, iO_In12, iO_In13, iO_In14, iO_In15 };
                 _ioOutputs = new IO_Out[] { iO_Out0, iO_Out1, iO_Out2, iO_Out3, iO_Out4, iO_Out5, iO_Out6, iO_Out7, iO_Out8, iO_Out9, iO_Out10, iO_Out11, iO_Out12, iO_Out13, iO_Out14, iO_Out15 };
-                string[] inNames = { "门禁", "启动", "急停", "复位", "气缸伸出", "气缸缩回", "左启动", "右启动", "IN8", "IN9", "IN10", "IN11", "IN12", "IN13", "IN14", "IN15" };
+                string[] inNames = { "门禁", "设备启动", "急停", "复位", "气缸伸出到位", "气缸缩回到位", "保留", "流程启动", "停止", "IN9", "IN10", "IN11", "IN12", "IN13", "IN14", "IN15" };
                 string[] outNames = { "电磁阀", "OUT1", "光源COM123", "光源COM4", "OUT4", "黄灯", "绿灯", "红灯", "蜂鸣器", "OUT9", "OUT10", "OUT11", "OUT12", "OUT13", "OUT14", "OUT15" };
                 for (int i = 0; i <= 15; i++) _ioInputs[i].IOName = inNames[i];
                 for (int i = 0; i <= 15; i++) _ioOutputs[i].IOName = outNames[i];
@@ -367,6 +368,12 @@ namespace CCDInspection.UI.Forms
                     green = true;
                     text = "机台运行中";
                     color = Color.LightGreen;
+                    _buzzerEnabled = false;
+                    break;
+                case MachineStatus.Stop:
+                    red = true;
+                    text = "机台已停止";
+                    color = Color.Red;
                     _buzzerEnabled = false;
                     break;
                 default:
@@ -1022,13 +1029,27 @@ namespace CCDInspection.UI.Forms
         /// </summary>
         private async void ExecuteCylinderDetection()
         {
+            // 构造 VM 方案路径并加载
+            var solPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                "VmSol", _currentProductPort, _currentProductModel + ".sol");
+            LogService.Information("[主界面] 加载VM方案: {Path}", solPath);
+            if (File.Exists(solPath))
+            {
+                try { _deviceManager.Vision.LoadSolution(solPath); }
+                catch (Exception ex) { LogService.Error(ex, "[主界面] VM方案加载失败"); }
+            }
+            else
+            {
+                LogService.Warning("[主界面] VM方案不存在: {Path}", solPath);
+            }
+
             var product = new CCDInspection.Core.Models.ProductConfig
             {
                 Index = _currentProduct.ProductIndex,
                 Name = _currentProduct.ProductName,
                 ZHeight = _configService?.Load()?.Inspection?.DetectZHeight ?? _detectZHeight,
                 Color = _currentProduct.ProductColor,
-                SolPath = _configService?.Load()?.Inspection?.SolDirectory
+                SolPath = solPath
             };
             await _stationController.StartAsync(product);
         }
@@ -1328,8 +1349,8 @@ namespace CCDInspection.UI.Forms
                 bool cylRet = _deviceManager?.Motion?.ReadInput(IOMapping.IN_CylinderRetractOk) ?? false;
                 bool emg = !(_deviceManager?.Motion?.ReadInput(IOMapping.IN_EmergencyStop) ?? true);
 
-                if (cylExt) { WriteNGMsg("警告：气缸处于伸出状态！请先复位再启动", UserTheadStatus.SoftOptStatus); SetMachineStatus(MachineStatus.Alarm); }
-                else if (!cylRet) WriteMsg("提示：气缸位置未知，建议先执行复位", UserTheadStatus.SoftOptStatus);
+                if (cylRet && !cylExt) { WriteNGMsg("警告：气缸处于缩回状态！请先复位再启动", UserTheadStatus.SoftOptStatus); SetMachineStatus(MachineStatus.Alarm); }
+                else if (!cylExt && !cylRet) WriteMsg("提示：气缸位置未知，建议先执行复位", UserTheadStatus.SoftOptStatus);
 
                 if (emg) { WriteNGMsg("警告：急停按钮已按下！请松开后复位", UserTheadStatus.SoftOptStatus); SetMachineStatus(MachineStatus.Alarm); }
             }
@@ -1349,7 +1370,7 @@ namespace CCDInspection.UI.Forms
             if (emg) { WriteNGMsg("急停按钮已按下，无法启动", UserTheadStatus.SoftOptStatus); return false; }
 
             bool cylExt = _deviceManager?.Motion?.ReadInput(IOMapping.IN_CylinderExtendOk) ?? false;
-            if (cylExt) { WriteNGMsg("气缸未缩回，请先复位", UserTheadStatus.SoftOptStatus); return false; }
+            if (!cylExt) { WriteNGMsg("气缸未伸出，请先复位", UserTheadStatus.SoftOptStatus); return false; }
 
             return true;
         }
