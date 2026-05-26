@@ -75,17 +75,21 @@ namespace CCDInspection.Device.Motion
                 {
                     ct.ThrowIfCancellationRequested();
 
+                    LogService.Information("[轴{Index}] MoveAbs 目标={Pos:F1} 速度={Spd}",
+                        Index, position, speed?.ToString() ?? "默认");
+
                     if (speed.HasValue)
                         ZmcApi.ZAux_Direct_SetSpeed(_handle, Index, speed.Value);
 
                     int ret = ZmcApi.ZAux_Direct_Single_MoveAbs(_handle, Index, position);
                     if (ret != 0)
                     {
-                        LogService.Error("Z轴绝对移动失败, 目标={Position}, 错误码={Error}", position, ret);
+                        LogService.Error("[轴{Index}] MoveAbs 失败, 目标={Pos:F1}, 错误码={Err}", Index, position, ret);
                         return false;
                     }
 
                     WaitForDone(ct);
+                    LogService.Information("[轴{Index}] MoveAbs 到达 | 目标={Pos:F1}", Index, position);
                     return true;
                 }
                 catch (OperationCanceledException)

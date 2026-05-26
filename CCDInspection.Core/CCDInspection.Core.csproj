@@ -606,6 +606,7 @@
     <Compile Include="Models\AxisConfig.cs" />
     <Compile Include="Models\InspectionItem.cs" />
     <Compile Include="Models\InspectionRecord.cs" />
+    <Compile Include="Models\InspectionRecordEntity.cs" />
     <Compile Include="Models\PositionPoint.cs" />
     <Compile Include="Models\ProductConfig.cs" />
     <Compile Include="Models\ProductionStatistics.cs" />

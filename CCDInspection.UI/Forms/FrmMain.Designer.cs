@@ -32,11 +32,11 @@ namespace CCDInspection.UI.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.uiGroupBox3 = new Sunny.UI.UIGroupBox();
             this.uiGroupBox8 = new Sunny.UI.UIGroupBox();
             this.lbl_TotalResult = new Sunny.UI.UILabel();
@@ -49,6 +49,9 @@ namespace CCDInspection.UI.Forms
             this.tslb_actionInfo = new System.Windows.Forms.ToolStripLabel();
             this.tslbl_InfoShow = new System.Windows.Forms.ToolStripLabel();
             this.uiGroupBox2 = new Sunny.UI.UIGroupBox();
+            this.cob_ProductType = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.uiGroupBox4 = new Sunny.UI.UIGroupBox();
             this.btn_StartAutoTest = new Sunny.UI.UIButton();
             this.btn_StopAutoTest = new Sunny.UI.UIButton();
@@ -113,27 +116,6 @@ namespace CCDInspection.UI.Forms
             this.btn_ZDown = new Sunny.UI.UIButton();
             this.label65 = new System.Windows.Forms.Label();
             this.uiLabel68 = new Sunny.UI.UILabel();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.uiGroupBox18 = new Sunny.UI.UIGroupBox();
-            this.uiGroupBox23 = new Sunny.UI.UIGroupBox();
-            this.switch_Gama = new Sunny.UI.UISwitch();
-            this.txt_Gama = new Sunny.UI.UITextBox();
-            this.txt_Gain = new Sunny.UI.UITextBox();
-            this.txt_CameraSN1 = new Sunny.UI.UITextBox();
-            this.txt_Exposure = new Sunny.UI.UITextBox();
-            this.uiLabel49 = new Sunny.UI.UILabel();
-            this.uiLabel50 = new Sunny.UI.UILabel();
-            this.uiLabel53 = new Sunny.UI.UILabel();
-            this.uiLabel54 = new Sunny.UI.UILabel();
-            this.uiLabel55 = new Sunny.UI.UILabel();
-            this.uiLabel51 = new Sunny.UI.UILabel();
-            this.btnSoftTriOnce = new Sunny.UI.UIButton();
-            this.cmb_TriggerModel = new Sunny.UI.UIComboBox();
-            this.cmb_CameraSet = new Sunny.UI.UIComboBox();
-            this.uiLabel52 = new Sunny.UI.UILabel();
-            this.uiGroupBox24 = new Sunny.UI.UIGroupBox();
-            this.vmFrontendControl1 = new VMControls.Winform.Release.VmFrontendControl();
-            this.hWindow_Camera = new System.Windows.Forms.PictureBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.uiTabControl3 = new Sunny.UI.UITabControl();
             this.tabPage9 = new System.Windows.Forms.TabPage();
@@ -271,7 +253,30 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox15 = new Sunny.UI.UIGroupBox();
             this.vmRenderControl1 = new VMControls.Winform.Release.VmRenderControl();
             this.uiTabControl1 = new Sunny.UI.UITabControl();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.btn_open = new Sunny.UI.UIButton();
+            this.btn_print = new Sunny.UI.UIButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.label15 = new System.Windows.Forms.Label();
+            this.com_product_code = new System.Windows.Forms.ComboBox();
+            this.sql_select = new Sunny.UI.UIButton();
+            this.cob_sqlProduct_model = new System.Windows.Forms.ComboBox();
+            this.com_sqllPort = new System.Windows.Forms.ComboBox();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label14 = new System.Windows.Forms.Label();
             this.uiGroupBox3.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.uiGroupBox2.SuspendLayout();
@@ -285,11 +290,6 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox17.SuspendLayout();
             this.gb_AxisSet.SuspendLayout();
             this.uiGroupBox20.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.uiGroupBox18.SuspendLayout();
-            this.uiGroupBox23.SuspendLayout();
-            this.uiGroupBox24.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.hWindow_Camera)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.uiTabControl3.SuspendLayout();
             this.tabPage9.SuspendLayout();
@@ -312,6 +312,9 @@ namespace CCDInspection.UI.Forms
             this.gbTestResult.SuspendLayout();
             this.uiGroupBox15.SuspendLayout();
             this.uiTabControl1.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // uiGroupBox3
@@ -432,6 +435,8 @@ namespace CCDInspection.UI.Forms
             // 
             // uiGroupBox2
             // 
+            this.uiGroupBox2.Controls.Add(this.cob_ProductType);
+            this.uiGroupBox2.Controls.Add(this.label6);
             this.uiGroupBox2.Controls.Add(this.comboBox1);
             this.uiGroupBox2.Controls.Add(this.uiGroupBox4);
             this.uiGroupBox2.Controls.Add(this.Product_Label);
@@ -446,6 +451,31 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox2.TabIndex = 241;
             this.uiGroupBox2.Text = "系统操作";
             this.uiGroupBox2.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // cob_ProductType
+            // 
+            this.cob_ProductType.FormattingEnabled = true;
+            this.cob_ProductType.Location = new System.Drawing.Point(92, 73);
+            this.cob_ProductType.Name = "cob_ProductType";
+            this.cob_ProductType.Size = new System.Drawing.Size(141, 29);
+            this.cob_ProductType.TabIndex = 272;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 76);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 21);
+            this.label6.TabIndex = 271;
+            this.label6.Text = "类型选择";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(92, 127);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(155, 29);
+            this.comboBox1.TabIndex = 270;
             // 
             // uiGroupBox4
             // 
@@ -505,7 +535,7 @@ namespace CCDInspection.UI.Forms
             // Product_Label
             // 
             this.Product_Label.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Product_Label.Location = new System.Drawing.Point(5, 76);
+            this.Product_Label.Location = new System.Drawing.Point(4, 133);
             this.Product_Label.Name = "Product_Label";
             this.Product_Label.Size = new System.Drawing.Size(82, 17);
             this.Product_Label.TabIndex = 266;
@@ -647,7 +677,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage6.Controls.Add(this.uiGroupBox17);
             this.tabPage6.Location = new System.Drawing.Point(0, 40);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(200, 60);
+            this.tabPage6.Size = new System.Drawing.Size(1034, 560);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "运动控制";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1222,7 +1252,7 @@ namespace CCDInspection.UI.Forms
             this.btn_ZHome.Tag = "";
             this.btn_ZHome.Text = "Z复位";
             this.btn_ZHome.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ZHome.Click += new System.EventHandler(this.btn_ZHome_Click);
+            this.btn_ZHome.Click += new System.EventHandler(this.btn_AllHome_Click);
             // 
             // btn_ClearAlarm
             // 
@@ -1301,302 +1331,6 @@ namespace CCDInspection.UI.Forms
             this.uiLabel68.TabIndex = 44;
             this.uiLabel68.Text = "使  能";
             this.uiLabel68.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.uiGroupBox18);
-            this.tabPage5.Location = new System.Drawing.Point(0, 40);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(200, 60);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "图像处理";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // uiGroupBox18
-            // 
-            this.uiGroupBox18.Controls.Add(this.uiGroupBox23);
-            this.uiGroupBox18.Controls.Add(this.uiGroupBox24);
-            this.uiGroupBox18.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox18.Location = new System.Drawing.Point(4, 5);
-            this.uiGroupBox18.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiGroupBox18.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiGroupBox18.Name = "uiGroupBox18";
-            this.uiGroupBox18.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox18.Size = new System.Drawing.Size(1284, 712);
-            this.uiGroupBox18.TabIndex = 273;
-            this.uiGroupBox18.Text = "相机";
-            this.uiGroupBox18.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // uiGroupBox23
-            // 
-            this.uiGroupBox23.Controls.Add(this.switch_Gama);
-            this.uiGroupBox23.Controls.Add(this.txt_Gama);
-            this.uiGroupBox23.Controls.Add(this.txt_Gain);
-            this.uiGroupBox23.Controls.Add(this.txt_CameraSN1);
-            this.uiGroupBox23.Controls.Add(this.txt_Exposure);
-            this.uiGroupBox23.Controls.Add(this.uiLabel49);
-            this.uiGroupBox23.Controls.Add(this.uiLabel50);
-            this.uiGroupBox23.Controls.Add(this.uiLabel53);
-            this.uiGroupBox23.Controls.Add(this.uiLabel54);
-            this.uiGroupBox23.Controls.Add(this.uiLabel55);
-            this.uiGroupBox23.Controls.Add(this.uiLabel51);
-            this.uiGroupBox23.Controls.Add(this.btnSoftTriOnce);
-            this.uiGroupBox23.Controls.Add(this.cmb_TriggerModel);
-            this.uiGroupBox23.Controls.Add(this.cmb_CameraSet);
-            this.uiGroupBox23.Controls.Add(this.uiLabel52);
-            this.uiGroupBox23.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox23.Location = new System.Drawing.Point(802, 27);
-            this.uiGroupBox23.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiGroupBox23.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiGroupBox23.Name = "uiGroupBox23";
-            this.uiGroupBox23.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox23.Size = new System.Drawing.Size(198, 476);
-            this.uiGroupBox23.TabIndex = 377;
-            this.uiGroupBox23.Text = "操作";
-            this.uiGroupBox23.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // switch_Gama
-            // 
-            this.switch_Gama.ActiveText = "Enable";
-            this.switch_Gama.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.switch_Gama.InActiveText = "Disable";
-            this.switch_Gama.Location = new System.Drawing.Point(86, 364);
-            this.switch_Gama.MinimumSize = new System.Drawing.Size(1, 1);
-            this.switch_Gama.Name = "switch_Gama";
-            this.switch_Gama.Size = new System.Drawing.Size(90, 29);
-            this.switch_Gama.TabIndex = 5;
-            this.switch_Gama.Text = "uiSwitch1";
-            // 
-            // txt_Gama
-            // 
-            this.txt_Gama.ButtonSymbol = 61761;
-            this.txt_Gama.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.txt_Gama.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txt_Gama.DoubleValue = 1D;
-            this.txt_Gama.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_Gama.IntValue = 1;
-            this.txt_Gama.Location = new System.Drawing.Point(86, 410);
-            this.txt_Gama.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txt_Gama.MinimumSize = new System.Drawing.Size(1, 16);
-            this.txt_Gama.Name = "txt_Gama";
-            this.txt_Gama.Padding = new System.Windows.Forms.Padding(5);
-            this.txt_Gama.ShowText = false;
-            this.txt_Gama.Size = new System.Drawing.Size(64, 29);
-            this.txt_Gama.TabIndex = 4;
-            this.txt_Gama.Text = "1";
-            this.txt_Gama.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.txt_Gama.Watermark = "";
-            // 
-            // txt_Gain
-            // 
-            this.txt_Gain.ButtonSymbol = 61761;
-            this.txt_Gain.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.txt_Gain.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txt_Gain.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_Gain.Location = new System.Drawing.Point(86, 324);
-            this.txt_Gain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txt_Gain.MinimumSize = new System.Drawing.Size(1, 16);
-            this.txt_Gain.Name = "txt_Gain";
-            this.txt_Gain.Padding = new System.Windows.Forms.Padding(5);
-            this.txt_Gain.ShowText = false;
-            this.txt_Gain.Size = new System.Drawing.Size(74, 29);
-            this.txt_Gain.TabIndex = 4;
-            this.txt_Gain.Text = "0";
-            this.txt_Gain.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.txt_Gain.Watermark = "";
-            // 
-            // txt_CameraSN1
-            // 
-            this.txt_CameraSN1.ButtonSymbol = 61761;
-            this.txt_CameraSN1.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.txt_CameraSN1.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txt_CameraSN1.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_CameraSN1.Location = new System.Drawing.Point(86, 124);
-            this.txt_CameraSN1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txt_CameraSN1.MinimumSize = new System.Drawing.Size(1, 16);
-            this.txt_CameraSN1.Multiline = true;
-            this.txt_CameraSN1.Name = "txt_CameraSN1";
-            this.txt_CameraSN1.Padding = new System.Windows.Forms.Padding(5);
-            this.txt_CameraSN1.ShowText = false;
-            this.txt_CameraSN1.Size = new System.Drawing.Size(108, 38);
-            this.txt_CameraSN1.TabIndex = 4;
-            this.txt_CameraSN1.Text = "DA1359793";
-            this.txt_CameraSN1.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.txt_CameraSN1.Watermark = "";
-            // 
-            // txt_Exposure
-            // 
-            this.txt_Exposure.ButtonSymbol = 61761;
-            this.txt_Exposure.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.txt_Exposure.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txt_Exposure.DoubleValue = 1000D;
-            this.txt_Exposure.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_Exposure.IntValue = 1000;
-            this.txt_Exposure.Location = new System.Drawing.Point(86, 281);
-            this.txt_Exposure.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txt_Exposure.MinimumSize = new System.Drawing.Size(1, 16);
-            this.txt_Exposure.Name = "txt_Exposure";
-            this.txt_Exposure.Padding = new System.Windows.Forms.Padding(5);
-            this.txt_Exposure.ShowText = false;
-            this.txt_Exposure.Size = new System.Drawing.Size(74, 29);
-            this.txt_Exposure.TabIndex = 4;
-            this.txt_Exposure.Text = "1000";
-            this.txt_Exposure.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.txt_Exposure.Watermark = "";
-            // 
-            // uiLabel49
-            // 
-            this.uiLabel49.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel49.Location = new System.Drawing.Point(19, 413);
-            this.uiLabel49.Name = "uiLabel49";
-            this.uiLabel49.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel49.TabIndex = 3;
-            this.uiLabel49.Text = "Gama：";
-            this.uiLabel49.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel50
-            // 
-            this.uiLabel50.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel50.Location = new System.Drawing.Point(19, 370);
-            this.uiLabel50.Name = "uiLabel50";
-            this.uiLabel50.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel50.TabIndex = 3;
-            this.uiLabel50.Text = "Gama：";
-            this.uiLabel50.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel53
-            // 
-            this.uiLabel53.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel53.Location = new System.Drawing.Point(19, 200);
-            this.uiLabel53.Name = "uiLabel53";
-            this.uiLabel53.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel53.TabIndex = 3;
-            this.uiLabel53.Text = "模式：";
-            this.uiLabel53.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel54
-            // 
-            this.uiLabel54.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel54.Location = new System.Drawing.Point(19, 327);
-            this.uiLabel54.Name = "uiLabel54";
-            this.uiLabel54.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel54.TabIndex = 3;
-            this.uiLabel54.Text = "增益：";
-            this.uiLabel54.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel55
-            // 
-            this.uiLabel55.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel55.Location = new System.Drawing.Point(19, 139);
-            this.uiLabel55.Name = "uiLabel55";
-            this.uiLabel55.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel55.TabIndex = 3;
-            this.uiLabel55.Text = "序号：";
-            this.uiLabel55.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel51
-            // 
-            this.uiLabel51.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel51.Location = new System.Drawing.Point(19, 284);
-            this.uiLabel51.Name = "uiLabel51";
-            this.uiLabel51.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel51.TabIndex = 3;
-            this.uiLabel51.Text = "曝光：";
-            this.uiLabel51.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // btnSoftTriOnce
-            // 
-            this.btnSoftTriOnce.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSoftTriOnce.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnSoftTriOnce.Location = new System.Drawing.Point(86, 242);
-            this.btnSoftTriOnce.MinimumSize = new System.Drawing.Size(1, 1);
-            this.btnSoftTriOnce.Name = "btnSoftTriOnce";
-            this.btnSoftTriOnce.Size = new System.Drawing.Size(78, 29);
-            this.btnSoftTriOnce.TabIndex = 2;
-            this.btnSoftTriOnce.Text = "软触发一次";
-            this.btnSoftTriOnce.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            // 
-            // cmb_TriggerModel
-            // 
-            this.cmb_TriggerModel.DataSource = null;
-            this.cmb_TriggerModel.FillColor = System.Drawing.Color.White;
-            this.cmb_TriggerModel.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cmb_TriggerModel.Items.AddRange(new object[] {
-            "软触发",
-            "硬触发",
-            "连续触发"});
-            this.cmb_TriggerModel.Location = new System.Drawing.Point(86, 194);
-            this.cmb_TriggerModel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.cmb_TriggerModel.MinimumSize = new System.Drawing.Size(63, 0);
-            this.cmb_TriggerModel.Name = "cmb_TriggerModel";
-            this.cmb_TriggerModel.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
-            this.cmb_TriggerModel.Size = new System.Drawing.Size(108, 29);
-            this.cmb_TriggerModel.TabIndex = 1;
-            this.cmb_TriggerModel.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.cmb_TriggerModel.Watermark = "";
-            // 
-            // cmb_CameraSet
-            // 
-            this.cmb_CameraSet.DataSource = null;
-            this.cmb_CameraSet.FillColor = System.Drawing.Color.White;
-            this.cmb_CameraSet.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cmb_CameraSet.Items.AddRange(new object[] {
-            "相机1"});
-            this.cmb_CameraSet.Location = new System.Drawing.Point(86, 63);
-            this.cmb_CameraSet.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.cmb_CameraSet.MinimumSize = new System.Drawing.Size(63, 0);
-            this.cmb_CameraSet.Name = "cmb_CameraSet";
-            this.cmb_CameraSet.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
-            this.cmb_CameraSet.Size = new System.Drawing.Size(108, 34);
-            this.cmb_CameraSet.TabIndex = 1;
-            this.cmb_CameraSet.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.cmb_CameraSet.Watermark = "";
-            // 
-            // uiLabel52
-            // 
-            this.uiLabel52.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel52.Location = new System.Drawing.Point(19, 74);
-            this.uiLabel52.Name = "uiLabel52";
-            this.uiLabel52.Size = new System.Drawing.Size(62, 23);
-            this.uiLabel52.TabIndex = 0;
-            this.uiLabel52.Text = "相机：";
-            this.uiLabel52.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiGroupBox24
-            // 
-            this.uiGroupBox24.Controls.Add(this.vmFrontendControl1);
-            this.uiGroupBox24.Controls.Add(this.hWindow_Camera);
-            this.uiGroupBox24.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox24.Location = new System.Drawing.Point(6, 27);
-            this.uiGroupBox24.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiGroupBox24.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiGroupBox24.Name = "uiGroupBox24";
-            this.uiGroupBox24.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox24.Size = new System.Drawing.Size(792, 475);
-            this.uiGroupBox24.TabIndex = 376;
-            this.uiGroupBox24.Text = "显示区";
-            this.uiGroupBox24.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // vmFrontendControl1
-            // 
-            this.vmFrontendControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vmFrontendControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmFrontendControl1.Margin = new System.Windows.Forms.Padding(430128, 536384, 430128, 536384);
-            this.vmFrontendControl1.Name = "vmFrontendControl1";
-            this.vmFrontendControl1.Size = new System.Drawing.Size(792, 443);
-            this.vmFrontendControl1.TabIndex = 1;
-            // 
-            // hWindow_Camera
-            // 
-            this.hWindow_Camera.BackColor = System.Drawing.Color.Transparent;
-            this.hWindow_Camera.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.hWindow_Camera.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hWindow_Camera.Location = new System.Drawing.Point(0, 32);
-            this.hWindow_Camera.Margin = new System.Windows.Forms.Padding(0);
-            this.hWindow_Camera.Name = "hWindow_Camera";
-            this.hWindow_Camera.Size = new System.Drawing.Size(792, 443);
-            this.hWindow_Camera.TabIndex = 0;
-            this.hWindow_Camera.TabStop = false;
             // 
             // tabPage4
             // 
@@ -2033,52 +1767,52 @@ namespace CCDInspection.UI.Forms
             // 
             this.dgv_CheckItem.AllowUserToAddRows = false;
             this.dgv_CheckItem.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            this.dgv_CheckItem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_CheckItem.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle12.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgv_CheckItem.ColumnHeadersHeight = 32;
             this.dgv_CheckItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgv_CheckItem.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3});
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_CheckItem.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgv_CheckItem.EnableHeadersVisualStyles = false;
             this.dgv_CheckItem.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dgv_CheckItem.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(173)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.Location = new System.Drawing.Point(3, 29);
             this.dgv_CheckItem.Name = "dgv_CheckItem";
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(249)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_CheckItem.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dgv_CheckItem.RowHeadersWidth = 62;
-            dataGridViewCellStyle15.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.dgv_CheckItem.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dgv_CheckItem.RowTemplate.Height = 23;
             this.dgv_CheckItem.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.dgv_CheckItem.SelectedIndex = -1;
@@ -2116,7 +1850,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage3.Controls.Add(this.gb_Optional);
             this.tabPage3.Location = new System.Drawing.Point(0, 40);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage3.Size = new System.Drawing.Size(200, 60);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "功能与屏蔽";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -3261,7 +2995,7 @@ namespace CCDInspection.UI.Forms
             this.vmRenderControl1.ImageSource = null;
             this.vmRenderControl1.IsShowCustomROIMenu = false;
             this.vmRenderControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(6117, 6436, 6117, 6436);
+            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(81467, 85712, 81467, 85712);
             this.vmRenderControl1.ModuleSource = null;
             this.vmRenderControl1.Name = "vmRenderControl1";
             this.vmRenderControl1.Size = new System.Drawing.Size(851, 527);
@@ -3288,13 +3022,228 @@ namespace CCDInspection.UI.Forms
             this.uiTabControl1.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiTabControl1.SelectedIndexChanged += new System.EventHandler(this.uiTabControl1_SelectedIndexChanged);
             // 
-            // comboBox1
+            // tabPage5
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(93, 70);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(155, 29);
-            this.comboBox1.TabIndex = 270;
+            this.tabPage5.Controls.Add(this.btn_open);
+            this.tabPage5.Controls.Add(this.btn_print);
+            this.tabPage5.Controls.Add(this.groupBox2);
+            this.tabPage5.Controls.Add(this.dataGridView1);
+            this.tabPage5.Location = new System.Drawing.Point(0, 40);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage5.TabIndex = 6;
+            this.tabPage5.Text = "数据查询";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // btn_open
+            // 
+            this.btn_open.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_open.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_open.Location = new System.Drawing.Point(839, 223);
+            this.btn_open.MinimumSize = new System.Drawing.Size(1, 1);
+            this.btn_open.Name = "btn_open";
+            this.btn_open.Size = new System.Drawing.Size(101, 34);
+            this.btn_open.TabIndex = 9;
+            this.btn_open.Text = "打开文件夹";
+            this.btn_open.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            // 
+            // btn_print
+            // 
+            this.btn_print.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_print.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_print.Location = new System.Drawing.Point(839, 183);
+            this.btn_print.MinimumSize = new System.Drawing.Size(1, 1);
+            this.btn_print.Name = "btn_print";
+            this.btn_print.Size = new System.Drawing.Size(101, 34);
+            this.btn_print.TabIndex = 9;
+            this.btn_print.Text = "打印";
+            this.btn_print.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_print.Click += new System.EventHandler(this.btn_print_Click_1);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.dateTimePicker2);
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.com_product_code);
+            this.groupBox2.Controls.Add(this.sql_select);
+            this.groupBox2.Controls.Add(this.cob_sqlProduct_model);
+            this.groupBox2.Controls.Add(this.com_sqllPort);
+            this.groupBox2.Controls.Add(this.dateTimePicker1);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.label16);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Location = new System.Drawing.Point(0, 15);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(994, 142);
+            this.groupBox2.TabIndex = 2;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "筛选条件";
+            // 
+            // dateTimePicker2
+            // 
+            this.dateTimePicker2.CustomFormat = "yyyy-MM-dd HH:mm:ss”";
+            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTimePicker2.Location = new System.Drawing.Point(473, 91);
+            this.dateTimePicker2.Name = "dateTimePicker2";
+            this.dateTimePicker2.Size = new System.Drawing.Size(209, 29);
+            this.dateTimePicker2.TabIndex = 8;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(705, 34);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(74, 21);
+            this.label15.TabIndex = 7;
+            this.label15.Text = "产品编码";
+            // 
+            // com_product_code
+            // 
+            this.com_product_code.FormattingEnabled = true;
+            this.com_product_code.Location = new System.Drawing.Point(798, 31);
+            this.com_product_code.Name = "com_product_code";
+            this.com_product_code.Size = new System.Drawing.Size(121, 29);
+            this.com_product_code.TabIndex = 6;
+            // 
+            // sql_select
+            // 
+            this.sql_select.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.sql_select.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sql_select.Location = new System.Drawing.Point(702, 91);
+            this.sql_select.MinimumSize = new System.Drawing.Size(1, 1);
+            this.sql_select.Name = "sql_select";
+            this.sql_select.Size = new System.Drawing.Size(217, 34);
+            this.sql_select.TabIndex = 5;
+            this.sql_select.Text = "查询";
+            this.sql_select.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sql_select.Click += new System.EventHandler(this.sql_select_Click_1);
+            // 
+            // cob_sqlProduct_model
+            // 
+            this.cob_sqlProduct_model.FormattingEnabled = true;
+            this.cob_sqlProduct_model.Location = new System.Drawing.Point(473, 36);
+            this.cob_sqlProduct_model.Name = "cob_sqlProduct_model";
+            this.cob_sqlProduct_model.Size = new System.Drawing.Size(203, 29);
+            this.cob_sqlProduct_model.TabIndex = 3;
+            // 
+            // com_sqllPort
+            // 
+            this.com_sqllPort.FormattingEnabled = true;
+            this.com_sqllPort.Location = new System.Drawing.Point(129, 39);
+            this.com_sqllPort.Name = "com_sqllPort";
+            this.com_sqllPort.Size = new System.Drawing.Size(183, 29);
+            this.com_sqllPort.TabIndex = 2;
+            // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.CustomFormat = "yyyy-MM-dd HH:mm:ss”";
+            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTimePicker1.Location = new System.Drawing.Point(129, 91);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(183, 29);
+            this.dateTimePicker1.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(35, 39);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(74, 21);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "端口选择";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(365, 97);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(74, 21);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "结束时间";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(36, 97);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(74, 21);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "起始时间";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(365, 44);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(74, 21);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "产品类型";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(39, 72);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(0, 21);
+            this.label8.TabIndex = 0;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.time,
+            this.Column6,
+            this.Column7,
+            this.Column8,
+            this.Column9,
+            this.Column5});
+            this.dataGridView1.Location = new System.Drawing.Point(23, 171);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(795, 352);
+            this.dataGridView1.TabIndex = 0;
+            // 
+            // time
+            // 
+            this.time.HeaderText = "时间";
+            this.time.Name = "time";
+            this.time.Width = 180;
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "检测产品类型";
+            this.Column6.Name = "Column6";
+            this.Column6.Width = 135;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "检测产品端口";
+            this.Column7.Name = "Column7";
+            this.Column7.Width = 135;
+            // 
+            // Column8
+            // 
+            this.Column8.HeaderText = "检测颜色";
+            this.Column8.Name = "Column8";
+            // 
+            // Column9
+            // 
+            this.Column9.HeaderText = "产品编码";
+            this.Column9.Name = "Column9";
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "结果";
+            this.Column5.Name = "Column5";
+            // 
+            // label14
+            // 
+            this.label14.Location = new System.Drawing.Point(0, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(100, 23);
+            this.label14.TabIndex = 0;
             // 
             // FrmMain
             // 
@@ -3315,6 +3264,7 @@ namespace CCDInspection.UI.Forms
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.uiGroupBox2.ResumeLayout(false);
+            this.uiGroupBox2.PerformLayout();
             this.uiGroupBox4.ResumeLayout(false);
             this.uiGroupBox1.ResumeLayout(false);
             this.cms_PathPlan.ResumeLayout(false);
@@ -3326,11 +3276,6 @@ namespace CCDInspection.UI.Forms
             this.gb_AxisSet.ResumeLayout(false);
             this.uiGroupBox20.ResumeLayout(false);
             this.uiGroupBox20.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
-            this.uiGroupBox18.ResumeLayout(false);
-            this.uiGroupBox23.ResumeLayout(false);
-            this.uiGroupBox24.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.hWindow_Camera)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.uiTabControl3.ResumeLayout(false);
             this.tabPage9.ResumeLayout(false);
@@ -3355,6 +3300,10 @@ namespace CCDInspection.UI.Forms
             this.gbTestResult.ResumeLayout(false);
             this.uiGroupBox15.ResumeLayout(false);
             this.uiTabControl1.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3447,26 +3396,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIButton btn_ZUp;
         private Sunny.UI.UIButton btn_ZDown;
         private System.Windows.Forms.Label label65;
-        private System.Windows.Forms.TabPage tabPage5;
-        private Sunny.UI.UIGroupBox uiGroupBox18;
-        private Sunny.UI.UIGroupBox uiGroupBox23;
-        private Sunny.UI.UISwitch switch_Gama;
-        private Sunny.UI.UITextBox txt_Gama;
-        private Sunny.UI.UITextBox txt_Gain;
-        private Sunny.UI.UITextBox txt_CameraSN1;
-        private Sunny.UI.UITextBox txt_Exposure;
-        private Sunny.UI.UILabel uiLabel49;
-        private Sunny.UI.UILabel uiLabel50;
-        private Sunny.UI.UILabel uiLabel53;
-        private Sunny.UI.UILabel uiLabel54;
-        private Sunny.UI.UILabel uiLabel55;
-        private Sunny.UI.UILabel uiLabel51;
-        private Sunny.UI.UIButton btnSoftTriOnce;
-        private Sunny.UI.UIComboBox cmb_TriggerModel;
-        private Sunny.UI.UIComboBox cmb_CameraSet;
-        private Sunny.UI.UILabel uiLabel52;
-        private Sunny.UI.UIGroupBox uiGroupBox24;
-        private System.Windows.Forms.PictureBox hWindow_Camera;
         private System.Windows.Forms.TabPage tabPage4;
         private Sunny.UI.UITabControl uiTabControl3;
         private System.Windows.Forms.TabPage tabPage9;
@@ -3599,7 +3528,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UIGroupBox uiGroupBox15;
         private VMControls.Winform.Release.VmRenderControl vmRenderControl1;
         private Sunny.UI.UITabControl uiTabControl1;
-        private VMControls.Winform.Release.VmFrontendControl vmFrontendControl1;
         private Sunny.UI.UITextBox uiTextBox1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
@@ -3608,6 +3536,32 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cob_ProductType;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cob_sqlProduct_model;
+        private System.Windows.Forms.ComboBox com_sqllPort;
+        private Sunny.UI.UIButton sql_select;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox com_product_code;
+        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private Sunny.UI.UIButton btn_print;
+        private Sunny.UI.UIButton btn_open;
+        private System.Windows.Forms.DataGridViewTextBoxColumn time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
     }
 }
 

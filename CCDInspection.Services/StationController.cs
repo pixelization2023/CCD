@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CCDInspection.Core;
@@ -9,9 +10,9 @@ using CCDInspection.Core.Interfaces.Hardware;
 using CCDInspection.Core.Interfaces.Services;
 using CCDInspection.Core.Models;
 using CCDInspection.Device.IO;
-using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
 using IAlarmHandler = CCDInspection.Core.Interfaces.Services.IAlarmHandler;
 using IInspectionStation = CCDInspection.Core.Interfaces.Services.IInspectionStation;
+using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
 
 namespace CCDInspection.Services
 {
@@ -22,32 +23,35 @@ namespace CCDInspection.Services
     /// 【运行说明】
     ///
     /// 1. 开机 → 红灯，软件已连接ZMC/轴已使能，但未复位
-    /// 2. 按 IN3 或点"清除报警" → 黄灯(复位中) → 回零完成 → 绿灯(就绪)
-    /// 3. 点"启动自动测试" → 绿灯(运行中) → 状态机进入 WaitStart
-    /// 4. 同时按下 IN6(左启动)+IN7(右启动) → 执行一次检测流程
-    /// 5. 每轮完成后必须松开双手再按，才能触发下一轮（安全规范）
+    /// 2. 按 IN3 或点"清除报警" → 黄灯(复位中) → 气缸伸出+回零+移到配方高度 → 绿灯(就绪)
+    /// 3. 按 IN1 或点"启动自动测试" → 状态机进入 AutoRun → WaitStart 等待流程启动
+    /// 4. 按 IN7(流程启动) → 执行一次检测流程（每轮必须松开IN7再按，才能触发下一轮）
+    /// 5. 按 IN8(停止) → 触发报警 → 停止所有动作
     ///
-    /// 【检测流程（10步，VM内置拍照）】
-    ///   S1 WaitStart(IN7) → S2 CylinderRetract → S3 LightOn+ZAxisMove+Vision(Run拍照+检测)+Save+LightOff+ZAxisReturn
-    ///   → S4 CylinderExtend → S5 Completed → 等IN7松开 → 下一轮 S1
+    /// 【IO定义】
+    ///   IN0 = 安全光栅(常闭)   IN1 = 设备启动   IN2 = 急停(常闭)
+    ///   IN3 = 复位             IN4 = 气缸伸出到位  IN5 = 气缸缩回到位
+    ///   IN7 = 流程启动         IN8 = 停止
+    ///   OT0 = 气缸(0=伸出 1=缩回)
+    ///
+    /// 【检测流程（VM内置拍照）】
+    ///   WaitStart(等IN7↑) → CylinderRetract → LightOn → ZAxisMove → VisionProcess
+    ///   → SaveResult → LightOff → ZAxisReturn → CylinderExtend → Completed → 下一轮
     ///
     /// 【安全机制】
-    ///   - 光栅遮挡(IN0) → 立即报警，停止所有动作
-    ///   - 急停(IN2) → 硬件急停 + 报警
-    ///   - 限位触发 → 停止轴 + 报警，反向点动退出
-    ///   - 报警后必须人工复位(IN3或软件按钮)才能继续
-    ///   - 报警→复位：气缸缩回 + Z轴回零 → 回到就绪
+    ///   - 光栅遮挡(IN0)：仅流程运行期间报警，空闲/复位/报警状态下不检测
+    ///   - 急停(IN2)：NC常闭，断开即报警
+    ///   - 限位触发：停止轴+报警，反向点动退出限位后复位
+    ///   - 报警→复位(IN3)：气缸伸出 + Z轴回零 + 移到配方高度 → Idle
+    ///   - 停止(IN8)：触发STOP报警，与急停同等处理
     ///
     /// 【屏蔽功能（界面复选框，即时生效无需重启）】
-    ///   屏蔽相机    = 跳过拍照，用虚拟图像
-    ///   屏蔽蜂鸣器  = 报警时蜂鸣器不响
     ///   屏蔽光栅    = 遮挡不触发报警
     ///   气缸屏蔽    = 跳过气缸传感器检测
     ///
-    /// 【三层架构】
-    ///   顶层状态机 (StationState) = 控制运行模式：Idle / AutoRun / Paused / Alarm / Resetting
-    ///   流程状态机 (InspectionFlowState) = 控制检测步骤序列
-    ///   抽象设备接口 = IAxis / ICamera / ICylinder / ILightCurtain / IAlarmHandler
+    /// 【双层状态机】
+    ///   顶层状态机 (StationState)  = Idle / AutoRun / Alarm / Resetting
+    ///   流程状态机 (InspectionFlowState) = WaitStart → CylinderRetract → ... → Completed
     /// </summary>
     public class StationController : IInspectionStation
     {
@@ -76,6 +80,8 @@ namespace CCDInspection.Services
         // ================================================================
         /// <summary>停止标志，为true时AutoRun循环和流程handler会退出</summary>
         private volatile bool _stopRequested;
+        /// <summary>光栅检测启用标志 — 仅流程运行期间=true，完成后=false</summary>
+        private volatile bool _lightCurtainActive;
         /// <summary>当前检测的产品配置（Z轴高度、视觉方案路径等）</summary>
         private ProductConfig _currentProduct;
         /// <summary>用于取消等待中的异步操作</summary>
@@ -128,19 +134,21 @@ namespace CCDInspection.Services
             _config = config;
             _configService = configService;
 
-            // 始终订阅光栅事件，运行时根据屏蔽配置决定是否报警（支持界面动态切换）
+            // 光栅事件订阅：仅流程运行时（_lightCurtainActive=true）才报警
             _lightCurtain.OnBlocked += () =>
             {
+                if (!_lightCurtainActive) return;
                 if (Features.ShieldLightCurtain)
                 {
-                    LogService.Information("[诊断-光栅] 光栅遮挡(已屏蔽，不报警)");
+                    LogService.Information("[光栅] 遮挡(已屏蔽)");
                     return;
                 }
                 if (_motion?.IsConnected != true)
                 {
-                    LogService.Warning("[诊断-光栅] 忽略遮挡事件(设备已断开)");
+                    LogService.Warning("[光栅] 忽略遮挡(设备断开)");
                     return;
                 }
+                LogService.Warning("[光栅] 遮挡触发报警");
                 _ = TriggerAlarmAsync("LIGHT_CURTAIN", "安全光栅被遮挡");
             };
 
@@ -203,6 +211,7 @@ namespace CCDInspection.Services
         private async Task IdleHandler()
         {
             LogService.Information("[状态机] 进入 Idle 空闲状态");
+            _lightCurtainActive = false;
             while (_topSM.CurrentState.Equals(StationState.Idle) && !_stopRequested)
             {
                 var completed = await Task.WhenAny(_idleSignal.Task, Task.Delay(100));
@@ -295,6 +304,7 @@ namespace CCDInspection.Services
         private async Task AlarmHandler()
         {
             LogService.Error("[状态机] 进入 Alarm 报警状态");
+            _lightCurtainActive = false;
             _motion.ZAxis?.Stop();
             ReportStatus("报警中...等待复位(IN3或软件复位)");
             _skipReset = false;
@@ -379,7 +389,7 @@ namespace CCDInspection.Services
         private async Task WaitStartHandler()
         {
             ReportStatus("按IN7流程启动");
-            LogService.Information("[诊断] WaitStart 等待IN7流程启动");
+            LogService.Information("[流程] WaitStart 等待IN7流程启动信号...");
             while (!_motion.ReadInput(IOMapping.IN_FlowStart))
             {
                 if (_stopRequested || CheckStop()) return;
@@ -387,7 +397,13 @@ namespace CCDInspection.Services
             }
             await Task.Delay(100);
             if (!_motion.ReadInput(IOMapping.IN_FlowStart))
+            {
+                LogService.Information("[流程] WaitStart IN7毛刺，继续等待");
                 return;
+            }
+            LogService.Information("[流程] WaitStart IN7上升沿确认 → CylinderRetract");
+            _lightCurtainActive = true;
+            LogService.Information("[光栅] 检测已启用");
             await SafeFlowNext(InspectionFlowState.CylinderRetract);
         }
 
@@ -396,32 +412,40 @@ namespace CCDInspection.Services
         {
             if (Features.ShieldCylinder)
             {
+                LogService.Information("[流程] CylinderRetract 气缸已屏蔽，跳过");
                 ReportStatus("气缸已屏蔽，跳过缩回检测");
                 await SafeFlowNext(InspectionFlowState.LightOn);
                 return;
             }
+            LogService.Information("[流程] CylinderRetract 开始缩回 | 超时={T}ms", _config.Inspection.CylinderTimeoutMs);
             if (!await _cylinder.RetractAsync(_config.Inspection.CylinderTimeoutMs))
             {
                 _alarm.RaiseAlarm("CYL", "气缸缩回失败");
                 await _topSM.TransitionToAsync(StationState.Alarm);
                 return;
             }
+            LogService.Information("[流程] CylinderRetract 缩回到位");
             await SafeFlowNext(InspectionFlowState.LightOn);
         }
 
         /// <summary>S3：光源开启 — OUT2通电</summary>
         private async Task LightOnHandler()
         {
+            LogService.Information("[流程] LightOn 光源开启 | 延时={D}ms", _config.Inspection.LightOnDelayMs);
             _motion.WriteOutput(IOMapping.OUT_Light, true);
             _motion.WriteOutput(IOMapping.OUT_Light2, true);
             await Task.Delay(_config.Inspection.LightOnDelayMs);
             await SafeFlowNext(InspectionFlowState.ZAxisMove);
         }
 
-        /// <summary>S3：Z轴移动到检测高度</summary>
+        /// <summary>S3：Z轴移动到检测高度（读最新JSON配方高度）</summary>
         private async Task ZAxisMoveHandler()
         {
-            float z = _currentProduct?.ZHeight ?? 0;
+            float cfgZ = _configService.Load()?.Inspection?.DetectZHeight ?? 0;
+            float prodZ = _currentProduct?.ZHeight ?? 0;
+            float z = cfgZ != 0 ? cfgZ : prodZ;
+            LogService.Information("[流程] ZAxisMove | JSON={CfgZ:F1} 配方={ProdZ:F1} → 目标={Z:F1}",
+                cfgZ, prodZ, z);
             ReportStatus($"Z轴→{z}mm");
             if (_motion.ZAxis == null || !await _motion.ZAxis.MoveAbs(z))
             {
@@ -437,21 +461,49 @@ namespace CCDInspection.Services
         {
             if (!_vision.IsLoaded)
             {
+                LogService.Information("[流程] VisionProcess VM未加载，跳过视觉处理→OK");
                 ReportStatus("VM未加载，跳过视觉处理→OK");
-                LastRecord = NewRecord("OK", "");
+                LastRecord = NewRecord("OK", "", "", "");
                 await SafeFlowNext(InspectionFlowState.SaveResult);
                 return;
             }
             try
             {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
                 bool ok; string reason;
                 _vision.Run(null, out ok, out reason);
-                LastRecord = NewRecord(ok ? "OK" : "NG", reason);
+                sw.Stop();
+
+                // 解析VM返回的多行结果字符串
+                // 格式: "检测结果:OK\n产品编码:A\n产品颜色:深蓝"
+                string code = "", color = "", ngReason = "";
+                if (!string.IsNullOrEmpty(reason))
+                {
+                    foreach (var line in reason.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var kv = line.Split(new[] { ':', '：' }, 2);
+                        if (kv.Length == 2)
+                        {
+                            var key = kv[0].Trim();
+                            var val = kv[1].Trim();
+                            if (key.Contains("编码")) code = val;
+                            else if (key.Contains("颜色")) color = val;
+                            else if (key.Contains("结果")) ngReason = val;
+                           // else ngReason = val;
+                        }
+                    }
+                }
+                LastRecord = NewRecord(ok ? "OK" : "NG", ok ? "" : reason, code, color);
+                LogService.Information("[流程] VisionProcess 完成 | 结果={R} 耗时={T}ms 编码={Code} 颜色={Color}",
+                    ok ? "OK" : "NG", sw.ElapsedMilliseconds, code, color);
+                LastRecord.NgReason = LastRecord.NgReason.Replace("\n"," ");
+                LastRecord.NgReason = LastRecord.NgReason.Replace("\r"," ");
+
             }
             catch (Exception ex)
             {
-                LogService.Error(ex, "VM流程运行异常");
-                LastRecord = NewRecord("NG", ex.Message);
+                LogService.Error(ex, "[流程] VisionProcess VM流程运行异常");
+                LastRecord = NewRecord("NG", ex.Message, "", "");
             }
             await SafeFlowNext(InspectionFlowState.SaveResult);
         }
@@ -462,12 +514,14 @@ namespace CCDInspection.Services
             if (LastRecord.Result == "OK") _stats.RecordOK();
             else _stats.RecordNG(LastRecord.NgReason);
             OnInspectionCompleted?.Invoke(LastRecord);
+            LogService.Debug("[流程] SaveResult → LightOff | 结果={R}", LastRecord.Result);
             await SafeFlowNext(InspectionFlowState.LightOff);
         }
 
         /// <summary>S3：光源关闭</summary>
         private async Task LightOffHandler()
         {
+            LogService.Information("[流程] LightOff 光源关闭");
             _motion.WriteOutput(IOMapping.OUT_Light, false);
             _motion.WriteOutput(IOMapping.OUT_Light2, false);
             await SafeFlowNext(InspectionFlowState.ZAxisReturn);
@@ -476,6 +530,7 @@ namespace CCDInspection.Services
         /// <summary>S3：Z轴回零</summary>
         private async Task ZAxisReturnHandler()
         {
+            LogService.Information("[流程] ZAxisReturn 回零");
             if (_motion.ZAxis != null)
                 await _motion.ZAxis.MoveAbs(0);
             await SafeFlowNext(InspectionFlowState.CylinderExtend);
@@ -486,23 +541,30 @@ namespace CCDInspection.Services
         {
             if (Features.ShieldCylinder)
             {
+                LogService.Information("[流程] CylinderExtend 气缸已屏蔽，跳过");
                 ReportStatus("气缸已屏蔽，跳过伸出检测");
                 await SafeFlowNext(InspectionFlowState.Completed);
                 return;
             }
+            LogService.Information("[流程] CylinderExtend 开始伸出 | 超时={T}ms", _config.Inspection.CylinderTimeoutMs);
             if (!await _cylinder.ExtendAsync(_config.Inspection.CylinderTimeoutMs))
             {
                 _alarm.RaiseAlarm("CYL", "气缸伸出失败");
                 await _topSM.TransitionToAsync(StationState.Alarm);
                 return;
             }
+            LogService.Information("[流程] CylinderExtend 伸出到位");
             await SafeFlowNext(InspectionFlowState.Completed);
         }
 
-        /// <summary>S5：完成 → 等IN6松开 → 回S1</summary>
+        /// <summary>S5：完成 → 停用光栅 → 等下一轮</summary>
         private async Task CompletedHandler()
         {
-            ReportStatus(LastRecord?.Result == "OK" ? "OK" : $"NG:{LastRecord?.NgReason}");
+            _lightCurtainActive = false;
+            LogService.Information("[光栅] 检测已停用");
+            var status = LastRecord?.Result == "OK" ? "OK" : $"NG:{LastRecord?.NgReason}";
+            LogService.Information("[流程] Completed 本轮结束 | 结果={S}", status);
+            ReportStatus(status);
         }
 
         // ================================================================
@@ -575,6 +637,7 @@ namespace CCDInspection.Services
         {
             LogService.Information("[诊断-状态机] StopAsync 调用 | 当前状态={S}", _topSM.CurrentState);
             _stopRequested = true;
+            _lightCurtainActive = false;
             _cycleCts?.Cancel();
             _cycleCts?.Dispose();
             _cycleCts = null;
@@ -619,12 +682,14 @@ namespace CCDInspection.Services
         }
 
         /// <summary>创建检测记录</summary>
-        private InspectionRecord NewRecord(string r, string reason) => new InspectionRecord
+        private InspectionRecord NewRecord(string result, string reason, string code, string color) => new InspectionRecord
         {
             Time = DateTime.Now,
-            ProductIndex = _currentProduct?.Index ?? "?",
-            Result = r,
-            NgReason = reason
+            ProductIndex = _currentProduct?.Index ?? "999",
+            Result = result,
+            NgReason = reason,
+            ProductCode = code,
+            ProductColor = color
         };
 
         /// <summary>报告状态变更（UI订阅显示）</summary>
