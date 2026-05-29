@@ -211,7 +211,6 @@ namespace CCDInspection.UI.Forms
             this.ckb_SaveNGSourceImage = new Sunny.UI.UICheckBox();
             this.ckb_SaveSourceImage = new Sunny.UI.UICheckBox();
             this.ckb_ShieldBuzzer = new Sunny.UI.UICheckBox();
-            this.ckb_CameraShieldI = new Sunny.UI.UICheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.uiGroupBox10 = new Sunny.UI.UIGroupBox();
             this.iO_In11 = new Application_UI.IO_In();
@@ -257,6 +256,11 @@ namespace CCDInspection.UI.Forms
             this.btn_open = new Sunny.UI.UIButton();
             this.btn_print = new Sunny.UI.UIButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ckb_enableendtime = new System.Windows.Forms.CheckBox();
+            this.ckb_enableProt = new System.Windows.Forms.CheckBox();
+            this.ckb_enbalestartTime = new System.Windows.Forms.CheckBox();
+            this.ckb_enbalecode = new System.Windows.Forms.CheckBox();
+            this.ckb_enableType = new System.Windows.Forms.CheckBox();
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             this.label15 = new System.Windows.Forms.Label();
             this.com_product_code = new System.Windows.Forms.ComboBox();
@@ -455,7 +459,7 @@ namespace CCDInspection.UI.Forms
             // cob_ProductType
             // 
             this.cob_ProductType.FormattingEnabled = true;
-            this.cob_ProductType.Location = new System.Drawing.Point(92, 73);
+            this.cob_ProductType.Location = new System.Drawing.Point(92, 239);
             this.cob_ProductType.Name = "cob_ProductType";
             this.cob_ProductType.Size = new System.Drawing.Size(141, 29);
             this.cob_ProductType.TabIndex = 272;
@@ -463,7 +467,7 @@ namespace CCDInspection.UI.Forms
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 76);
+            this.label6.Location = new System.Drawing.Point(6, 242);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 21);
             this.label6.TabIndex = 271;
@@ -472,7 +476,7 @@ namespace CCDInspection.UI.Forms
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(92, 127);
+            this.comboBox1.Location = new System.Drawing.Point(92, 276);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(155, 29);
             this.comboBox1.TabIndex = 270;
@@ -535,7 +539,7 @@ namespace CCDInspection.UI.Forms
             // Product_Label
             // 
             this.Product_Label.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Product_Label.Location = new System.Drawing.Point(4, 133);
+            this.Product_Label.Location = new System.Drawing.Point(4, 283);
             this.Product_Label.Name = "Product_Label";
             this.Product_Label.Size = new System.Drawing.Size(82, 17);
             this.Product_Label.TabIndex = 266;
@@ -677,7 +681,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage6.Controls.Add(this.uiGroupBox17);
             this.tabPage6.Location = new System.Drawing.Point(0, 40);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage6.Size = new System.Drawing.Size(200, 60);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "运动控制";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1337,7 +1341,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage4.Controls.Add(this.uiTabControl3);
             this.tabPage4.Location = new System.Drawing.Point(0, 40);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage4.Size = new System.Drawing.Size(200, 60);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "参数设置";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -2438,7 +2442,6 @@ namespace CCDInspection.UI.Forms
             this.gb_Optional.Controls.Add(this.ckb_SaveNGSourceImage);
             this.gb_Optional.Controls.Add(this.ckb_SaveSourceImage);
             this.gb_Optional.Controls.Add(this.ckb_ShieldBuzzer);
-            this.gb_Optional.Controls.Add(this.ckb_CameraShieldI);
             this.gb_Optional.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.gb_Optional.Location = new System.Drawing.Point(3, 6);
             this.gb_Optional.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -2454,7 +2457,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.ckb_ShieldLightCurtain.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ckb_ShieldLightCurtain.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_ShieldLightCurtain.Location = new System.Drawing.Point(13, 102);
+            this.ckb_ShieldLightCurtain.Location = new System.Drawing.Point(13, 65);
             this.ckb_ShieldLightCurtain.MinimumSize = new System.Drawing.Size(1, 1);
             this.ckb_ShieldLightCurtain.Name = "ckb_ShieldLightCurtain";
             this.ckb_ShieldLightCurtain.Size = new System.Drawing.Size(95, 29);
@@ -2466,7 +2469,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.ckb_CylinderShield.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ckb_CylinderShield.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_CylinderShield.Location = new System.Drawing.Point(13, 141);
+            this.ckb_CylinderShield.Location = new System.Drawing.Point(13, 100);
             this.ckb_CylinderShield.MinimumSize = new System.Drawing.Size(1, 1);
             this.ckb_CylinderShield.Name = "ckb_CylinderShield";
             this.ckb_CylinderShield.Size = new System.Drawing.Size(95, 29);
@@ -2502,25 +2505,13 @@ namespace CCDInspection.UI.Forms
             // 
             this.ckb_ShieldBuzzer.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ckb_ShieldBuzzer.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_ShieldBuzzer.Location = new System.Drawing.Point(13, 64);
+            this.ckb_ShieldBuzzer.Location = new System.Drawing.Point(13, 30);
             this.ckb_ShieldBuzzer.MinimumSize = new System.Drawing.Size(1, 1);
             this.ckb_ShieldBuzzer.Name = "ckb_ShieldBuzzer";
             this.ckb_ShieldBuzzer.Size = new System.Drawing.Size(117, 29);
             this.ckb_ShieldBuzzer.TabIndex = 0;
             this.ckb_ShieldBuzzer.Text = "屏蔽蜂鸣器";
             this.ckb_ShieldBuzzer.CheckedChanged += new System.EventHandler(this.ckb_ShieldBuzzer_CheckedChanged);
-            // 
-            // ckb_CameraShieldI
-            // 
-            this.ckb_CameraShieldI.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_CameraShieldI.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_CameraShieldI.Location = new System.Drawing.Point(13, 24);
-            this.ckb_CameraShieldI.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_CameraShieldI.Name = "ckb_CameraShieldI";
-            this.ckb_CameraShieldI.Size = new System.Drawing.Size(127, 29);
-            this.ckb_CameraShieldI.TabIndex = 0;
-            this.ckb_CameraShieldI.Text = "屏蔽相机";
-            this.ckb_CameraShieldI.CheckedChanged += new System.EventHandler(this.ckb_CameraShieldI_CheckedChanged);
             // 
             // tabPage2
             // 
@@ -2967,6 +2958,7 @@ namespace CCDInspection.UI.Forms
             // rtb_TestResult
             // 
             this.rtb_TestResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb_TestResult.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.rtb_TestResult.Location = new System.Drawing.Point(3, 25);
             this.rtb_TestResult.Name = "rtb_TestResult";
             this.rtb_TestResult.Size = new System.Drawing.Size(166, 511);
@@ -2995,7 +2987,7 @@ namespace CCDInspection.UI.Forms
             this.vmRenderControl1.ImageSource = null;
             this.vmRenderControl1.IsShowCustomROIMenu = false;
             this.vmRenderControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(81467, 85712, 81467, 85712);
+            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(144831, 152377, 144831, 152377);
             this.vmRenderControl1.ModuleSource = null;
             this.vmRenderControl1.Name = "vmRenderControl1";
             this.vmRenderControl1.Size = new System.Drawing.Size(851, 527);
@@ -3030,7 +3022,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage5.Controls.Add(this.dataGridView1);
             this.tabPage5.Location = new System.Drawing.Point(0, 40);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage5.Size = new System.Drawing.Size(200, 60);
             this.tabPage5.TabIndex = 6;
             this.tabPage5.Text = "数据查询";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -3062,6 +3054,11 @@ namespace CCDInspection.UI.Forms
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.ckb_enableendtime);
+            this.groupBox2.Controls.Add(this.ckb_enableProt);
+            this.groupBox2.Controls.Add(this.ckb_enbalestartTime);
+            this.groupBox2.Controls.Add(this.ckb_enbalecode);
+            this.groupBox2.Controls.Add(this.ckb_enableType);
             this.groupBox2.Controls.Add(this.dateTimePicker2);
             this.groupBox2.Controls.Add(this.label15);
             this.groupBox2.Controls.Add(this.com_product_code);
@@ -3080,6 +3077,51 @@ namespace CCDInspection.UI.Forms
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "筛选条件";
+            // 
+            // ckb_enableendtime
+            // 
+            this.ckb_enableendtime.AutoSize = true;
+            this.ckb_enableendtime.Location = new System.Drawing.Point(344, 106);
+            this.ckb_enableendtime.Name = "ckb_enableendtime";
+            this.ckb_enableendtime.Size = new System.Drawing.Size(15, 14);
+            this.ckb_enableendtime.TabIndex = 9;
+            this.ckb_enableendtime.UseVisualStyleBackColor = true;
+            // 
+            // ckb_enableProt
+            // 
+            this.ckb_enableProt.AutoSize = true;
+            this.ckb_enableProt.Location = new System.Drawing.Point(24, 44);
+            this.ckb_enableProt.Name = "ckb_enableProt";
+            this.ckb_enableProt.Size = new System.Drawing.Size(15, 14);
+            this.ckb_enableProt.TabIndex = 9;
+            this.ckb_enableProt.UseVisualStyleBackColor = true;
+            // 
+            // ckb_enbalestartTime
+            // 
+            this.ckb_enbalestartTime.AutoSize = true;
+            this.ckb_enbalestartTime.Location = new System.Drawing.Point(23, 101);
+            this.ckb_enbalestartTime.Name = "ckb_enbalestartTime";
+            this.ckb_enbalestartTime.Size = new System.Drawing.Size(15, 14);
+            this.ckb_enbalestartTime.TabIndex = 9;
+            this.ckb_enbalestartTime.UseVisualStyleBackColor = true;
+            // 
+            // ckb_enbalecode
+            // 
+            this.ckb_enbalecode.AutoSize = true;
+            this.ckb_enbalecode.Location = new System.Drawing.Point(684, 41);
+            this.ckb_enbalecode.Name = "ckb_enbalecode";
+            this.ckb_enbalecode.Size = new System.Drawing.Size(15, 14);
+            this.ckb_enbalecode.TabIndex = 9;
+            this.ckb_enbalecode.UseVisualStyleBackColor = true;
+            // 
+            // ckb_enableType
+            // 
+            this.ckb_enableType.AutoSize = true;
+            this.ckb_enableType.Location = new System.Drawing.Point(344, 46);
+            this.ckb_enableType.Name = "ckb_enableType";
+            this.ckb_enableType.Size = new System.Drawing.Size(15, 14);
+            this.ckb_enableType.TabIndex = 9;
+            this.ckb_enableType.UseVisualStyleBackColor = true;
             // 
             // dateTimePicker2
             // 
@@ -3486,7 +3528,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UICheckBox ckb_SaveNGSourceImage;
         private Sunny.UI.UICheckBox ckb_SaveSourceImage;
         private Sunny.UI.UICheckBox ckb_ShieldBuzzer;
-        private Sunny.UI.UICheckBox ckb_CameraShieldI;
         private System.Windows.Forms.TabPage tabPage2;
         private Sunny.UI.UIGroupBox uiGroupBox10;
         private Application_UI.IO_In iO_In11;
@@ -3545,7 +3586,6 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cob_sqlProduct_model;
         private System.Windows.Forms.ComboBox com_sqllPort;
         private Sunny.UI.UIButton sql_select;
@@ -3562,6 +3602,12 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.CheckBox ckb_enableType;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox ckb_enableendtime;
+        private System.Windows.Forms.CheckBox ckb_enbalestartTime;
+        private System.Windows.Forms.CheckBox ckb_enbalecode;
+        private System.Windows.Forms.CheckBox ckb_enableProt;
     }
 }
 

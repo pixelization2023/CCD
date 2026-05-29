@@ -50,7 +50,7 @@ namespace CCDInspection.UI.Forms
             this.cmb_ProductType.DataSource = null;
             this.cmb_ProductType.FillColor = System.Drawing.Color.White;
             this.cmb_ProductType.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cmb_ProductType.Location = new System.Drawing.Point(356, 129);
+            this.cmb_ProductType.Location = new System.Drawing.Point(210, 136);
             this.cmb_ProductType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cmb_ProductType.MinimumSize = new System.Drawing.Size(63, 0);
             this.cmb_ProductType.Name = "cmb_ProductType";
@@ -68,7 +68,7 @@ namespace CCDInspection.UI.Forms
             this.cmb_UserName.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cmb_UserName.Items.AddRange(new object[] {
             "管理员"});
-            this.cmb_UserName.Location = new System.Drawing.Point(356, 45);
+            this.cmb_UserName.Location = new System.Drawing.Point(210, 52);
             this.cmb_UserName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cmb_UserName.MinimumSize = new System.Drawing.Size(63, 0);
             this.cmb_UserName.Name = "cmb_UserName";
@@ -87,7 +87,7 @@ namespace CCDInspection.UI.Forms
             this.txt_Password.DoubleValue = 123456D;
             this.txt_Password.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_Password.IntValue = 123456;
-            this.txt_Password.Location = new System.Drawing.Point(356, 86);
+            this.txt_Password.Location = new System.Drawing.Point(210, 93);
             this.txt_Password.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_Password.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_Password.Name = "txt_Password";
@@ -99,16 +99,16 @@ namespace CCDInspection.UI.Forms
             this.txt_Password.Text = "123456";
             this.txt_Password.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.txt_Password.Watermark = "";
-            //
+            // 
             // txt_Account
-            //
+            // 
             this.txt_Account.ButtonSymbol = 61761;
             this.txt_Account.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_Account.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_Account.DoubleValue = 1D;
             this.txt_Account.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_Account.IntValue = 1;
-            this.txt_Account.Location = new System.Drawing.Point(356, 255);
+            this.txt_Account.Location = new System.Drawing.Point(210, 262);
             this.txt_Account.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_Account.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_Account.Name = "txt_Account";
@@ -123,7 +123,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel1
             // 
             this.uiLabel1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel1.Location = new System.Drawing.Point(283, 91);
+            this.uiLabel1.Location = new System.Drawing.Point(137, 98);
             this.uiLabel1.Name = "uiLabel1";
             this.uiLabel1.Size = new System.Drawing.Size(66, 23);
             this.uiLabel1.TabIndex = 271;
@@ -133,7 +133,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel4
             // 
             this.uiLabel4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel4.Location = new System.Drawing.Point(259, 133);
+            this.uiLabel4.Location = new System.Drawing.Point(113, 140);
             this.uiLabel4.Name = "uiLabel4";
             this.uiLabel4.Size = new System.Drawing.Size(90, 23);
             this.uiLabel4.TabIndex = 272;
@@ -143,17 +143,17 @@ namespace CCDInspection.UI.Forms
             // uiLabel3
             // 
             this.uiLabel3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel3.Location = new System.Drawing.Point(283, 49);
+            this.uiLabel3.Location = new System.Drawing.Point(137, 56);
             this.uiLabel3.Name = "uiLabel3";
             this.uiLabel3.Size = new System.Drawing.Size(66, 23);
             this.uiLabel3.TabIndex = 273;
             this.uiLabel3.Text = "权限：";
             this.uiLabel3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // uiLabel2
-            //
+            // 
             this.uiLabel2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel2.Location = new System.Drawing.Point(251, 260);
+            this.uiLabel2.Location = new System.Drawing.Point(105, 267);
             this.uiLabel2.Name = "uiLabel2";
             this.uiLabel2.Size = new System.Drawing.Size(100, 23);
             this.uiLabel2.TabIndex = 274;
@@ -161,10 +161,10 @@ namespace CCDInspection.UI.Forms
             this.uiLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btn_Login
-            //
+            // 
             this.btn_Login.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_Login.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Login.Location = new System.Drawing.Point(299, 315);
+            this.btn_Login.Location = new System.Drawing.Point(143, 315);
             this.btn_Login.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_Login.Name = "btn_Login";
             this.btn_Login.Size = new System.Drawing.Size(86, 42);
@@ -174,10 +174,10 @@ namespace CCDInspection.UI.Forms
             this.btn_Login.Click += new System.EventHandler(this.btn_Login_Click);
             // 
             // btn_Cancel
-            //
+            // 
             this.btn_Cancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_Cancel.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Cancel.Location = new System.Drawing.Point(448, 315);
+            this.btn_Cancel.Location = new System.Drawing.Point(292, 315);
             this.btn_Cancel.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_Cancel.Name = "btn_Cancel";
             this.btn_Cancel.Size = new System.Drawing.Size(86, 42);
@@ -191,7 +191,7 @@ namespace CCDInspection.UI.Forms
             this.uiComboBox_Productmodel.DataSource = null;
             this.uiComboBox_Productmodel.FillColor = System.Drawing.Color.White;
             this.uiComboBox_Productmodel.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiComboBox_Productmodel.Location = new System.Drawing.Point(356, 170);
+            this.uiComboBox_Productmodel.Location = new System.Drawing.Point(210, 177);
             this.uiComboBox_Productmodel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiComboBox_Productmodel.MinimumSize = new System.Drawing.Size(63, 0);
             this.uiComboBox_Productmodel.Name = "uiComboBox_Productmodel";
@@ -203,21 +203,21 @@ namespace CCDInspection.UI.Forms
             this.uiComboBox_Productmodel.SelectedIndexChanged += new System.EventHandler(this.uiComboBox_Productmodel_SelectedIndexChanged);
             // 
             // uiLabel5
-            //
+            // 
             this.uiLabel5.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel5.Location = new System.Drawing.Point(259, 175);
+            this.uiLabel5.Location = new System.Drawing.Point(113, 182);
             this.uiLabel5.Name = "uiLabel5";
             this.uiLabel5.Size = new System.Drawing.Size(90, 23);
             this.uiLabel5.TabIndex = 279;
             this.uiLabel5.Text = "产品型号：";
             this.uiLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // com_Product_code
-            //
+            // 
             this.com_Product_code.DataSource = null;
             this.com_Product_code.FillColor = System.Drawing.Color.White;
             this.com_Product_code.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.com_Product_code.Location = new System.Drawing.Point(356, 211);
+            this.com_Product_code.Location = new System.Drawing.Point(210, 218);
             this.com_Product_code.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.com_Product_code.MinimumSize = new System.Drawing.Size(63, 0);
             this.com_Product_code.Name = "com_Product_code";
@@ -226,19 +226,19 @@ namespace CCDInspection.UI.Forms
             this.com_Product_code.TabIndex = 280;
             this.com_Product_code.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.com_Product_code.Watermark = "";
-            //
+            // 
             // uiLabel6
-            //
+            // 
             this.uiLabel6.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel6.Location = new System.Drawing.Point(259, 216);
+            this.uiLabel6.Location = new System.Drawing.Point(113, 223);
             this.uiLabel6.Name = "uiLabel6";
             this.uiLabel6.Size = new System.Drawing.Size(90, 23);
             this.uiLabel6.TabIndex = 281;
             this.uiLabel6.Text = "产品编码：";
             this.uiLabel6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // FrmLogin
-            //
+            // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(551, 380);
             this.Controls.Add(this.uiComboBox_Productmodel);

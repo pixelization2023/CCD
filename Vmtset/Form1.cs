@@ -41,10 +41,11 @@ namespace Vmtset
                 VmProcedure vmProcedure = (VmProcedure)VmSolution.Instance["流程1"];
                 vmProcedure.Run();
                 vmRenderControl1.ModuleSource = vmProcedure;
-                var  resint =vmProcedure.ModuResult.GetOutputInt("out0").pIntVal[0];
+         
+                var  resint =vmProcedure.ModuResult.GetOutputInt("out").pIntVal[0];
                 if (resint==1)
                 {
-                    var out1 = vmProcedure.ModuResult.GetOutputString("out").astStringVal[0].strValue;//ok
+                    var out1 = vmProcedure.ModuResult.GetOutputString("out0").astStringVal[0].strValue;//ok
                     txt_show.Text = $"out1={out1}";
                 }
                 else
@@ -53,6 +54,8 @@ namespace Vmtset
                     txt_show.Text = $"out1={str}";
                 }
 
+                var img = vmProcedure.ModuResult.GetOutputImageV2("ImageData0").ToBitmap();
+                 img.Save("D:\\Desktop\\output\\Debug\\VmSol\\母端\\result.png");
 
                 //var out0 = vmProcedure.ModuResult.GetOutputString("out0").astStringVal[0].strValue;//ng
 

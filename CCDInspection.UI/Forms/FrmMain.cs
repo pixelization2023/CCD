@@ -37,6 +37,7 @@ using NpoiBorder = NPOI.SS.UserModel.BorderStyle;
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
 using VMControls.Winform.Release.ExportControl;
 using Sunny.UI;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CCDInspection.UI.Forms
 {
@@ -147,6 +148,10 @@ namespace CCDInspection.UI.Forms
             try
             {
                 LogService.Information("[初始化] ====== FrmMain加载开始 ======");
+
+                //窗口自适应
+                this.Resize += FrmMain_Resize;
+                this.SizeChanged += FrmMain_Resize;
 
                 // 1. 加载配置（优先从DI容器获取，失败则新建）
                 LogService.Information("[初始化] 步骤1 加载JSON配置...");
@@ -269,7 +274,7 @@ namespace CCDInspection.UI.Forms
 
                 // 4. UI控件 — Designer 已绑定 CheckedChanged 事件，此处只加载初始值
                 var f = _config.Features;
-                ckb_CameraShieldI.Checked = f.ShieldCamera;
+              
                 ckb_ShieldBuzzer.Checked = f.ShieldBuzzer;
                 _shieldBuzzerCached = f.ShieldBuzzer;
                 ckb_ShieldLightCurtain.Checked = f.ShieldLightCurtain;
@@ -308,6 +313,7 @@ namespace CCDInspection.UI.Forms
                 // 加载产品配方到 dataGridView3 和 comboBox1
                 LoadProductGrid();
                 InitProductCombo();
+                comboBox1.Text =_currentProductModel+"-"+_currentProductPort;
                 comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
                 InitDatabase();
                 InitDbFilterControls();
@@ -317,6 +323,8 @@ namespace CCDInspection.UI.Forms
                 SetMachineStatus(MachineStatus.SoftwareOpen);
                 CheckSafeStartupCondition();
                 _stationController.StartIdlePolling();
+
+              //  _autoSize.controlAutoSize(this);
                 // 延迟加载配方（FrmLogin时DeviceManager尚未创建）
                 if (_needLoadRecipe && !string.IsNullOrEmpty(_currentProductPort))
                 {
@@ -334,12 +342,24 @@ namespace CCDInspection.UI.Forms
                 _initSuccess = false;
             }
         }
-        protected override void OnResizeEnd(EventArgs e)
+
+        private void FrmMain_Resize(object sender, EventArgs e)
         {
-            base.OnResizeEnd(e);
+            
             LogService.Information("[AutoSize] OnResizeEnd W={W} H={H} oldCtrl={Cnt}", this.Width, this.Height, _autoSize.oldCtrl.Count);
-            _autoSize.controlAutoSize(this);
+            try
+            {
+                _autoSize.controlAutoSize(this);
+            }
+            catch (Exception ex)
+            {
+
+                LogService.Error(ex, "[AutoSize] Resize异常");
+            }
+       
         }
+
+
         private void FrmMain_ResizeEnd(object sender, EventArgs e) { } // Designer reference
         #endregion
 
@@ -499,7 +519,7 @@ namespace CCDInspection.UI.Forms
             if (!_initFinished) return;
             var config = _configService?.Load() ?? new AppConfig();
             var f = config.Features;
-            f.ShieldCamera = ckb_CameraShieldI.Checked;
+
             f.ShieldBuzzer = ckb_ShieldBuzzer.Checked;
             f.ShieldLightCurtain = ckb_ShieldLightCurtain.Checked;
             f.ShieldCylinder = ckb_CylinderShield.Checked;
@@ -1435,12 +1455,12 @@ namespace CCDInspection.UI.Forms
         private void ShowInspectionResult(CCDInspection.Core.Models.InspectionRecord record)
         {
             bool isOK = record.Result == "OK";
-            string resultText = $"[{record.Time:HH:mm:ss}] 检测结果:{(isOK ? "OK" : "NG")} 产品:{record.ProductIndex}";
+            string resultText = $"[{record.Time:HH:mm:ss}] 检测结果:{(isOK ? "OK" : "NG")} 颜色:{record.ProductColor}";
 
             if (!isOK && !string.IsNullOrEmpty(record.Reason))
-                resultText += $" NG原因:{record.Reason}";
+                resultText += $" NG原因:{record.Reason.Replace("\n"," ").Replace("\r"," ")}";
 
-            resultText += $" CT:{record.CycleTimeMs}ms";
+   
 
             // 在gbTestResult的RichTextBox中显示
             if (rtb_TestResult.InvokeRequired)
@@ -1484,6 +1504,7 @@ namespace CCDInspection.UI.Forms
             catch (Exception ex) { LogService.Error(ex, "[DB] 数据库初始化失败"); }
         }
 
+
         /// <summary>初始化数据库查询筛选控件 — 端口→型号→编码 三级联动 + 查询按钮</summary>
         private void InitDbFilterControls()
         {
@@ -1505,8 +1526,7 @@ namespace CCDInspection.UI.Forms
             if (com_sqllPort.Items.Count > 0)
                 com_sqllPort_SelectedIndexChanged(com_sqllPort, EventArgs.Empty);
 
-            // 查询按钮 — 由设计器绑定 sql_select_Click_1，不重复注册
-            btn_print.Click += btn_print_Click;
+            // 查询/打印按钮由设计器绑定，不重复注册
             btn_open.Click += btn_open_Click;
         }
 
@@ -1546,20 +1566,37 @@ namespace CCDInspection.UI.Forms
             try
             {
                 if (_db == null) { LogService.Error("[DB] 查询失败: _db为null"); MessageBox.Show("数据库未初始化"); return; }
-                var port = com_sqllPort.SelectedItem?.ToString() ?? "";
-                var model = cob_sqlProduct_model.SelectedItem?.ToString() ?? "";
-                var dateFrom = dateTimePicker1.Value.Date;
-                var dateTo = dateTimePicker2.Value.Date.AddDays(1);
 
-                var query = _db.Select<InspectionRecordEntity>()
-                    .Where(r => r.Time >= dateFrom && r.Time < dateTo);
-                if (!string.IsNullOrEmpty(port))
-                    query = query.Where(r => r.ProductPort == port);
-                if (!string.IsNullOrEmpty(model))
-                    query = query.Where(r => r.ProductModel == model);
-                var code = com_product_code.SelectedItem?.ToString() ?? "";
-                if (!string.IsNullOrEmpty(code))
-                    query = query.Where(r => r.ProductCode == code);
+                var query = _db.Select<InspectionRecordEntity>();
+
+                // 时间范围（勾选时启用）
+                if (ckb_enbalestartTime.Checked || ckb_enableendtime.Checked)
+                {
+                    var dateFrom = ckb_enbalestartTime.Checked ? dateTimePicker1.Value.Date : DateTime.MinValue;
+                    var dateTo = ckb_enableendtime.Checked ? dateTimePicker2.Value.Date.AddDays(1) : DateTime.MaxValue;
+                    query = query.Where(r => r.Time >= dateFrom && r.Time < dateTo);
+                }
+                // 端口选择（勾选时启用）
+                if (ckb_enableProt.Checked)
+                {
+                    var port = com_sqllPort.SelectedItem?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(port))
+                        query = query.Where(r => r.ProductPort == port);
+                }
+                // 产品类型（勾选时启用）
+                if (ckb_enableType.Checked)
+                {
+                    var model = cob_sqlProduct_model.SelectedItem?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(model))
+                        query = query.Where(r => r.ProductModel == model);
+                }
+                // 产品编码（勾选时启用）
+                if (ckb_enbalecode.Checked)
+                {
+                    var code = com_product_code.SelectedItem?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(code))
+                        query = query.Where(r => r.ProductCode == code);
+                }
 
                 var list = query.OrderByDescending(r => r.Time).Take(1000).ToList();
                 dataGridView1.Rows.Clear();
@@ -1900,8 +1937,9 @@ namespace CCDInspection.UI.Forms
             {
                 var oldDir = Environment.CurrentDirectory;
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                VmSolution.Load(solPath);
+                VmSolution.Load(solPath, "", false);
                 Environment.CurrentDirectory = oldDir;
+                System.Threading.Thread.Sleep(200);
                 VmProcedure proc = VmSolution.Instance["流程1"] as VmProcedure;
                 if (proc != null) vmRenderControl1.ModuleSource = proc;
                 // 直接传递Procedure给VmVisionProcessor，不再重复调用VmSolution.Load
@@ -1916,7 +1954,7 @@ namespace CCDInspection.UI.Forms
         {
             try
             {
-                Button temp_button = (Button)sender;
+                System.Windows.Forms.Button temp_button = (System.Windows.Forms.Button)sender;
                 switch (temp_button.Name)
                 {
 
@@ -2124,7 +2162,7 @@ namespace CCDInspection.UI.Forms
 
         private void btn_print_Click_1(object sender, EventArgs e)
         {
-
+            btn_print_Click(sender, e);
         }
 
         private void SafeBeginInvoke(Action action)
