@@ -1,8 +1,10 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using VM.Core;
 using CCDInspection.Core;
 using CCDInspection.Core.Enums;
 using CCDInspection.Core.Interfaces;
@@ -13,6 +15,7 @@ using CCDInspection.Device.IO;
 using IAlarmHandler = CCDInspection.Core.Interfaces.Services.IAlarmHandler;
 using IInspectionStation = CCDInspection.Core.Interfaces.Services.IInspectionStation;
 using IVisionProcessor = CCDInspection.Core.Interfaces.Hardware.IVisionAnalyzer;
+using System.Drawing.Imaging;
 
 namespace CCDInspection.Services
 {
@@ -309,7 +312,8 @@ namespace CCDInspection.Services
             ReportStatus("报警中...等待复位(IN3或软件复位)");
             _skipReset = false;
 
-            while (_alarm.IsAlarming && !_stopRequested)
+            // 等待报警被清除：IN3硬件复位 或 软件ClearAlarm
+            while (_alarm.IsAlarming)
             {
                 if (_motion.ReadInput(IOMapping.IN_Reset))
                 {
@@ -319,20 +323,16 @@ namespace CCDInspection.Services
                 }
                 await Task.Delay(100);
             }
-            if (_alarm.IsAlarming)
-            {
-                LogService.Information("[状态机] 强制清除报警(停止请求)");
-                _alarm.ClearAlarm();
-            }
 
+            LogService.Information("[状态机] 报警已清除");
             if (_skipReset)
             {
-                LogService.Information("[状态机] 报警已清除(软件)，跳过回零 → Idle");
+                LogService.Information("[状态机] 跳过回零 → Idle");
                 await _topSM.TransitionToAsync(StationState.Idle);
             }
             else
             {
-                LogService.Information("[状态机] 报警已清除，进入 Resetting");
+                LogService.Information("[状态机] 进入 Resetting");
                 await _topSM.TransitionToAsync(StationState.Resetting);
             }
         }
@@ -356,19 +356,23 @@ namespace CCDInspection.Services
                 LogService.Information("[复位] 气缸伸出中... ShieldCylinder={S}", Features.ShieldCylinder);
                 bool extendOk = await _cylinder.ExtendAsync(_config.Inspection.CylinderTimeoutMs);
                 LogService.Information("[复位] 气缸伸出结果={R} IsExtended={E}", extendOk, _cylinder.IsExtended);
+                if (!extendOk) { LogService.Error("[复位] 气缸伸出失败，跳过后续步骤"); }
             }
 
-            // Z轴回零
-            if (_motion.ZAxis != null)
+            // Z轴回零（仅在成功且未请求停止时）
+            if (_motion.ZAxis != null && !_stopRequested)
             {
                 LogService.Information("[状态机] 回零中...");
-                await _motion.ZAxis.Home(_config.Axis);
-                // 回零后移动到配方检测高度（读最新JSON，支持界面切换方案后生效）
-                float recipeZ = _configService.Load()?.Inspection?.DetectZHeight ?? _config.Inspection.DetectZHeight;
-                if (recipeZ != 0)
+                bool homeOk = await _motion.ZAxis.Home(_config.Axis);
+                if (!homeOk) { LogService.Error("[复位] 回零失败"); }
+                else if (!_stopRequested)
                 {
-                    LogService.Information("[复位] Z轴→配方高度 {Z:F1}mm", recipeZ);
-                    await _motion.ZAxis.MoveAbs(recipeZ);
+                    float recipeZ = _configService.Load()?.Inspection?.DetectZHeight ?? _config.Inspection.DetectZHeight;
+                    if (recipeZ != 0)
+                    {
+                        LogService.Information("[复位] Z轴→配方高度 {Z:F1}mm", recipeZ);
+                        await _motion.ZAxis.MoveAbs(recipeZ);
+                    }
                 }
             }
 
@@ -471,10 +475,33 @@ namespace CCDInspection.Services
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 bool ok; string reason;
-                _vision.Run(null, out ok, out reason);
+                Bitmap resultImg;
+                _vision.Run(out resultImg, out ok, out reason);
+               // if (resultImg != null) resultImg.Dispose();
                 sw.Stop();
 
-                // 解析VM返回的多行结果字符串
+                // 保存检测原图（从JSON读最新复选框状态）
+                var features = _configService.Load()?.Features ?? _config.Features;
+                
+                if (features.SaveOkImage && ok || features.SaveNgImage && !ok)
+                {
+                    try
+                    {
+  
+                        if (resultImg != null)
+                        {
+                            var imgDir = _config.Inspection.ImageSavePath;
+                            if (!Directory.Exists(imgDir)) Directory.CreateDirectory(imgDir);
+
+                      
+                            var tag = ok ? "OK" : "NG";
+                            
+                            resultImg.Save(Path.Combine(imgDir, $"{DateTime.Now:HHmmssfff}_{tag}.png"), ImageFormat.Png);
+                            resultImg.Dispose();
+                        }
+                    }
+                    catch (Exception ex) { LogService.Error(ex, "[流程] 保存图像失败"); }
+                }
                 // 格式: "检测结果:OK\n产品编码:A\n产品颜色:深蓝"
                 string code = "", color = "", Reason = "";
                 if (!string.IsNullOrEmpty(reason))
@@ -493,7 +520,7 @@ namespace CCDInspection.Services
                         }
                     }
                 }
-                LastRecord = NewRecord(ok ? "OK": "NG", ok ? "" : reason, code, color);
+                LastRecord = NewRecord(ok ? "OK": "NG", ok ? "" : reason, code, color, sw.ElapsedMilliseconds);
               
 
                 LogService.Information("[流程] VisionProcess 完成 | 结果={R} 耗时={T}ms 编码={Code} 颜色={Color}",
@@ -646,9 +673,18 @@ namespace CCDInspection.Services
             // 唤醒所有可能正在阻塞的Handler
             _idleSignal?.TrySetResult(true);
             _pausedSignal?.TrySetResult(true);
-            _alarmSignal?.TrySetResult(true);
-
-            await _topSM.TransitionToAsync(StationState.Idle);
+            // 如在报警状态，先清除报警，让AlarmHandler正常退出
+            if (_topSM.CurrentState.Equals(StationState.Alarm) && _alarm.IsAlarming)
+            {
+                LogService.Information("[诊断-状态机] StopAsync 当前Alarm，清除报警后等其退出");
+                _alarm.ClearAlarm();
+                // 等待AlarmHandler退出并切到Idle（_stopRequested=true会让后续Resetting跳过）
+                await Task.Delay(300);
+            }
+            else
+            {
+                await _topSM.TransitionToAsync(StationState.Idle);
+            }
             LogService.Information("[诊断-状态机] StopAsync 完成 | 当前状态={S}", _topSM.CurrentState);
         }
 
@@ -682,15 +718,26 @@ namespace CCDInspection.Services
             await _topSM.TransitionToAsync(StationState.Alarm);
         }
 
-        /// <summary>创建检测记录</summary>
-        private InspectionRecord NewRecord(string result, string reason, string code, string color) => new InspectionRecord
+
+        /// <summary>
+        /// 创建检测记录
+        /// </summary>
+        /// <param name="result">结果</param>
+        /// <param name="reason"></param>
+        /// <param name="code">产品编码</param>
+        /// <param name="color">产品颜色</param>
+        /// <param name="cycleMs">视觉运行时间</param>
+        /// <returns></returns>
+        private InspectionRecord NewRecord(string result, string reason, string code, string color, long cycleMs = 0) => new InspectionRecord
         {
             Time = DateTime.Now,
-            ProductIndex = _currentProduct?.Index ?? "999",
+            ProductIndex = _currentProduct != null && !string.IsNullOrEmpty(_currentProduct.Index) ? _currentProduct.Index :
+                           !string.IsNullOrEmpty(code) ? code : "?",
             Result = result,
             Reason = reason,
             ProductCode = code,
-            ProductColor = color
+            ProductColor = color,
+            CycleTimeMs = cycleMs
         };
 
         /// <summary>报告状态变更（UI订阅显示）</summary>

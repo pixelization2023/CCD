@@ -26,34 +26,48 @@ namespace CCDInspection.Device.Vision
 
         public bool LoadSolution(string solPath) => Task.Run(() => LoadSolutionAsync(solPath)).GetAwaiter().GetResult();
         public void Unload() { _procedure = null; IsLoaded = false; }
-        public bool Run(Bitmap img, out bool passed, out string reason)
+        public bool Run(out Bitmap img, out bool passed, out string reason)
         {
-            passed = false; reason = "";
+            img = null; passed = false; reason = "";
             if (!IsLoaded || _procedure == null) { reason = "VM未加载"; return false; }
             try
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                _procedure.Run();
+  
                 sw.Stop();
+
+                var proc = VmSolution.Instance["流程1"] as VmProcedure;
+                proc.Run();
+                _procedure = proc;
+                if (proc == null) { reason = "流程获取失败"; return false; }
 
                 int resInt = 0;
                 try
                 {
-                    resInt = _procedure.ModuResult.GetOutputInt("out").pIntVal[0];
-                    if (resInt == 1)
-                    {
-                        reason = _procedure.ModuResult.GetOutputString("out0").astStringVal[0].strValue;
-                    }
-                    else { reason = "检测结果:NG\r\n产品编码:999\r\n产品颜色:999"; }
+                    resInt = proc.ModuResult.GetOutputInt("out").pIntVal[0];
                 }
                 catch
                 {
-                    //reason = "获取结果失败";
-                    reason = "检查结果：NG\n产品编码：999\n产品颜色：999";
+                    resInt = 0;
                 }
                 passed = resInt == 1;
-                if (string.IsNullOrEmpty(reason) && !passed)
-                    reason = "检查结果：NG\n产品编码：999\n产品颜色：999";
+                if (passed)
+                {
+                    reason = proc.ModuResult.GetOutputString("out0").astStringVal[0].strValue;
+                }
+                else
+                {
+                    reason = passed ? "" : "检查结果：NG\n产品编码：999\n产品颜色：999";
+                }
+
+
+  
+
+
+                try { 
+                    img = proc.ModuResult.GetOutputImageV2("ImageData0")?.ToBitmap();
+                }
+                catch { img = null; }
 
                 LogService.Information("[VM] Run完成 | passed={P} 耗时={T}ms reason={R}",
                     passed, sw.ElapsedMilliseconds, reason ?? "");
@@ -61,7 +75,7 @@ namespace CCDInspection.Device.Vision
             }
             catch (Exception ex)
             {
-                passed = false;
+                img = null; passed = false;
                 reason = ex.Message;
                 LogService.Error(ex, "[VM] Run异常");
                 return false;
@@ -74,10 +88,7 @@ namespace CCDInspection.Device.Vision
             try
             {
                 if (!System.IO.File.Exists(solPath)) { LogService.Error("VM方案不存在"); return false; }
-                var old = Environment.CurrentDirectory;
-                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 VmSolution.Load(solPath);
-                Environment.CurrentDirectory = old;
                 _procedure = VmSolution.Instance["流程1"] as VmProcedure;
                 IsLoaded = _procedure != null;
                 return IsLoaded;
@@ -87,7 +98,7 @@ namespace CCDInspection.Device.Vision
 
         public Task UnloadAsync() => Task.Run(() => { _procedure = null; IsLoaded = false; });
         public Task<VisionResult> AnalyzeAsync(Bitmap img, CancellationToken ct = default) =>
-            Task.Run(() => { bool p; string r; Run(img, out p, out r); return new VisionResult { Success = true, Passed = p, Reason = r }; }, ct);
+            Task.Run(() => { Bitmap o; bool p; string r; Run(out o, out p, out r); o?.Dispose(); return new VisionResult { Success = true, Passed = p, Reason = r }; }, ct);
 
         public void Dispose() { _procedure = null; }
     }
