@@ -47,23 +47,15 @@ namespace CCDInspection.UI.Assisat
                     AddControl(c);//窗体内其余控件还可能嵌套控件(比如panel),要单独抽出,因为要递归调用
             }
         }
-        //(3.2)控件自适应大小,
+        //(3.2)控件自适应大小（需先调用 controllInitializeSize 记录初始尺寸）
         public void controlAutoSize(Control mForm)
         {
-            if (ctrlNo == 0)
-            { //*如果在窗体的Form1_Load中，记录控件原始的大小和位置，正常没有问题，但要加入皮肤就会出现问题，因为有些控件如dataGridView的的子控件还没有完成，个数少
-              //*要在窗体的Form1_SizeChanged中，第一次改变大小时，记录控件原始的大小和位置,这里所有控件的子控件都已经形成
-                controlRect cR;
-                //  cR.Left = mForm.Left; cR.Top = mForm.Top; cR.Width = mForm.Width; cR.Height = mForm.Height;
-                cR.Left = 0; cR.Top = 0; cR.Width = mForm.PreferredSize.Width; cR.Height = mForm.PreferredSize.Height;
+            if (oldCtrl.Count == 0) return;
 
-                oldCtrl.Add(cR);//第一个为"窗体本身",只加入一次即可
-                AddControl(mForm);//窗体内其余控件可能嵌套其它控件(比如panel),故单独抽出以便递归调用
-            }
-            float wScale = (float)mForm.Width / (float)oldCtrl[0].Width;//新旧窗体之间的比例，与最早的旧窗体
-            float hScale = (float)mForm.Height / (float)oldCtrl[0].Height;//.Height;
-            ctrlNo = 1;//进入=1，第0个为窗体本身,窗体内的控件,从序号1开始
-            AutoScaleControl(mForm, wScale, hScale);//窗体内其余控件还可能嵌套控件(比如panel),要单独抽出,因为要递归调用
+            float wScale = (float)mForm.Width / (float)oldCtrl[0].Width;
+            float hScale = (float)mForm.Height / (float)oldCtrl[0].Height;
+            ctrlNo = 1;
+            AutoScaleControl(mForm, wScale, hScale);
         }
         private void AutoScaleControl(Control ctl, float wScale, float hScale)
         {
@@ -87,28 +79,44 @@ namespace CCDInspection.UI.Assisat
                 //**放在这里，是先缩放控件本身，后缩放控件的子控件
                 if (c.Controls.Count > 0)
                     AutoScaleControl(c, wScale, hScale);//窗体内其余控件还可能嵌套控件(比如panel),要单独抽出,因为要递归调用
+            }
 
-                if (ctl is DataGridView)
+            // 处理 DataGridView 的列自适应（在 foreach 外面，只执行一次）
+            if (ctl is DataGridView)
+            {
+                DataGridView dgv = ctl as DataGridView;
+                Cursor.Current = Cursors.WaitCursor;
+
+                int widths = 0;
+                for (int i = 0; i < dgv.Columns.Count; i++)
                 {
-                    DataGridView dgv = ctl as DataGridView;
-                    Cursor.Current = Cursors.WaitCursor;
-
-                    int widths = 0;
-                    for (int i = 0; i < dgv.Columns.Count; i++)
-                    {
-                        dgv.AutoResizeColumn(i, DataGridViewAutoSizeColumnMode.AllCells);  // 自动调整列宽  
-                        widths += dgv.Columns[i].Width;   // 计算调整列后单元列的宽度和                       
-                    }
-                    if (widths >= ctl.Size.Width)  // 如果调整列的宽度大于设定列宽  
-                        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;  // 调整列的模式 自动  
-                    else
-                        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;  // 如果小于 则填充  
-
-                    Cursor.Current = Cursors.Default;
+                    dgv.AutoResizeColumn(i, DataGridViewAutoSizeColumnMode.AllCells);
+                    widths += dgv.Columns[i].Width;
                 }
+
+                if (widths >= ctl.Size.Width)
+                {
+                    // 内容超出宽度 → 每列按内容显示，冻结列保持不动
+                    foreach (DataGridViewColumn col in dgv.Columns)
+                    {
+                        if (!col.Frozen)
+                            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                    }
+                }
+                else
+                {
+                    // 内容少于宽度 → 非冻结列填满剩余空间
+                    foreach (DataGridViewColumn col in dgv.Columns)
+                    {
+                        if (!col.Frozen)
+                            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+
+                Cursor.Current = Cursors.Default;
+            }
             }
 
 
         }
     }
-}

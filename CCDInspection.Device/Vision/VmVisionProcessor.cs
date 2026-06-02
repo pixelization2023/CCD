@@ -28,7 +28,7 @@ namespace CCDInspection.Device.Vision
         public void Unload() { _procedure = null; IsLoaded = false; }
         public bool Run(out Bitmap img, out bool passed, out string reason)
         {
-            img = null; passed = false; reason = "";
+            img = null; passed = false; reason = "检查结果：NG\n产品编码：未识别\n产品颜色：未识别";
             if (!IsLoaded || _procedure == null) { reason = "VM未加载"; return false; }
             try
             {
@@ -51,13 +51,13 @@ namespace CCDInspection.Device.Vision
                     resInt = 0;
                 }
                 passed = resInt == 1;
-                if (passed)
+                if (resInt==1)
                 {
                     reason = proc.ModuResult.GetOutputString("out0").astStringVal[0].strValue;
                 }
                 else
                 {
-                    reason = passed ? "" : "检查结果：NG\n产品编码：999\n产品颜色：999";
+                    reason = "检查结果：NG\n产品编码：未识别\n产品颜色：未识别";
                 }
 
 

@@ -29,7 +29,7 @@ namespace CCDInspection.Services
     /// 2. 按 IN3 或点"清除报警" → 黄灯(复位中) → 气缸伸出+回零+移到配方高度 → 绿灯(就绪)
     /// 3. 按 IN1 或点"启动自动测试" → 状态机进入 AutoRun → WaitStart 等待流程启动
     /// 4. 按 IN7(流程启动) → 执行一次检测流程（每轮必须松开IN7再按，才能触发下一轮）
-    /// 5. 按 IN8(停止) → 触发报警 → 停止所有动作
+    /// 5. 按 IN8(停止) → 正常停止 → 黄灯 → 需复位后才能重启（不报警）
     ///
     /// 【IO定义】
     ///   IN0 = 安全光栅(常闭)   IN1 = 设备启动   IN2 = 急停(常闭)
@@ -46,7 +46,7 @@ namespace CCDInspection.Services
     ///   - 急停(IN2)：NC常闭，断开即报警
     ///   - 限位触发：停止轴+报警，反向点动退出限位后复位
     ///   - 报警→复位(IN3)：气缸伸出 + Z轴回零 + 移到配方高度 → Idle
-    ///   - 停止(IN8)：触发STOP报警，与急停同等处理
+    ///   - 停止(IN8)：正常停止，回到空闲状态（不触发报警）
     ///
     /// 【屏蔽功能（界面复选框，即时生效无需重启）】
     ///   屏蔽光栅    = 遮挡不触发报警
@@ -214,6 +214,7 @@ namespace CCDInspection.Services
         private async Task IdleHandler()
         {
             LogService.Information("[状态机] 进入 Idle 空闲状态");
+            _stopRequested = false;
             _lightCurtainActive = false;
             while (_topSM.CurrentState.Equals(StationState.Idle) && !_stopRequested)
             {
@@ -346,6 +347,12 @@ namespace CCDInspection.Services
             LogService.Information("[状态机] 进入 Resetting 复位状态");
             ReportStatus("复位中...");
 
+
+            //关闭光源
+            _motion.WriteOutput(IOMapping.OUT_Light, false);
+            _motion.WriteOutput(IOMapping.OUT_Light2, false);
+
+
             // 气缸伸出到初始状态 S0（屏蔽时跳过）
             if (Features.ShieldCylinder)
             {
@@ -394,6 +401,9 @@ namespace CCDInspection.Services
         {
             ReportStatus("按IN7流程启动");
             LogService.Information("[流程] WaitStart 等待IN7流程启动信号...");
+            _motion.WriteOutput(IOMapping.OUT_GreenLight, true);
+            _motion.WriteOutput(IOMapping.OUT_RedLight, false);
+            _motion.WriteOutput(IOMapping.OUT_Buzzer,false);
             while (!_motion.ReadInput(IOMapping.IN_FlowStart))
             {
                 if (_stopRequested || CheckStop()) return;
@@ -439,7 +449,7 @@ namespace CCDInspection.Services
             _motion.WriteOutput(IOMapping.OUT_Light, true);
             _motion.WriteOutput(IOMapping.OUT_Light2, true);
             await Task.Delay(_config.Inspection.LightOnDelayMs);
-            await SafeFlowNext(InspectionFlowState.ZAxisMove);
+            await SafeFlowNext(InspectionFlowState.VisionProcess);
         }
 
         /// <summary>S3：Z轴移动到检测高度（读最新JSON配方高度）</summary>
@@ -463,14 +473,6 @@ namespace CCDInspection.Services
         /// <summary>S3：VM视觉处理 — 调Run触发拍照检测，读Outputs解析结果</summary>
         private async Task VisionProcessHandler()
         {
-            if (!_vision.IsLoaded)
-            {
-                LogService.Information("[流程] VisionProcess VM未加载，跳过视觉处理→OK");
-                ReportStatus("VM未加载，跳过视觉处理→OK");
-                LastRecord = NewRecord("OK", "", "", "");
-                await SafeFlowNext(InspectionFlowState.SaveResult);
-                return;
-            }
             try
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -552,7 +554,7 @@ namespace CCDInspection.Services
             LogService.Information("[流程] LightOff 光源关闭");
             _motion.WriteOutput(IOMapping.OUT_Light, false);
             _motion.WriteOutput(IOMapping.OUT_Light2, false);
-            await SafeFlowNext(InspectionFlowState.ZAxisReturn);
+            await SafeFlowNext(InspectionFlowState.CylinderExtend);
         }
 
         /// <summary>S3：Z轴回零</summary>
@@ -603,13 +605,18 @@ namespace CCDInspection.Services
         /// 安全流转到流程状态机的下一个状态
         /// 只有顶层状态为 AutoRun 时才允许，防止报警/暂停时流程乱跑
         /// </summary>
-        /// <summary>IN8停止按钮检测，返回true表示已触发停止</summary>
+        /// <summary>IN8停止按钮检测，返回true表示已触发停止（正常停止，不报警，需复位后重启）</summary>
         private bool CheckStop()
         {
             if (_motion.ReadInput(IOMapping.IN_Stop))
             {
-                LogService.Warning("[状态机] IN8停止按钮按下");
-                _ = TriggerAlarmAsync("STOP", "停止按钮按下");
+                if (!_stopRequested && _topSM.CurrentState.Equals(StationState.AutoRun))
+                {
+                    LogService.Warning("[状态机] IN8停止按钮按下 → 正常停止");
+                    _stopRequested = true;
+                    ReportStatus("已停止");
+                    _ = _topSM.TransitionToAsync(StationState.Idle);
+                }
                 return true;
             }
             return false;
