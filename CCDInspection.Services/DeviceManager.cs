@@ -90,7 +90,8 @@ namespace CCDInspection.Services
 
         public void CylinderExtend(int timeoutMs = 20000)
         {
-            Motion.WriteOutput(IOMapping.OUT_Cylinder, false);
+            Motion.WriteOutput(IOMapping.OUT_CylinderOUT, true);
+            Motion.WriteOutput(IOMapping.OUT_CylinderIN, false);
             int elapsed = 0;
             while (!Motion.ReadInput(IOMapping.IN_CylinderExtendOk))
             {
@@ -102,7 +103,8 @@ namespace CCDInspection.Services
 
         public void CylinderRetract(int timeoutMs = 20000)
         {
-            Motion.WriteOutput(IOMapping.OUT_Cylinder, true);
+            Motion.WriteOutput(IOMapping.OUT_CylinderOUT, false);
+            Motion.WriteOutput(IOMapping.OUT_CylinderIN, true);
             int elapsed = 0;
             while (!Motion.ReadInput(IOMapping.IN_CylinderRetractOk))
             {

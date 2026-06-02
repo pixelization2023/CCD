@@ -104,8 +104,10 @@ namespace CCDInspection.UI.Forms
             //    MessageBox.Show("请选择产品类型和型号");
             //    return;
             //}
+            var prod = productModels?.FirstOrDefault(p => p.Product_code == com_Product_code.Text && p.Product_port == cmb_ProductType.Text);
             m_FrmMain._currentProductPort = cmb_ProductType.Text.ToString();
-            m_FrmMain._currentProductModel = uiComboBox_Productmodel.Text.ToString();
+            m_FrmMain._currentProductModel = prod?.Product_model ?? "";
+            m_FrmMain._currentProductColor = uiComboBox_Productmodel.Text.ToString();
             m_FrmMain._currentProductCode = com_Product_code.Text.ToString();
             m_FrmMain._operatorId = txt_Account.Text.Trim();
             m_FrmMain._currentUser = cmb_UserName.Text.ToString();
@@ -177,9 +179,13 @@ namespace CCDInspection.UI.Forms
                 var item = productModels[i];
                 if (item.Product_port == selectedPort)
                 {
-                    uiComboBox_Productmodel.Items.Add(item.Product_model);
+                    uiComboBox_Productmodel.Items.Add(item.Product_color);
                 }
             }
+            // 去重颜色
+            var distinctColors = uiComboBox_Productmodel.Items.Cast<string>().Distinct().ToList();
+            uiComboBox_Productmodel.Items.Clear();
+            foreach (var c in distinctColors) uiComboBox_Productmodel.Items.Add(c);
             if (uiComboBox_Productmodel.Items.Count > 0)
                 uiComboBox_Productmodel.SelectedIndex = 0;
         }
@@ -194,7 +200,7 @@ namespace CCDInspection.UI.Forms
 
             foreach (var p in productModels)
             {
-                if (p.Product_port == selectedPort && p.Product_model == selectedModel)
+                if (p.Product_port == selectedPort && p.Product_color == selectedModel)
                     com_Product_code.Items.Add(p.Product_code);
             }
             if (com_Product_code.Items.Count > 0)

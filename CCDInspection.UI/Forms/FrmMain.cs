@@ -95,6 +95,7 @@ namespace CCDInspection.UI.Forms
         public string _currentProductPort;
         public string _currentProductModel;
         public string _currentProductCode;
+        public string _currentProductColor;
         public bool _needLoadRecipe; // FrmLogin标记：初始化完成后加载配方
 
         public string _operatorId;
@@ -135,6 +136,7 @@ namespace CCDInspection.UI.Forms
         private bool _shieldBuzzerCached;
         private readonly object _homeLock = new object();
         private readonly SemaphoreSlim _detectionLock = new SemaphoreSlim(1, 1);
+        private System.Windows.Forms.TextBox txt_CurrentCheckTime;
         #endregion
 
         #region 窗体事件
@@ -147,11 +149,12 @@ namespace CCDInspection.UI.Forms
         {
             try
             {
+                lbl_result.Text = "";
+                lbl_currentCode.Text = "";
                 LogService.Information("[初始化] ====== FrmMain加载开始 ======");
 
-                //窗口自适应
-                this.Resize += FrmMain_Resize;
-                this.SizeChanged += FrmMain_Resize;
+                //窗口自适应：记录设计时初始尺寸（ResizeEnd 已在 Designer 中绑定）
+                _autoSize.controllInitializeSize(this);
 
                 // 1. 加载配置（优先从DI容器获取，失败则新建）
                 LogService.Information("[初始化] 步骤1 加载JSON配置...");
@@ -164,8 +167,7 @@ namespace CCDInspection.UI.Forms
                     _configService = new ConfigService();
                 }
                 AppConfig _config = _configService.Load();
-                LogService.Information("[初始化] 配置加载完成 | AxisIP={IP}",
- _config.Axis.IpAddress);
+                LogService.Information("[初始化] 配置加载完成 | AxisIP={IP}", _config.Axis.IpAddress);
 
                 // 2. 从 DI 获取已连接好的设备（避免重复连接 ZMC 控制器导致第二次连接失败）
                 LogService.Information("[初始化] 步骤2 创建服务层...");
@@ -215,7 +217,8 @@ namespace CCDInspection.UI.Forms
                 // 3. 初始化状态机
                 LogService.Information("[初始化] 步骤3 创建状态机...");
                 var cylinder = new Cylinder(motion,
-                    IOMapping.OUT_Cylinder, IOMapping.IN_CylinderExtendOk, IOMapping.IN_CylinderRetractOk);
+                    IOMapping.OUT_CylinderOUT, IOMapping.OUT_CylinderIN,
+                    IOMapping.IN_CylinderExtendOk, IOMapping.IN_CylinderRetractOk);
                 // AlarmHandler 必须用 FrmMain 自己的 DeviceManager，不能从 DI 拿（DI 里的 DeviceManager 设备为空）
 
                 var alarmHandler = new AlarmHandler(_deviceManager);
@@ -227,32 +230,58 @@ namespace CCDInspection.UI.Forms
                 lightCurtain.StartMonitoring();
                 _stationController = new StationController(
                     motion, vision,
-                    cylinder, alarmHandler, lightCurtain, _statsService, _config, _configService);
+         cylinder, alarmHandler, lightCurtain, _statsService, _config, _configService);
 
                 // 订阅状态机完成事件
 
                 _stationController.OnInspectionCompleted += record =>
                     SafeBeginInvoke(() =>
                     {
-                        // VM结果解析已移至 StationController.VisionProcessHandler
-
 
                         lbl_TotalResult.Text = record.Result;
                         lbl_TotalResult.BackColor = record.Result == "OK" ? Color.LightGreen : Color.Red;
                         UpdateStatsUI(_statsService.Current);
+                        if (txt_CurrentCheckTime != null)
+                            txt_CurrentCheckTime.Text = $"{record.CycleTimeMs} ms";
                         // 显示在 rtb_TestResult 并写入 SQLite
                         bool isOk = record.Result == "OK";
+                        lbl_result.Text = record.Result=="OK"?"PASS":"Fail";
+                        if (!isOk)
+                        {
+                            motion.WriteOutput(IOMapping.OUT_RedLight, true);
+
+                            var config = _configService?.Load() ?? new AppConfig();
+                            var config1= config.Features;
+                            if (config1.ShieldBuzzer)
+                            {
+                                motion.WriteOutput(IOMapping.OUT_Buzzer, true);
+                                
+                            }
+                           
+                        }
+
+                        lbl_result.BackColor = record.Result == "OK" ? Color.LightGreen : Color.Red;
                         SaveInspectionRecord(isOk, record.Reason, record.ProductCode, record.ProductColor);
                     });
                 _stationController.OnStatusChanged += msg =>
                     SafeBeginInvoke(() =>
                     {
                         WriteMsg(msg, UserTheadStatus.SoftOptStatus);
-                        if (msg.Contains("复位中"))
+                        if (msg.Contains("已停止"))
+                        {
+                            _isAxisHomed = false;
+                            SetMachineStatus(MachineStatus.Initial);
+                        }
+                        else if (msg.Contains("复位中"))
                             SetThreeColorLight(MachineStatus.Initial);
                         else if (msg.Contains("复位完成"))
                         {
                             _isAxisHomed = true;
+                            txt_AlarmInfo.Clear();
+                            lbl_result.Text = "";
+                            lbl_result.BackColor = Color.White;
+                            if (txt_CurrentCheckTime != null)
+                                txt_CurrentCheckTime.Text = "0 ms";
                             SetMachineStatus(MachineStatus.Initialed);
                         }
                         else if (msg.Contains("自动运行"))
@@ -274,7 +303,7 @@ namespace CCDInspection.UI.Forms
 
                 // 4. UI控件 — Designer 已绑定 CheckedChanged 事件，此处只加载初始值
                 var f = _config.Features;
-              
+
                 ckb_ShieldBuzzer.Checked = f.ShieldBuzzer;
                 _shieldBuzzerCached = f.ShieldBuzzer;
                 ckb_ShieldLightCurtain.Checked = f.ShieldLightCurtain;
@@ -285,7 +314,7 @@ namespace CCDInspection.UI.Forms
                 _ioInputs = new IO_In[] { iO_In0, iO_In1, iO_In2, iO_In3, iO_In4, iO_In5, iO_In6, iO_In7, iO_In8, iO_In9, iO_In10, iO_In11, iO_In12, iO_In13, iO_In14, iO_In15 };
                 _ioOutputs = new IO_Out[] { iO_Out0, iO_Out1, iO_Out2, iO_Out3, iO_Out4, iO_Out5, iO_Out6, iO_Out7, iO_Out8, iO_Out9, iO_Out10, iO_Out11, iO_Out12, iO_Out13, iO_Out14, iO_Out15 };
                 string[] inNames = { "门禁", "设备启动", "急停", "复位", "气缸伸出到位", "气缸缩回到位", "保留", "流程启动", "停止", "IN9", "IN10", "IN11", "IN12", "IN13", "IN14", "IN15" };
-                string[] outNames = { "电磁阀", "OUT1", "光源COM123", "光源COM4", "OUT4", "黄灯", "绿灯", "红灯", "蜂鸣器", "OUT9", "OUT10", "OUT11", "OUT12", "OUT13", "OUT14", "OUT15" };
+                string[] outNames = { "电磁阀A", "电磁阀B", "光源COM123", "光源COM4", "OUT4", "黄灯", "绿灯", "红灯", "蜂鸣器", "OUT9", "OUT10", "OUT11", "OUT12", "OUT13", "OUT14", "OUT15" };
                 for (int i = 0; i <= 15; i++) _ioInputs[i].IOName = inNames[i];
                 for (int i = 0; i <= 15; i++) _ioOutputs[i].IOName = outNames[i];
 
@@ -298,6 +327,13 @@ namespace CCDInspection.UI.Forms
                 InitialAxis();
                 LogService.Information("[初始化] 轴卡连接结果 | Connected={C} | Handle={H}",
                     _deviceManager.Motion?.IsConnected, _axisHandle);
+
+                // 中封式电磁阀：上电初始化两路掉电，保持当前位置
+                if (_deviceManager?.Motion?.IsConnected == true)
+                {
+                    _deviceManager.Motion.WriteOutput(IOMapping.OUT_CylinderOUT, false);
+                    _deviceManager.Motion.WriteOutput(IOMapping.OUT_CylinderIN, false);
+                }
 
 
                 if (_buzzerThread?.ThreadState != System.Threading.ThreadState.Running)
@@ -313,10 +349,31 @@ namespace CCDInspection.UI.Forms
                 // 加载产品配方到 dataGridView3 和 comboBox1
                 LoadProductGrid();
                 InitProductCombo();
-                comboBox1.Text =_currentProductModel+"-"+_currentProductPort;
+                cob_ProductType.Text = _currentProductPort;
                 comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+                comboBox1.Text = _currentProductColor;
+                lbl_currentCode.Text = _currentProductCode;
                 InitDatabase();
                 InitDbFilterControls();
+
+                // 在 tabPage14 添加"完成检查时间"显示
+                var lblCheckTime = new System.Windows.Forms.Label
+                {
+                    Text = "完成检查时间：",
+                    Location = new System.Drawing.Point(24, 282),
+                    AutoSize = true,
+                    Font = new System.Drawing.Font("微软雅黑", 12F)
+                };
+                txt_CurrentCheckTime = new System.Windows.Forms.TextBox
+                {
+                    Location = new System.Drawing.Point(64, 302),
+                    Size = new System.Drawing.Size(93, 23),
+                    ReadOnly = true,
+                    Text = "0 ms"
+                };
+                tabPage14.Controls.Add(lblCheckTime);
+                tabPage14.Controls.Add(txt_CurrentCheckTime);
+
                 _initFinished = true;
                 _initSuccess = true;
                 // 开机保持红灯（安全状态），等待用户手动复位后才变绿灯
@@ -324,13 +381,13 @@ namespace CCDInspection.UI.Forms
                 CheckSafeStartupCondition();
                 _stationController.StartIdlePolling();
 
-              //  _autoSize.controlAutoSize(this);
+                //  _autoSize.controlAutoSize(this);
                 // 延迟加载配方（FrmLogin时DeviceManager尚未创建）
                 if (_needLoadRecipe && !string.IsNullOrEmpty(_currentProductPort))
                 {
                     var prod = _productModels?.FirstOrDefault(p => p.Product_port == _currentProductPort && p.Product_model == _currentProductModel);
                     UpdateCurrentProduct(_currentProductPort, _currentProductModel, prod);
-                    LoadRecipeInfo(_currentProductPort, _currentProductModel);
+                    LoadRecipeInfo(_currentProductPort, _currentProductModel, _currentProductCode);
                 }
                 LogService.Information("[初始化] ====== 初始化完成 Initialed ======");
             }
@@ -343,24 +400,18 @@ namespace CCDInspection.UI.Forms
             }
         }
 
-        private void FrmMain_Resize(object sender, EventArgs e)
+        private void FrmMain_ResizeEnd(object sender, EventArgs e)
         {
-            
-            LogService.Information("[AutoSize] OnResizeEnd W={W} H={H} oldCtrl={Cnt}", this.Width, this.Height, _autoSize.oldCtrl.Count);
+            LogService.Information("[AutoSize] ResizeEnd W={W} H={H}", this.Width, this.Height);
             try
             {
                 _autoSize.controlAutoSize(this);
             }
             catch (Exception ex)
             {
-
-                LogService.Error(ex, "[AutoSize] Resize异常");
+                LogService.Error(ex, "[AutoSize] ResizeEnd异常");
             }
-       
         }
-
-
-        private void FrmMain_ResizeEnd(object sender, EventArgs e) { } // Designer reference
         #endregion
 
         #region 主程序
@@ -377,6 +428,7 @@ namespace CCDInspection.UI.Forms
                 LogService.Debug("[SetThreeColorLight] DeviceManager=null, 灯未设置 status={Status}", status);
 
             string text; Color color; bool green = false, red = false, yellow = false, buzz = false;
+            string hint = "";
             switch (status)
             {
                 case MachineStatus.Alarm:
@@ -384,47 +436,53 @@ namespace CCDInspection.UI.Forms
                     buzz = true;
                     text = "机台报警中";
                     color = Color.Red;
+                    hint = "1. 检查并排除故障\r\n2. 点击【清除报警】\r\n3. 点击【复位】等待回零完成\r\n4. 绿灯亮后可点击【启动】";
                     _buzzerEnabled = true;
                     break;
                 case MachineStatus.Initial:
                     yellow = true;
-                    text = "机台初始化中...";
+                    text = "机台复位中...";
                     color = Color.LightYellow;
+                    hint = "气缸伸出 + 轴回零中，请稍候...\r\n完成后将自动变为绿灯";
                     _buzzerEnabled = false;
                     break;
                 case MachineStatus.Initialed:
                     green = true;
-                    text = "机台初始化完成";
+                    text = "机台就绪";
                     color = Color.LightGreen;
+                    hint = "操作提示：\r\n  ● 点击【启动】开始自动检测\r\n  ● 切换配方：在上方下拉框选择产品型号\r\n  ● 配方切换后轴将自动移到检测位置";
                     _buzzerEnabled = false;
                     break;
                 case MachineStatus.Start:
                     green = true;
-                    text = "机台运行中";
+                    text = "自动运行中";
                     color = Color.LightGreen;
+                    hint = "设备正在自动检测，请勿靠近运动部件\r\n  ● 按【停止】可中止运行\r\n  ● 如需切换配方请先停止";
                     _buzzerEnabled = false;
                     break;
                 case MachineStatus.Stop:
                     red = true;
                     text = "机台已停止";
                     color = Color.Red;
+                    hint = "设备已停止，轴位置保持不变\r\n  ● 点击【复位】回零后可重新启动\r\n  ● 或直接切换配方后点击【启动】";
                     _buzzerEnabled = false;
                     break;
                 default:
                     red = true;
-                    text = "软件打开未初始化，请勿启动";
+                    text = "等待初始化";
                     color = Color.Red;
+                    hint = "1. 请确认急停按钮已松开\r\n2. 点击【复位】按钮初始化设备\r\n3. 等待回零完成，绿灯亮后即可操作";
                     break;
             }
 
             bool buzzerShielded = _configService?.Load()?.Features?.ShieldBuzzer ?? false;
             _deviceManager?.SetTowerLight(green, red, yellow, buzz && !buzzerShielded);
 
-            // 修复：使用 SafeInvoke
             SafeInvoke(() =>
             {
                 lbl_MachineStatus.Text = text;
                 lbl_MachineStatus.BackColor = color;
+                if (lbl_about != null) lbl_about.Text = hint;
             });
         }
 
@@ -806,10 +864,11 @@ namespace CCDInspection.UI.Forms
                 _stationController?.CurrentState);
             _isRunning = false;
             _isAutoRun = false;
+            _isAxisHomed = false;
             _transferTask?.Stop();
             Task.Run(async () => await _stationController?.StopAsync());
             SetControlsEnabledDuringRunning(false);
-            SetMachineStatus(MachineStatus.Initialed);
+            SetMachineStatus(MachineStatus.Initial);
         }
 
         private void btn_Login_Click(object sender, EventArgs e)
@@ -930,31 +989,36 @@ namespace CCDInspection.UI.Forms
 
 
         /// <summary>
-        /// 按照图中流程执行检测（气缸移载方式）
-        /// 流程：人工上料 → 移载气缸伸出 → 到达检测位 → 光源开启 → Z轴调整 → 拍照检测 → 光源关闭 → 移载气缸缩回 → 人工取件
+ 
         /// CT要求：30-40S/Pcs
         /// </summary>
         private float _detectZHeight = 20f; // 自动检测高度(mm)，UI输入框可修改
 
         /// <summary>
         /// 执行一次自动检测流程（气缸移载方式）
-        /// 流程：Z轴移动到检测高度 → 双手启动 → 气缸伸出 → 光源开 → Z轴到位
-        ///       → 相机拍照 → VM视觉处理 → 保存结果 → 光源关 → Z轴回零 → 气缸缩回 → 循环
+
         /// </summary>
         private async void ExecuteCylinderDetection()
         {
-            // 构造 VM 方案路径并加载
-            var solPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                "VmSol", _currentProductPort, _currentProductModel + ".sol");
+            // 通过编码前缀搜索VM方案文件并加载
+            var solDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VmSol", _currentProductPort);
+            var solPath = "";
+            if (Directory.Exists(solDir))
+            {
+                var code = _currentProductCode ?? _currentProductModel;
+                var solFiles = Directory.GetFiles(solDir, code + "*.sol");
+                if (solFiles.Length > 0) solPath = solFiles[0];
+            }
             LogService.Information("[主界面] 加载VM方案: {Path}", solPath);
-            if (File.Exists(solPath))
+            if (!string.IsNullOrEmpty(solPath) && File.Exists(solPath))
             {
                 try { _deviceManager.Vision.LoadSolution(solPath); }
                 catch (Exception ex) { LogService.Error(ex, "[主界面] VM方案加载失败"); }
             }
             else
             {
-                LogService.Warning("[主界面] VM方案不存在: {Path}", solPath);
+                LogService.Warning("[主界面] VM方案不存在, 编码={Code}", _currentProductCode);
+                lbl_currentCode.Text = $"{_currentProductCode}-方案缺失";
             }
 
             var product = new CCDInspection.Core.Models.ProductConfig
@@ -1229,6 +1293,9 @@ namespace CCDInspection.UI.Forms
             //}
         }
 
+        /// <summary>
+        /// 急停处理：立即停止所有运动，禁止再次启动 → 触发报警状态机 → 等待人工干预（清除报警、复位）
+        /// </summary>
         private void EmergencyStopAll()
         {
             LogService.Error("[诊断-界面] EmergencyStopAll 触发!");
@@ -1286,8 +1353,8 @@ namespace CCDInspection.UI.Forms
                 gb_AxisSet.Enabled = !isRunning;
                 btn_GoHome.Enabled = !isRunning;
 
-                btn_StartAutoTest.Enabled = !isRunning;
-                btn_StopAutoTest.Enabled = isRunning;
+                //btn_StartAutoTest.Enabled = !isRunning;
+                //btn_StopAutoTest.Enabled = isRunning;
                 // 自动运行中禁止手动点动，防止轴位置被推偏
                 btn_ZUp.Enabled = !isRunning;
                 btn_ZDown.Enabled = !isRunning;
@@ -1435,19 +1502,19 @@ namespace CCDInspection.UI.Forms
             {
                 if (_db == null) { LogService.Error("[DB] _db为null"); return; }
                 LogService.Debug("[DB] 准备插入...");
-                    var res = _db.Insert(new InspectionRecordEntity
-                    {
-                        Time = record.Time,
-                        ProductModel = _currentProduct.ProductName ,
-                        ProductPort = _currentProductPort,
-                        ProductColor = record.ProductColor,
-                        ProductCode = record.ProductCode,
-                        Result = record.Result,
-                        NgReason = record.Reason
-                    }).ExecuteAffrows();
+                var res = _db.Insert(new InspectionRecordEntity
+                {
+                    Time = record.Time,
+                    ProductModel = _currentProduct.ProductName,
+                    ProductPort = _currentProductPort,
+                    ProductColor = record.ProductColor,
+                    ProductCode = record.ProductCode,
+                    Result = record.Result,
+                    NgReason = record.Reason
+                }).ExecuteAffrows();
 
 
-                   LogService.Debug("[DB] 写入成功");
+                LogService.Debug("[DB] 写入成功");
             }
             catch (Exception ex) { LogService.Error(ex, "[DB] 保存记录失败"); }
         }
@@ -1458,9 +1525,9 @@ namespace CCDInspection.UI.Forms
             string resultText = $"[{record.Time:HH:mm:ss}] 检测结果:{(isOK ? "OK" : "NG")} 颜色:{record.ProductColor}";
 
             if (!isOK && !string.IsNullOrEmpty(record.Reason))
-                resultText += $" NG原因:{record.Reason.Replace("\n"," ").Replace("\r"," ")}";
+                resultText += $" NG原因:{record.Reason.Replace("\n", " ").Replace("\r", " ")}";
 
-   
+
 
             // 在gbTestResult的RichTextBox中显示
             if (rtb_TestResult.InvokeRequired)
@@ -1598,7 +1665,7 @@ namespace CCDInspection.UI.Forms
                         query = query.Where(r => r.ProductCode == code);
                 }
 
-                var list = query.OrderByDescending(r => r.Time).Take(1000).ToList();
+                var list = query.OrderByDescending(r => r.Time).Take(5000).ToList();
                 dataGridView1.Rows.Clear();
                 foreach (var r in list)
                     dataGridView1.Rows.Add(
@@ -1781,6 +1848,7 @@ namespace CCDInspection.UI.Forms
 
                 LogService.Information("[报表] 导出成功: {File}", file);
                 MessageBox.Show($"导出成功: {file}", "报表导出");
+                Process.Start(file);
             }
             catch (Exception ex) { LogService.Error(ex, "[报表] 导出失败"); MessageBox.Show($"导出失败: {ex.Message}"); }
         }
@@ -1844,21 +1912,56 @@ namespace CCDInspection.UI.Forms
 
                 // cob_ProductType 变化时筛选 comboBox1
                 cob_ProductType.SelectedIndexChanged += (s, e) => FilterProductList();
+                com_productcode.SelectedIndexChanged += (s, e) => LoadVmCOde();
+
                 FilterProductList();
             }
             catch { }
+        }
+        //这里根据产品硬编码来加载确保 相同端口 相同颜色 不会加载错误
+        private void LoadVmCOde()
+        {
+            if (!_initFinished) return;
+            var code = com_productcode.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(code)) return;
+
+            // 安全状态检查
+            if (_stationController?.CurrentState != StationState.Idle)
+            {
+                WriteMsg("请在空闲状态下切换方案", UserTheadStatus.SoftOptStatus);
+                if (!string.IsNullOrEmpty(_currentProductCode))
+                {
+                    var idx = com_productcode.Items.Cast<string>().ToList().IndexOf(_currentProductCode);
+                    if (idx >= 0) com_productcode.SelectedIndex = idx;
+                }
+                return;
+            }
+
+            var port = cob_ProductType.SelectedItem?.ToString() ?? _currentProductPort;
+            // 通过编码查找产品
+            var prod = _productModels?.FirstOrDefault(p => p.Product_code == code && p.Product_port == port);
+            if (prod == null) return;
+
+            _currentProductCode = code;
+            _currentProductPort = prod.Product_port;
+            _currentProductModel = prod.Product_model;
+            _currentProductColor = prod.Product_color;
+            lbl_currentCode.Text = code;
+            UpdateCurrentProduct(prod.Product_port, prod.Product_model, prod);
+            LoadRecipeInfo(prod.Product_port, prod.Product_model, code);
+            WriteMsg($"已切换方案: {code}", UserTheadStatus.SoftOptStatus);
         }
 
         private void FilterProductList()
         {
             if (_productModels == null) return;
-            var filter = cob_ProductType.SelectedItem?.ToString() ?? "";
+            var filter = cob_ProductType.SelectedItem?.ToString() ?? _currentProductPort ?? "";
             comboBox1.Items.Clear();
             var filtered = string.IsNullOrEmpty(filter)
                 ? _productModels
                 : _productModels.Where(p => p.Product_port == filter).ToList();
-            foreach (var p in filtered)
-                comboBox1.Items.Add($"{p.Product_port}-{p.Product_model}");
+            foreach (var c in filtered.Select(p => p.Product_color).Distinct())
+                comboBox1.Items.Add(c);
             // 选中当前产品
             if (!string.IsNullOrEmpty(_currentProductPort) && !string.IsNullOrEmpty(_currentProductModel))
             {
@@ -1871,32 +1974,23 @@ namespace CCDInspection.UI.Forms
         /// <summary>切换产品方案 — 安全状态下才能切换，切换后轴移到配方高度</summary>
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!_initFinished) return;
-            var sel = comboBox1.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(sel)) return;
-            var parts = sel.Split('-');
-            if (parts.Length < 2) return;
-            var port = parts[0];
-            var model = string.Join("-", parts.Skip(1));
+            if (_productModels == null) return;
+            var sel = comboBox1.SelectedItem?.ToString()??"";
+            com_productcode.Items.Clear();
+            var portFilter = cob_ProductType.SelectedItem?.ToString() ?? _currentProductPort ?? "";
+            var filterd = string.IsNullOrEmpty(sel) ? _productModels : _productModels.Where(p => p.Product_color == sel && p.Product_port == portFilter).ToList();
+            foreach (var p in filterd) com_productcode.Items.Add(p.Product_code);
 
-            // 安全状态检查
-            if (_stationController?.CurrentState != StationState.Idle)
+
+            // 选中当前产品
+            if (!string.IsNullOrEmpty(_currentProductPort) && !string.IsNullOrEmpty(_currentProductColor))
             {
-                WriteMsg("请在空闲状态下切换方案", UserTheadStatus.SoftOptStatus);
-                if (!string.IsNullOrEmpty(_currentProductPort))
-                    comboBox1.SelectedItem = $"{_currentProductPort}-{_currentProductModel}";
-                return;
+                var cur =_currentProductCode;
+                var idx = com_productcode.Items.Cast<string>().ToList().IndexOf(cur);
+                if (idx >= 0) com_productcode.SelectedIndex = idx;
             }
+            lbl_currentCode.Text = com_productcode.SelectedItem?.ToString() ?? "";
 
-            _currentProductPort = port;
-            _currentProductModel = model;
-            // 从 ProductConfig 获取产品编码
-            var prod = _productModels?.FirstOrDefault(p => p.Product_port == port && p.Product_model == model);
-            _currentProductCode = prod?.Product_code ?? "";
-            // 同步更新 _currentProduct（用于 SaveInspectionRecord 获取 ProductName/ProductIndex 等）
-            UpdateCurrentProduct(port, model, prod);
-            LoadRecipeInfo(port, model);
-            WriteMsg($"已切换方案: {sel}", UserTheadStatus.SoftOptStatus);
         }
 
         /// <summary>统一加载配方信息和VM方案 — 登录和切换共用</summary>
@@ -1909,13 +2003,14 @@ namespace CCDInspection.UI.Forms
             _currentProduct.ZHeight = float.TryParse(prod?.Product_zHeight, out var zh) ? zh : 0f;
         }
 
-        public void LoadRecipeInfo(string port, string model)
+        public void LoadRecipeInfo(string port, string model, string code = null)
         {
-            // 1. 读产品Z高度 → 更新JSON配置 → Z轴移动
+            // 1. 读产品Z高度 + 获取产品编码 → Z轴移动
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ProductConfig.json");
+            List<ProductModel> list = null;
             if (File.Exists(path))
             {
-                var list = JsonConvert.DeserializeObject<List<ProductModel>>(File.ReadAllText(path));
+                list = JsonConvert.DeserializeObject<List<ProductModel>>(File.ReadAllText(path));
                 var p = list?.FirstOrDefault(x => x.Product_model == model && x.Product_port == port);
                 if (p != null && float.TryParse(p.Product_zHeight, out float zh) && zh != 0)
                 {
@@ -1928,11 +2023,15 @@ namespace CCDInspection.UI.Forms
                 }
             }
 
-            // 2. 直接加载VM方案 + 绑定渲染
-            var solPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VmSol", port, model + ".sol");
-            LogService.Information("[配方加载] VM方案路径: {Path}", solPath);
+            // 2. 通过编码前缀搜索VM方案文件并加载
             vmRenderControl1.ModuleSource = null;
-            if (!File.Exists(solPath)) { LogService.Warning("[配方加载] VM方案不存在"); return; }
+            var searchCode = code ?? list?.FirstOrDefault(x => x.Product_model == model && x.Product_port == port)?.Product_code ?? model;
+            var solDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VmSol", port);
+            if (!Directory.Exists(solDir)) { LogService.Warning("[配方加载] VM方案目录不存在: {Dir}", solDir); lbl_currentCode.Text = "方案目录缺失"; return; }
+            var solFiles = Directory.GetFiles(solDir, searchCode + "*.sol");
+            if (solFiles.Length == 0) { LogService.Warning("[配方加载] VM方案不存在, 编码={Code}", searchCode); lbl_currentCode.Text = $"{searchCode}-方案缺失"; return; }
+            var solPath = solFiles[0];
+            LogService.Information("[配方加载] VM方案路径: {Path}", solPath);
             try
             {
                 var oldDir = Environment.CurrentDirectory;
@@ -1942,7 +2041,6 @@ namespace CCDInspection.UI.Forms
                 System.Threading.Thread.Sleep(200);
                 VmProcedure proc = VmSolution.Instance["流程1"] as VmProcedure;
                 if (proc != null) vmRenderControl1.ModuleSource = proc;
-                // 直接传递Procedure给VmVisionProcessor，不再重复调用VmSolution.Load
                 if (_deviceManager.Vision is VmVisionProcessor vmVision)
                     vmVision.SetProcedure(proc);
                 LogService.Information("[配方加载] VM方案已加载: {Path}", solPath);
@@ -1997,7 +2095,7 @@ namespace CCDInspection.UI.Forms
                             });
                         }
                         // 全量写入一次，不再每行重复写
-                        var json = JsonConvert.SerializeObject(_productModels);
+                        var json = JsonConvert.SerializeObject(_productModels,Formatting.Indented);
                         var configDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
                         if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
                         File.WriteAllText(Path.Combine(configDir, "ProductConfig.json"), json);
@@ -2153,7 +2251,7 @@ namespace CCDInspection.UI.Forms
                     msg += $"ProductColor={first.ProductColor}\n";
                     msg += $"ProductCode={first.ProductCode}\n";
                     msg += $"Result={first.Result}\n";
-                   
+
                 }
                 MessageBox.Show(msg, "测试查询");
             }
@@ -2163,6 +2261,56 @@ namespace CCDInspection.UI.Forms
         private void btn_print_Click_1(object sender, EventArgs e)
         {
             btn_print_Click(sender, e);
+        }
+
+
+
+        /// <summary>
+        /// 清楚当前计数，
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_ClearCurrentCount_Click(object sender, EventArgs e)
+        {
+            _statsService?.ClearCurrent();
+            UpdateStatsUI(_statsService?.Current);
+            if (txt_CurrentCheckTime != null)
+                txt_CurrentCheckTime.Text = "0 ms";
+        }
+
+
+
+          //清楚总计数
+        private void btn_ClearTotalCount_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("确认清除全部计数?", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) ==
+                System.Windows.Forms.DialogResult.OK)
+            {
+                _statsService?.ClearAll();
+                UpdateStatsUI(_statsService?.Current);
+            }
+        }
+
+        private void uiGroupBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+        //添加视觉方案
+        private void btn_addvm_Click(object sender, EventArgs e)
+        {
+            // 现在当前视觉方案 解除相机占用
+            //vmRenderControl1.ModuleSource = null;
+
+            //打开窗口
+            using (FrmVM frmVM = new FrmVM())
+            {
+                frmVM.DeviceManager = _deviceManager;
+                frmVM.ShowDialog(this);
+            }
+
+            //加载当前视觉方案 //恢复 视觉
+            if (!string.IsNullOrEmpty(_currentProductPort))
+                LoadRecipeInfo(_currentProductPort, _currentProductModel, _currentProductCode);
         }
 
         private void SafeBeginInvoke(Action action)

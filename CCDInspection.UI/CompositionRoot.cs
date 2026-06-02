@@ -47,7 +47,8 @@ namespace CCDInspection.UI
             builder.Register(ctx =>
             {
                 var mc = ctx.Resolve<IMotionController>();
-                return new Cylinder(mc, IOMapping.OUT_Cylinder, IOMapping.IN_CylinderExtendOk, IOMapping.IN_CylinderRetractOk);
+                return new Cylinder(mc, IOMapping.OUT_CylinderOUT, IOMapping.OUT_CylinderIN,
+                    IOMapping.IN_CylinderExtendOk, IOMapping.IN_CylinderRetractOk);
             }).As<ICylinder>().SingleInstance();
 
             builder.Register(ctx =>

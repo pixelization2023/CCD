@@ -1,28 +1,149 @@
 [
-  {"Product_model":"深黑-公端","Product_port":"公端","Product_color":"深黑","Product_code":"A","Product_zHeight":"-22"},
-  {"Product_model":"深黑-母端","Product_port":"母端","Product_color":"深黑","Product_code":"A","Product_zHeight":"-22"},
-  {"Product_model":"奶油白-公端","Product_port":"公端","Product_color":"奶油白","Product_code":"B","Product_zHeight":"-22"},
-  {"Product_model":"奶油白-母端","Product_port":"母端","Product_color":"奶油白","Product_code":"B","Product_zHeight":"-22"},
-  {"Product_model":"信号蓝-公端","Product_port":"公端","Product_color":"信号蓝","Product_code":"C","Product_zHeight":"-22"},
-  {"Product_model":"信号蓝-母端","Product_port":"母端","Product_color":"信号蓝","Product_code":"C","Product_zHeight":"-22"},
-  {"Product_model":"波尔多紫-公端","Product_port":"公端","Product_color":"波尔多紫","Product_code":"D","Product_zHeight":"-22"},
-  {"Product_model":"波尔多紫-母端","Product_port":"母端","Product_color":"波尔多紫","Product_code":"D","Product_zHeight":"-22"},
-  {"Product_model":"树叶绿-公端","Product_port":"公端","Product_color":"树叶绿","Product_code":"E","Product_zHeight":"-22"},
-  {"Product_model":"树叶绿-母端","Product_port":"母端","Product_color":"树叶绿","Product_code":"E","Product_zHeight":"-22"},
-  {"Product_model":"棕-公端","Product_port":"公端","Product_color":"棕","Product_code":"F","Product_zHeight":"-22"},
-  {"Product_model":"棕-母端","Product_port":"母端","Product_color":"棕","Product_code":"F","Product_zHeight":"-22"},
-  {"Product_model":"蓝灰-公端","Product_port":"公端","Product_color":"蓝灰","Product_code":"G","Product_zHeight":"-22"},
-  {"Product_model":"蓝灰-母端","Product_port":"母端","Product_color":"蓝灰","Product_code":"G","Product_zHeight":"-22"},
-  {"Product_model":"紫罗兰-公端","Product_port":"公端","Product_color":"紫罗兰","Product_code":"H","Product_zHeight":"-22"},
-  {"Product_model":"紫罗兰-母端","Product_port":"母端","Product_color":"紫罗兰","Product_code":"H","Product_zHeight":"-22"},
-  {"Product_model":"米色-公端","Product_port":"公端","Product_color":"米色","Product_code":"I","Product_zHeight":"-22"},
-  {"Product_model":"米色-母端","Product_port":"母端","Product_color":"米色","Product_code":"I","Product_zHeight":"-22"},
-  {"Product_model":"咖喱黄-公端","Product_port":"公端","Product_color":"咖喱黄","Product_code":"K","Product_zHeight":"-22"},
-  {"Product_model":"咖喱黄-母端","Product_port":"母端","Product_color":"咖喱黄","Product_code":"K","Product_zHeight":"-22"},
-  {"Product_model":"胭脂红-公端","Product_port":"公端","Product_color":"胭脂红","Product_code":"L","Product_zHeight":"-22"},
-  {"Product_model":"胭脂红-母端","Product_port":"母端","Product_color":"胭脂红","Product_code":"L","Product_zHeight":"-22"},
-  {"Product_model":"淡橙色-公端","Product_port":"公端","Product_color":"淡橙色","Product_code":"M","Product_zHeight":"-22"},
-  {"Product_model":"淡橙色-母端","Product_port":"母端","Product_color":"淡橙色","Product_code":"M","Product_zHeight":"-22"},
-  {"Product_model":"淡绿色-公端","Product_port":"公端","Product_color":"淡绿色","Product_code":"N","Product_zHeight":"-22"},
-  {"Product_model":"淡绿色-母端","Product_port":"母端","Product_color":"淡绿色","Product_code":"N","Product_zHeight":"-22"}
+  {
+    "Product_model": "黑色-母端",
+    "Product_port": "母端",
+    "Product_color": "黑色",
+    "Product_code": "AHSA13012A-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "黑色-母端",
+    "Product_port": "母端",
+    "Product_color": "黑色",
+    "Product_code": "AHSH13002A",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "奶油白-母端",
+    "Product_port": "母端",
+    "Product_color": "奶油白",
+    "Product_code": "AHSA13012B-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "奶油白-母端",
+    "Product_port": "母端",
+    "Product_color": "奶油白",
+    "Product_code": "AHSH13002B-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "深蓝-母端",
+    "Product_port": "母端",
+    "Product_color": "深蓝",
+    "Product_code": "AHSH13002",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "深蓝-母端",
+    "Product_port": "母端",
+    "Product_color": "深蓝",
+    "Product_code": "AHSA13013C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "胭脂红-母端",
+    "Product_port": "母端",
+    "Product_color": "胭脂红",
+    "Product_code": "AHSA13012D-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "胭脂红-母端",
+    "Product_port": "母端",
+    "Product_color": "胭脂红",
+    "Product_code": "AHSH13002D-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "胭脂红-母端",
+    "Product_port": "母端",
+    "Product_color": "胭脂红",
+    "Product_code": "AHSH13042D",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "绿色-母端",
+    "Product_port": "母端",
+    "Product_color": "绿色",
+    "Product_code": "AHSA13012E-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "绿色-母端",
+    "Product_port": "母端",
+    "Product_color": "绿色",
+    "Product_code": "AHSH13002E-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "粉色-母端",
+    "Product_port": "母端",
+    "Product_color": "粉色",
+    "Product_code": "AHSH13002H-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "咖喱色-母端",
+    "Product_port": "母端",
+    "Product_color": "咖喱色",
+    "Product_code": "AHSH13002K-C",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "信号蓝-母端",
+    "Product_port": "母端",
+    "Product_color": "信号蓝",
+    "Product_code": "AHSH13002Z",
+    "Product_zHeight": "-30"
+  },
+  {
+    "Product_model": "黑色-公端",
+    "Product_port": "公端",
+    "Product_color": "黑色",
+    "Product_code": "AHSH13005A-C",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "奶油白-公端",
+    "Product_port": "公端",
+    "Product_color": "奶油白",
+    "Product_code": "AHSH13005B-C",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "深蓝-公端",
+    "Product_port": "公端",
+    "Product_color": "深蓝",
+    "Product_code": "AHSH13005C-C",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "胭脂红-公端",
+    "Product_port": "公端",
+    "Product_color": "胭脂红",
+    "Product_code": "AHSH13005D-C",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "绿色-公端",
+    "Product_port": "公端",
+    "Product_color": "绿色",
+    "Product_code": "AHSH13005E",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "咖喱色-公端",
+    "Product_port": "公端",
+    "Product_color": "咖喱色",
+    "Product_code": "AHSH13005K-C",
+    "Product_zHeight": "-28"
+  },
+  {
+    "Product_model": "信号蓝-公端",
+    "Product_port": "公端",
+    "Product_color": "信号蓝",
+    "Product_code": "AHSH13005Z-C",
+    "Product_zHeight": "-28"
+  }
 ]

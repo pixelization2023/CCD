@@ -48,6 +48,8 @@ namespace CCDInspection.Core.Models
 
         [JsonProperty("detectZHeight")]
         public float DetectZHeight { get; set; } = 20f;
+        [JsonProperty("CaptureCount")]
+        public int CaptureCount { get; set; } = 0;
     }
 
     public class FeaturesConfig

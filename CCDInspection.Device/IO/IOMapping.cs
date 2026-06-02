@@ -7,7 +7,8 @@ namespace CCDInspection.Device.IO
     public static class IOMapping
     {
         // === 输出引脚 ===
-        public const int OUT_Cylinder = 0;      // 电磁阀
+        public const int OUT_CylinderOUT = 1;      // 电磁阀A
+        public const int OUT_CylinderIN = 0;      // 电磁阀B
         public const int OUT_Light = 2;          // 光源 COM123
         public const int OUT_Light2 = 3;         // 光源 COM4
         public const int OUT_YellowLight = 5;    // 三色灯 黄
@@ -24,5 +25,6 @@ namespace CCDInspection.Device.IO
         public const int IN_CylinderRetractOk = 5;// 气缸缩回到位
         public const int IN_FlowStart = 7;       // 流程启动（触发单次检测）
         public const int IN_Stop = 8;            // 停止（中断流程）
+        
     }
 }

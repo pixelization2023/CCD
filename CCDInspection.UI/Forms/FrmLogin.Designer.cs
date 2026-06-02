@@ -209,7 +209,7 @@ namespace CCDInspection.UI.Forms
             this.uiLabel5.Name = "uiLabel5";
             this.uiLabel5.Size = new System.Drawing.Size(90, 23);
             this.uiLabel5.TabIndex = 279;
-            this.uiLabel5.Text = "产品型号：";
+            this.uiLabel5.Text = "产品颜色：";
             this.uiLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // com_Product_code

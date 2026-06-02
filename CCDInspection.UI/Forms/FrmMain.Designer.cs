@@ -49,13 +49,15 @@ namespace CCDInspection.UI.Forms
             this.tslb_actionInfo = new System.Windows.Forms.ToolStripLabel();
             this.tslbl_InfoShow = new System.Windows.Forms.ToolStripLabel();
             this.uiGroupBox2 = new Sunny.UI.UIGroupBox();
+            this.lbl_about = new System.Windows.Forms.Label();
+            this.lbl_result = new System.Windows.Forms.Label();
             this.cob_ProductType = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.com_productcode = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.uiGroupBox4 = new Sunny.UI.UIGroupBox();
-            this.btn_StartAutoTest = new Sunny.UI.UIButton();
-            this.btn_StopAutoTest = new Sunny.UI.UIButton();
-            this.btn_Login = new Sunny.UI.UIButton();
+            this.lbl_currentCode = new Sunny.UI.UILabel();
+            this.uiLabel9 = new Sunny.UI.UILabel();
+            this.uiLabel7 = new Sunny.UI.UILabel();
             this.Product_Label = new Sunny.UI.UILabel();
             this.lbl_MachineStatus = new Sunny.UI.UILabel();
             this.uiGroupBox1 = new Sunny.UI.UIGroupBox();
@@ -123,6 +125,7 @@ namespace CCDInspection.UI.Forms
             this.SaveData_Button = new System.Windows.Forms.Button();
             this.Btn_DelConfig = new System.Windows.Forms.Button();
             this.Begin_AddPoint_Btm = new System.Windows.Forms.Button();
+            this.btn_addvm = new System.Windows.Forms.Button();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewComboBoxColumn1 = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -154,6 +157,12 @@ namespace CCDInspection.UI.Forms
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.gb_Optional = new Sunny.UI.UIGroupBox();
+            this.ckb_ShieldLightCurtain = new Sunny.UI.UICheckBox();
+            this.ckb_CylinderShield = new Sunny.UI.UICheckBox();
+            this.ckb_SaveNGSourceImage = new Sunny.UI.UICheckBox();
+            this.ckb_SaveSourceImage = new Sunny.UI.UICheckBox();
+            this.ckb_ShieldBuzzer = new Sunny.UI.UICheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage14 = new System.Windows.Forms.TabPage();
             this.btn_ClearCurrentCount = new Sunny.UI.UIButton();
@@ -183,34 +192,6 @@ namespace CCDInspection.UI.Forms
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.btn_ClearTotalCount = new Sunny.UI.UIButton();
-            this.uiGroupBox13 = new Sunny.UI.UIGroupBox();
-            this.uiLabel37 = new Sunny.UI.UILabel();
-            this.uiTextBox18 = new Sunny.UI.UITextBox();
-            this.uiLabel36 = new Sunny.UI.UILabel();
-            this.uiTextBox17 = new Sunny.UI.UITextBox();
-            this.uiLabel35 = new Sunny.UI.UILabel();
-            this.uiTextBox16 = new Sunny.UI.UITextBox();
-            this.uiLabel25 = new Sunny.UI.UILabel();
-            this.uiTextBox12 = new Sunny.UI.UITextBox();
-            this.uiLabel30 = new Sunny.UI.UILabel();
-            this.uiLabel32 = new Sunny.UI.UILabel();
-            this.uiTextBox13 = new Sunny.UI.UITextBox();
-            this.uiLabel43 = new Sunny.UI.UILabel();
-            this.uiLabel42 = new Sunny.UI.UILabel();
-            this.uiLabel41 = new Sunny.UI.UILabel();
-            this.uiLabel40 = new Sunny.UI.UILabel();
-            this.uiLabel39 = new Sunny.UI.UILabel();
-            this.uiLabel38 = new Sunny.UI.UILabel();
-            this.uiLabel34 = new Sunny.UI.UILabel();
-            this.uiLabel33 = new Sunny.UI.UILabel();
-            this.uiTextBox14 = new Sunny.UI.UITextBox();
-            this.uiTextBox15 = new Sunny.UI.UITextBox();
-            this.gb_Optional = new Sunny.UI.UIGroupBox();
-            this.ckb_ShieldLightCurtain = new Sunny.UI.UICheckBox();
-            this.ckb_CylinderShield = new Sunny.UI.UICheckBox();
-            this.ckb_SaveNGSourceImage = new Sunny.UI.UICheckBox();
-            this.ckb_SaveSourceImage = new Sunny.UI.UICheckBox();
-            this.ckb_ShieldBuzzer = new Sunny.UI.UICheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.uiGroupBox10 = new Sunny.UI.UIGroupBox();
             this.iO_In11 = new Application_UI.IO_In();
@@ -247,10 +228,10 @@ namespace CCDInspection.UI.Forms
             this.iO_Out7 = new Application_UI.IO_Out();
             this.iO_Out4 = new Application_UI.IO_Out();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.gbTestResult = new System.Windows.Forms.GroupBox();
-            this.rtb_TestResult = new System.Windows.Forms.RichTextBox();
             this.uiGroupBox15 = new Sunny.UI.UIGroupBox();
             this.vmRenderControl1 = new VMControls.Winform.Release.VmRenderControl();
+            this.gbTestResult = new System.Windows.Forms.GroupBox();
+            this.rtb_TestResult = new System.Windows.Forms.RichTextBox();
             this.uiTabControl1 = new Sunny.UI.UITabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.btn_open = new Sunny.UI.UIButton();
@@ -284,7 +265,6 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox3.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.uiGroupBox2.SuspendLayout();
-            this.uiGroupBox4.SuspendLayout();
             this.uiGroupBox1.SuspendLayout();
             this.cms_PathPlan.SuspendLayout();
             this.cms_AssistPosition.SuspendLayout();
@@ -304,17 +284,16 @@ namespace CCDInspection.UI.Forms
             this.gb_CheckItems.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_CheckItem)).BeginInit();
             this.tabPage3.SuspendLayout();
+            this.gb_Optional.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage14.SuspendLayout();
             this.tabPage15.SuspendLayout();
-            this.uiGroupBox13.SuspendLayout();
-            this.gb_Optional.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.uiGroupBox10.SuspendLayout();
             this.uiGroupBox9.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.gbTestResult.SuspendLayout();
             this.uiGroupBox15.SuspendLayout();
+            this.gbTestResult.SuspendLayout();
             this.uiTabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -401,10 +380,10 @@ namespace CCDInspection.UI.Forms
             this.tslb_status,
             this.tslb_actionInfo,
             this.tslbl_InfoShow});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 767);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 999);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(1326, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(1920, 33);
             this.toolStrip1.TabIndex = 240;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -439,27 +418,55 @@ namespace CCDInspection.UI.Forms
             // 
             // uiGroupBox2
             // 
+            this.uiGroupBox2.Controls.Add(this.lbl_about);
+            this.uiGroupBox2.Controls.Add(this.lbl_result);
             this.uiGroupBox2.Controls.Add(this.cob_ProductType);
             this.uiGroupBox2.Controls.Add(this.label6);
+            this.uiGroupBox2.Controls.Add(this.com_productcode);
             this.uiGroupBox2.Controls.Add(this.comboBox1);
-            this.uiGroupBox2.Controls.Add(this.uiGroupBox4);
+            this.uiGroupBox2.Controls.Add(this.lbl_currentCode);
+            this.uiGroupBox2.Controls.Add(this.uiLabel9);
+            this.uiGroupBox2.Controls.Add(this.uiLabel7);
             this.uiGroupBox2.Controls.Add(this.Product_Label);
             this.uiGroupBox2.Controls.Add(this.lbl_MachineStatus);
             this.uiGroupBox2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox2.Location = new System.Drawing.Point(1041, 38);
+            this.uiGroupBox2.Location = new System.Drawing.Point(1654, 40);
             this.uiGroupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiGroupBox2.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox2.Name = "uiGroupBox2";
             this.uiGroupBox2.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox2.Size = new System.Drawing.Size(262, 593);
+            this.uiGroupBox2.Size = new System.Drawing.Size(262, 748);
             this.uiGroupBox2.TabIndex = 241;
             this.uiGroupBox2.Text = "系统操作";
             this.uiGroupBox2.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.uiGroupBox2.Click += new System.EventHandler(this.uiGroupBox2_Click);
+            // 
+            // lbl_about
+            // 
+            this.lbl_about.AutoSize = true;
+            this.lbl_about.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lbl_about.Location = new System.Drawing.Point(10, 528);
+            this.lbl_about.Name = "lbl_about";
+            this.lbl_about.Size = new System.Drawing.Size(56, 17);
+            this.lbl_about.TabIndex = 274;
+            this.lbl_about.Text = "操作提示";
+            // 
+            // lbl_result
+            // 
+            this.lbl_result.Enabled = false;
+            this.lbl_result.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.lbl_result.Font = new System.Drawing.Font("微软雅黑", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl_result.Location = new System.Drawing.Point(32, 156);
+            this.lbl_result.Name = "lbl_result";
+            this.lbl_result.Size = new System.Drawing.Size(215, 43);
+            this.lbl_result.TabIndex = 273;
+            this.lbl_result.Text = "label17";
+            this.lbl_result.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // cob_ProductType
             // 
             this.cob_ProductType.FormattingEnabled = true;
-            this.cob_ProductType.Location = new System.Drawing.Point(92, 239);
+            this.cob_ProductType.Location = new System.Drawing.Point(92, 343);
             this.cob_ProductType.Name = "cob_ProductType";
             this.cob_ProductType.Size = new System.Drawing.Size(141, 29);
             this.cob_ProductType.TabIndex = 272;
@@ -467,79 +474,62 @@ namespace CCDInspection.UI.Forms
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 242);
+            this.label6.Location = new System.Drawing.Point(6, 346);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 21);
             this.label6.TabIndex = 271;
             this.label6.Text = "类型选择";
             // 
+            // com_productcode
+            // 
+            this.com_productcode.FormattingEnabled = true;
+            this.com_productcode.Location = new System.Drawing.Point(92, 420);
+            this.com_productcode.Name = "com_productcode";
+            this.com_productcode.Size = new System.Drawing.Size(155, 29);
+            this.com_productcode.TabIndex = 275;
+            // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(92, 276);
+            this.comboBox1.Location = new System.Drawing.Point(92, 380);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(155, 29);
             this.comboBox1.TabIndex = 270;
             // 
-            // uiGroupBox4
+            // lbl_currentCode
             // 
-            this.uiGroupBox4.Controls.Add(this.btn_StartAutoTest);
-            this.uiGroupBox4.Controls.Add(this.btn_StopAutoTest);
-            this.uiGroupBox4.Controls.Add(this.btn_Login);
-            this.uiGroupBox4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox4.Location = new System.Drawing.Point(10, 331);
-            this.uiGroupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiGroupBox4.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiGroupBox4.Name = "uiGroupBox4";
-            this.uiGroupBox4.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox4.Size = new System.Drawing.Size(248, 203);
-            this.uiGroupBox4.TabIndex = 269;
-            this.uiGroupBox4.Text = "动作配置";
-            this.uiGroupBox4.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_currentCode.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl_currentCode.Location = new System.Drawing.Point(92, 454);
+            this.lbl_currentCode.Name = "lbl_currentCode";
+            this.lbl_currentCode.Size = new System.Drawing.Size(155, 23);
+            this.lbl_currentCode.TabIndex = 276;
+            this.lbl_currentCode.Text = "当前编码";
+            this.lbl_currentCode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btn_StartAutoTest
+            // uiLabel9
             // 
-            this.btn_StartAutoTest.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_StartAutoTest.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_StartAutoTest.Location = new System.Drawing.Point(29, 35);
-            this.btn_StartAutoTest.MinimumSize = new System.Drawing.Size(1, 1);
-            this.btn_StartAutoTest.Name = "btn_StartAutoTest";
-            this.btn_StartAutoTest.Size = new System.Drawing.Size(194, 47);
-            this.btn_StartAutoTest.TabIndex = 0;
-            this.btn_StartAutoTest.Text = "开始测试";
-            this.btn_StartAutoTest.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_StartAutoTest.Click += new System.EventHandler(this.btn_StartAutoTest_Click);
+            this.uiLabel9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiLabel9.Location = new System.Drawing.Point(6, 458);
+            this.uiLabel9.Name = "uiLabel9";
+            this.uiLabel9.Size = new System.Drawing.Size(82, 17);
+            this.uiLabel9.TabIndex = 277;
+            this.uiLabel9.Text = "编码:";
+            this.uiLabel9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btn_StopAutoTest
+            // uiLabel7
             // 
-            this.btn_StopAutoTest.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_StopAutoTest.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_StopAutoTest.Location = new System.Drawing.Point(29, 88);
-            this.btn_StopAutoTest.MinimumSize = new System.Drawing.Size(1, 1);
-            this.btn_StopAutoTest.Name = "btn_StopAutoTest";
-            this.btn_StopAutoTest.Size = new System.Drawing.Size(194, 47);
-            this.btn_StopAutoTest.TabIndex = 0;
-            this.btn_StopAutoTest.Text = "停止测试";
-            this.btn_StopAutoTest.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_StopAutoTest.Click += new System.EventHandler(this.btn_StopAutoTest_Click);
-            // 
-            // btn_Login
-            // 
-            this.btn_Login.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_Login.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Login.Location = new System.Drawing.Point(29, 141);
-            this.btn_Login.MinimumSize = new System.Drawing.Size(1, 1);
-            this.btn_Login.Name = "btn_Login";
-            this.btn_Login.Size = new System.Drawing.Size(194, 47);
-            this.btn_Login.TabIndex = 0;
-            this.btn_Login.Text = "权限登录";
-            this.btn_Login.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_Login.Click += new System.EventHandler(this.btn_Login_Click);
+            this.uiLabel7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiLabel7.Location = new System.Drawing.Point(6, 423);
+            this.uiLabel7.Name = "uiLabel7";
+            this.uiLabel7.Size = new System.Drawing.Size(82, 17);
+            this.uiLabel7.TabIndex = 278;
+            this.uiLabel7.Text = "产品编码:";
+            this.uiLabel7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Product_Label
             // 
             this.Product_Label.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Product_Label.Location = new System.Drawing.Point(4, 283);
+            this.Product_Label.Location = new System.Drawing.Point(4, 387);
             this.Product_Label.Name = "Product_Label";
             this.Product_Label.Size = new System.Drawing.Size(82, 17);
             this.Product_Label.TabIndex = 266;
@@ -560,12 +550,12 @@ namespace CCDInspection.UI.Forms
             // 
             this.uiGroupBox1.Controls.Add(this.txt_SoftOptStatus);
             this.uiGroupBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox1.Location = new System.Drawing.Point(7, 640);
+            this.uiGroupBox1.Location = new System.Drawing.Point(4, 822);
             this.uiGroupBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiGroupBox1.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox1.Name = "uiGroupBox1";
             this.uiGroupBox1.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox1.Size = new System.Drawing.Size(584, 122);
+            this.uiGroupBox1.Size = new System.Drawing.Size(1204, 173);
             this.uiGroupBox1.TabIndex = 275;
             this.uiGroupBox1.Text = "设备状态";
             this.uiGroupBox1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -576,7 +566,7 @@ namespace CCDInspection.UI.Forms
             this.txt_SoftOptStatus.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_SoftOptStatus.Location = new System.Drawing.Point(0, 32);
             this.txt_SoftOptStatus.Name = "txt_SoftOptStatus";
-            this.txt_SoftOptStatus.Size = new System.Drawing.Size(584, 90);
+            this.txt_SoftOptStatus.Size = new System.Drawing.Size(1204, 141);
             this.txt_SoftOptStatus.TabIndex = 24;
             this.txt_SoftOptStatus.Text = "";
             this.txt_SoftOptStatus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.txt_SoftOptStatus_MouseDown);
@@ -655,12 +645,12 @@ namespace CCDInspection.UI.Forms
             // 
             this.groip.Controls.Add(this.txt_AlarmInfo);
             this.groip.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groip.Location = new System.Drawing.Point(601, 639);
+            this.groip.Location = new System.Drawing.Point(1216, 822);
             this.groip.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groip.MinimumSize = new System.Drawing.Size(1, 1);
             this.groip.Name = "groip";
             this.groip.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.groip.Size = new System.Drawing.Size(584, 122);
+            this.groip.Size = new System.Drawing.Size(721, 173);
             this.groip.TabIndex = 276;
             this.groip.Text = "报警信息";
             this.groip.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -671,7 +661,7 @@ namespace CCDInspection.UI.Forms
             this.txt_AlarmInfo.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_AlarmInfo.Location = new System.Drawing.Point(0, 32);
             this.txt_AlarmInfo.Name = "txt_AlarmInfo";
-            this.txt_AlarmInfo.Size = new System.Drawing.Size(584, 90);
+            this.txt_AlarmInfo.Size = new System.Drawing.Size(721, 141);
             this.txt_AlarmInfo.TabIndex = 24;
             this.txt_AlarmInfo.Text = "";
             this.txt_AlarmInfo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.txt_AlarmInfo_MouseDown);
@@ -681,7 +671,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage6.Controls.Add(this.uiGroupBox17);
             this.tabPage6.Location = new System.Drawing.Point(0, 40);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(200, 60);
+            this.tabPage6.Size = new System.Drawing.Size(1144, 736);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "运动控制";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -696,7 +686,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox17.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox17.Name = "uiGroupBox17";
             this.uiGroupBox17.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox17.Size = new System.Drawing.Size(1278, 519);
+            this.uiGroupBox17.Size = new System.Drawing.Size(1142, 731);
             this.uiGroupBox17.TabIndex = 0;
             this.uiGroupBox17.Text = "轴控";
             this.uiGroupBox17.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -736,7 +726,7 @@ namespace CCDInspection.UI.Forms
             this.gb_AxisSet.MinimumSize = new System.Drawing.Size(1, 1);
             this.gb_AxisSet.Name = "gb_AxisSet";
             this.gb_AxisSet.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.gb_AxisSet.Size = new System.Drawing.Size(525, 248);
+            this.gb_AxisSet.Size = new System.Drawing.Size(691, 696);
             this.gb_AxisSet.TabIndex = 80;
             this.gb_AxisSet.Text = "轴基本参数";
             this.gb_AxisSet.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -759,12 +749,12 @@ namespace CCDInspection.UI.Forms
             "13",
             "14",
             "16"});
-            this.cmb_HomeModel.Location = new System.Drawing.Point(330, 97);
+            this.cmb_HomeModel.Location = new System.Drawing.Point(388, 259);
             this.cmb_HomeModel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cmb_HomeModel.MinimumSize = new System.Drawing.Size(63, 0);
             this.cmb_HomeModel.Name = "cmb_HomeModel";
             this.cmb_HomeModel.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
-            this.cmb_HomeModel.Size = new System.Drawing.Size(63, 27);
+            this.cmb_HomeModel.Size = new System.Drawing.Size(81, 27);
             this.cmb_HomeModel.TabIndex = 268;
             this.cmb_HomeModel.Text = "4";
             this.cmb_HomeModel.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -775,7 +765,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_SaveAxisBasicCnf.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_SaveAxisBasicCnf.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_SaveAxisBasicCnf.Location = new System.Drawing.Point(421, 18);
+            this.btn_SaveAxisBasicCnf.Location = new System.Drawing.Point(476, 459);
             this.btn_SaveAxisBasicCnf.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_SaveAxisBasicCnf.Name = "btn_SaveAxisBasicCnf";
             this.btn_SaveAxisBasicCnf.Size = new System.Drawing.Size(100, 35);
@@ -787,7 +777,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel22
             // 
             this.uiLabel22.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel22.Location = new System.Drawing.Point(211, 18);
+            this.uiLabel22.Location = new System.Drawing.Point(16, 179);
             this.uiLabel22.Name = "uiLabel22";
             this.uiLabel22.Size = new System.Drawing.Size(80, 35);
             this.uiLabel22.TabIndex = 265;
@@ -802,13 +792,13 @@ namespace CCDInspection.UI.Forms
             this.txt_SlowSpeed.DoubleValue = 10D;
             this.txt_SlowSpeed.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_SlowSpeed.IntValue = 10;
-            this.txt_SlowSpeed.Location = new System.Drawing.Point(330, 26);
+            this.txt_SlowSpeed.Location = new System.Drawing.Point(116, 181);
             this.txt_SlowSpeed.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_SlowSpeed.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_SlowSpeed.Name = "txt_SlowSpeed";
             this.txt_SlowSpeed.Padding = new System.Windows.Forms.Padding(5);
             this.txt_SlowSpeed.ShowText = false;
-            this.txt_SlowSpeed.Size = new System.Drawing.Size(63, 27);
+            this.txt_SlowSpeed.Size = new System.Drawing.Size(96, 35);
             this.txt_SlowSpeed.TabIndex = 263;
             this.txt_SlowSpeed.Text = "10";
             this.txt_SlowSpeed.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -823,13 +813,13 @@ namespace CCDInspection.UI.Forms
             this.txt_HomeSpeed.DoubleValue = 50D;
             this.txt_HomeSpeed.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_HomeSpeed.IntValue = 50;
-            this.txt_HomeSpeed.Location = new System.Drawing.Point(330, 138);
+            this.txt_HomeSpeed.Location = new System.Drawing.Point(388, 305);
             this.txt_HomeSpeed.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_HomeSpeed.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_HomeSpeed.Name = "txt_HomeSpeed";
             this.txt_HomeSpeed.Padding = new System.Windows.Forms.Padding(5);
             this.txt_HomeSpeed.ShowText = false;
-            this.txt_HomeSpeed.Size = new System.Drawing.Size(62, 29);
+            this.txt_HomeSpeed.Size = new System.Drawing.Size(80, 29);
             this.txt_HomeSpeed.TabIndex = 264;
             this.txt_HomeSpeed.Text = "50";
             this.txt_HomeSpeed.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -839,7 +829,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel31
             // 
             this.uiLabel31.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel31.Location = new System.Drawing.Point(252, 139);
+            this.uiLabel31.Location = new System.Drawing.Point(256, 304);
             this.uiLabel31.Name = "uiLabel31";
             this.uiLabel31.Size = new System.Drawing.Size(78, 29);
             this.uiLabel31.TabIndex = 266;
@@ -849,7 +839,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel44
             // 
             this.uiLabel44.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel44.Location = new System.Drawing.Point(252, 95);
+            this.uiLabel44.Location = new System.Drawing.Point(256, 252);
             this.uiLabel44.Name = "uiLabel44";
             this.uiLabel44.Size = new System.Drawing.Size(78, 29);
             this.uiLabel44.TabIndex = 267;
@@ -859,7 +849,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel1
             // 
             this.uiLabel1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel1.Location = new System.Drawing.Point(1, 68);
+            this.uiLabel1.Location = new System.Drawing.Point(16, 68);
             this.uiLabel1.Name = "uiLabel1";
             this.uiLabel1.Size = new System.Drawing.Size(74, 23);
             this.uiLabel1.TabIndex = 45;
@@ -869,7 +859,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel2
             // 
             this.uiLabel2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel2.Location = new System.Drawing.Point(1, 101);
+            this.uiLabel2.Location = new System.Drawing.Point(16, 105);
             this.uiLabel2.Name = "uiLabel2";
             this.uiLabel2.Size = new System.Drawing.Size(74, 23);
             this.uiLabel2.TabIndex = 44;
@@ -879,7 +869,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel3
             // 
             this.uiLabel3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel3.Location = new System.Drawing.Point(1, 138);
+            this.uiLabel3.Location = new System.Drawing.Point(16, 142);
             this.uiLabel3.Name = "uiLabel3";
             this.uiLabel3.Size = new System.Drawing.Size(74, 23);
             this.uiLabel3.TabIndex = 45;
@@ -889,7 +879,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel67
             // 
             this.uiLabel67.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel67.Location = new System.Drawing.Point(396, 101);
+            this.uiLabel67.Location = new System.Drawing.Point(256, 114);
             this.uiLabel67.Name = "uiLabel67";
             this.uiLabel67.Size = new System.Drawing.Size(60, 23);
             this.uiLabel67.TabIndex = 45;
@@ -899,7 +889,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel61
             // 
             this.uiLabel61.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel61.Location = new System.Drawing.Point(136, 140);
+            this.uiLabel61.Location = new System.Drawing.Point(16, 302);
             this.uiLabel61.Name = "uiLabel61";
             this.uiLabel61.Size = new System.Drawing.Size(60, 23);
             this.uiLabel61.TabIndex = 45;
@@ -909,7 +899,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel4
             // 
             this.uiLabel4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel4.Location = new System.Drawing.Point(133, 66);
+            this.uiLabel4.Location = new System.Drawing.Point(16, 228);
             this.uiLabel4.Name = "uiLabel4";
             this.uiLabel4.Size = new System.Drawing.Size(60, 23);
             this.uiLabel4.TabIndex = 45;
@@ -919,7 +909,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel46
             // 
             this.uiLabel46.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel46.Location = new System.Drawing.Point(252, 57);
+            this.uiLabel46.Location = new System.Drawing.Point(256, 206);
             this.uiLabel46.Name = "uiLabel46";
             this.uiLabel46.Size = new System.Drawing.Size(74, 23);
             this.uiLabel46.TabIndex = 45;
@@ -929,7 +919,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel66
             // 
             this.uiLabel66.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel66.Location = new System.Drawing.Point(396, 142);
+            this.uiLabel66.Location = new System.Drawing.Point(256, 160);
             this.uiLabel66.Name = "uiLabel66";
             this.uiLabel66.Size = new System.Drawing.Size(60, 23);
             this.uiLabel66.TabIndex = 44;
@@ -939,7 +929,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel60
             // 
             this.uiLabel60.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel60.Location = new System.Drawing.Point(396, 57);
+            this.uiLabel60.Location = new System.Drawing.Point(256, 68);
             this.uiLabel60.Name = "uiLabel60";
             this.uiLabel60.Size = new System.Drawing.Size(60, 23);
             this.uiLabel60.TabIndex = 44;
@@ -949,7 +939,7 @@ namespace CCDInspection.UI.Forms
             // uiLabel47
             // 
             this.uiLabel47.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel47.Location = new System.Drawing.Point(133, 101);
+            this.uiLabel47.Location = new System.Drawing.Point(16, 265);
             this.uiLabel47.Name = "uiLabel47";
             this.uiLabel47.Size = new System.Drawing.Size(60, 23);
             this.uiLabel47.TabIndex = 44;
@@ -962,13 +952,13 @@ namespace CCDInspection.UI.Forms
             this.txt_PulseEquivalent.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_PulseEquivalent.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_PulseEquivalent.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_PulseEquivalent.Location = new System.Drawing.Point(75, 64);
+            this.txt_PulseEquivalent.Location = new System.Drawing.Point(116, 64);
             this.txt_PulseEquivalent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_PulseEquivalent.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_PulseEquivalent.Name = "txt_PulseEquivalent";
             this.txt_PulseEquivalent.Padding = new System.Windows.Forms.Padding(5);
             this.txt_PulseEquivalent.ShowText = false;
-            this.txt_PulseEquivalent.Size = new System.Drawing.Size(52, 29);
+            this.txt_PulseEquivalent.Size = new System.Drawing.Size(96, 35);
             this.txt_PulseEquivalent.TabIndex = 43;
             this.txt_PulseEquivalent.Text = "0";
             this.txt_PulseEquivalent.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -981,13 +971,13 @@ namespace CCDInspection.UI.Forms
             this.txt_NegtivePoint.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_NegtivePoint.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_NegtivePoint.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_NegtivePoint.Location = new System.Drawing.Point(456, 97);
+            this.txt_NegtivePoint.Location = new System.Drawing.Point(388, 115);
             this.txt_NegtivePoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_NegtivePoint.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_NegtivePoint.Name = "txt_NegtivePoint";
             this.txt_NegtivePoint.Padding = new System.Windows.Forms.Padding(5);
             this.txt_NegtivePoint.ShowText = false;
-            this.txt_NegtivePoint.Size = new System.Drawing.Size(56, 29);
+            this.txt_NegtivePoint.Size = new System.Drawing.Size(74, 29);
             this.txt_NegtivePoint.TabIndex = 43;
             this.txt_NegtivePoint.Text = "0";
             this.txt_NegtivePoint.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1000,13 +990,13 @@ namespace CCDInspection.UI.Forms
             this.txt_AutoSpeed.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_AutoSpeed.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_AutoSpeed.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_AutoSpeed.Location = new System.Drawing.Point(75, 99);
+            this.txt_AutoSpeed.Location = new System.Drawing.Point(116, 103);
             this.txt_AutoSpeed.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_AutoSpeed.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_AutoSpeed.Name = "txt_AutoSpeed";
             this.txt_AutoSpeed.Padding = new System.Windows.Forms.Padding(5);
             this.txt_AutoSpeed.ShowText = false;
-            this.txt_AutoSpeed.Size = new System.Drawing.Size(52, 29);
+            this.txt_AutoSpeed.Size = new System.Drawing.Size(96, 35);
             this.txt_AutoSpeed.TabIndex = 43;
             this.txt_AutoSpeed.Text = "0";
             this.txt_AutoSpeed.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1019,13 +1009,13 @@ namespace CCDInspection.UI.Forms
             this.txt_OriginPoint.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_OriginPoint.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_OriginPoint.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_OriginPoint.Location = new System.Drawing.Point(196, 136);
+            this.txt_OriginPoint.Location = new System.Drawing.Point(116, 298);
             this.txt_OriginPoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_OriginPoint.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_OriginPoint.Name = "txt_OriginPoint";
             this.txt_OriginPoint.Padding = new System.Windows.Forms.Padding(5);
             this.txt_OriginPoint.ShowText = false;
-            this.txt_OriginPoint.Size = new System.Drawing.Size(51, 29);
+            this.txt_OriginPoint.Size = new System.Drawing.Size(96, 35);
             this.txt_OriginPoint.TabIndex = 43;
             this.txt_OriginPoint.Text = "0";
             this.txt_OriginPoint.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1038,13 +1028,13 @@ namespace CCDInspection.UI.Forms
             this.txt_AlarmPoint.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_AlarmPoint.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_AlarmPoint.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_AlarmPoint.Location = new System.Drawing.Point(456, 141);
+            this.txt_AlarmPoint.Location = new System.Drawing.Point(388, 163);
             this.txt_AlarmPoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_AlarmPoint.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_AlarmPoint.Name = "txt_AlarmPoint";
             this.txt_AlarmPoint.Padding = new System.Windows.Forms.Padding(5);
             this.txt_AlarmPoint.ShowText = false;
-            this.txt_AlarmPoint.Size = new System.Drawing.Size(56, 29);
+            this.txt_AlarmPoint.Size = new System.Drawing.Size(74, 29);
             this.txt_AlarmPoint.TabIndex = 43;
             this.txt_AlarmPoint.Text = "0";
             this.txt_AlarmPoint.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1057,13 +1047,13 @@ namespace CCDInspection.UI.Forms
             this.txt_PositiveSoftLimit.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_PositiveSoftLimit.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_PositiveSoftLimit.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_PositiveSoftLimit.Location = new System.Drawing.Point(75, 135);
+            this.txt_PositiveSoftLimit.Location = new System.Drawing.Point(116, 142);
             this.txt_PositiveSoftLimit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_PositiveSoftLimit.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_PositiveSoftLimit.Name = "txt_PositiveSoftLimit";
             this.txt_PositiveSoftLimit.Padding = new System.Windows.Forms.Padding(5);
             this.txt_PositiveSoftLimit.ShowText = false;
-            this.txt_PositiveSoftLimit.Size = new System.Drawing.Size(52, 29);
+            this.txt_PositiveSoftLimit.Size = new System.Drawing.Size(96, 35);
             this.txt_PositiveSoftLimit.TabIndex = 43;
             this.txt_PositiveSoftLimit.Text = "0";
             this.txt_PositiveSoftLimit.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1076,13 +1066,13 @@ namespace CCDInspection.UI.Forms
             this.txt_PositivePoint.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_PositivePoint.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_PositivePoint.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_PositivePoint.Location = new System.Drawing.Point(456, 56);
+            this.txt_PositivePoint.Location = new System.Drawing.Point(388, 67);
             this.txt_PositivePoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_PositivePoint.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_PositivePoint.Name = "txt_PositivePoint";
             this.txt_PositivePoint.Padding = new System.Windows.Forms.Padding(5);
             this.txt_PositivePoint.ShowText = false;
-            this.txt_PositivePoint.Size = new System.Drawing.Size(56, 29);
+            this.txt_PositivePoint.Size = new System.Drawing.Size(74, 29);
             this.txt_PositivePoint.TabIndex = 43;
             this.txt_PositivePoint.Text = "0";
             this.txt_PositivePoint.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1095,13 +1085,13 @@ namespace CCDInspection.UI.Forms
             this.txt_Acceleration.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_Acceleration.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_Acceleration.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_Acceleration.Location = new System.Drawing.Point(196, 60);
+            this.txt_Acceleration.Location = new System.Drawing.Point(116, 220);
             this.txt_Acceleration.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_Acceleration.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_Acceleration.Name = "txt_Acceleration";
             this.txt_Acceleration.Padding = new System.Windows.Forms.Padding(5);
             this.txt_Acceleration.ShowText = false;
-            this.txt_Acceleration.Size = new System.Drawing.Size(51, 29);
+            this.txt_Acceleration.Size = new System.Drawing.Size(96, 35);
             this.txt_Acceleration.TabIndex = 43;
             this.txt_Acceleration.Text = "0";
             this.txt_Acceleration.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1114,13 +1104,13 @@ namespace CCDInspection.UI.Forms
             this.txt_Deceleration.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_Deceleration.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_Deceleration.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_Deceleration.Location = new System.Drawing.Point(196, 97);
+            this.txt_Deceleration.Location = new System.Drawing.Point(116, 259);
             this.txt_Deceleration.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_Deceleration.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_Deceleration.Name = "txt_Deceleration";
             this.txt_Deceleration.Padding = new System.Windows.Forms.Padding(5);
             this.txt_Deceleration.ShowText = false;
-            this.txt_Deceleration.Size = new System.Drawing.Size(51, 29);
+            this.txt_Deceleration.Size = new System.Drawing.Size(96, 35);
             this.txt_Deceleration.TabIndex = 43;
             this.txt_Deceleration.Text = "0";
             this.txt_Deceleration.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1133,13 +1123,13 @@ namespace CCDInspection.UI.Forms
             this.txt_NegativeSoftLimit.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.txt_NegativeSoftLimit.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_NegativeSoftLimit.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_NegativeSoftLimit.Location = new System.Drawing.Point(330, 54);
+            this.txt_NegativeSoftLimit.Location = new System.Drawing.Point(388, 211);
             this.txt_NegativeSoftLimit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txt_NegativeSoftLimit.MinimumSize = new System.Drawing.Size(1, 16);
             this.txt_NegativeSoftLimit.Name = "txt_NegativeSoftLimit";
             this.txt_NegativeSoftLimit.Padding = new System.Windows.Forms.Padding(5);
             this.txt_NegativeSoftLimit.ShowText = false;
-            this.txt_NegativeSoftLimit.Size = new System.Drawing.Size(62, 29);
+            this.txt_NegativeSoftLimit.Size = new System.Drawing.Size(80, 29);
             this.txt_NegativeSoftLimit.TabIndex = 43;
             this.txt_NegativeSoftLimit.Text = "0";
             this.txt_NegativeSoftLimit.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1166,7 +1156,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox20.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox20.Name = "uiGroupBox20";
             this.uiGroupBox20.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox20.Size = new System.Drawing.Size(447, 248);
+            this.uiGroupBox20.Size = new System.Drawing.Size(447, 711);
             this.uiGroupBox20.TabIndex = 3;
             this.uiGroupBox20.Text = "手动";
             this.uiGroupBox20.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1217,7 +1207,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_GoHome.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_GoHome.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_GoHome.Location = new System.Drawing.Point(221, 141);
+            this.btn_GoHome.Location = new System.Drawing.Point(283, 277);
             this.btn_GoHome.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_GoHome.Name = "btn_GoHome";
             this.btn_GoHome.Size = new System.Drawing.Size(104, 45);
@@ -1248,10 +1238,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_ZHome.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ZHome.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ZHome.Location = new System.Drawing.Point(336, 25);
+            this.btn_ZHome.Location = new System.Drawing.Point(283, 398);
             this.btn_ZHome.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_ZHome.Name = "btn_ZHome";
-            this.btn_ZHome.Size = new System.Drawing.Size(104, 50);
+            this.btn_ZHome.Size = new System.Drawing.Size(104, 45);
             this.btn_ZHome.TabIndex = 380;
             this.btn_ZHome.Tag = "";
             this.btn_ZHome.Text = "Z复位";
@@ -1262,7 +1252,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_ClearAlarm.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ClearAlarm.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ClearAlarm.Location = new System.Drawing.Point(336, 83);
+            this.btn_ClearAlarm.Location = new System.Drawing.Point(283, 519);
             this.btn_ClearAlarm.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_ClearAlarm.Name = "btn_ClearAlarm";
             this.btn_ClearAlarm.Size = new System.Drawing.Size(104, 45);
@@ -1275,7 +1265,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_AllAxisStop.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_AllAxisStop.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_AllAxisStop.Location = new System.Drawing.Point(336, 141);
+            this.btn_AllAxisStop.Location = new System.Drawing.Point(283, 640);
             this.btn_AllAxisStop.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_AllAxisStop.Name = "btn_AllAxisStop";
             this.btn_AllAxisStop.Size = new System.Drawing.Size(104, 45);
@@ -1288,10 +1278,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_ZUp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ZUp.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ZUp.Location = new System.Drawing.Point(221, 26);
+            this.btn_ZUp.Location = new System.Drawing.Point(283, 35);
             this.btn_ZUp.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_ZUp.Name = "btn_ZUp";
-            this.btn_ZUp.Size = new System.Drawing.Size(96, 50);
+            this.btn_ZUp.Size = new System.Drawing.Size(104, 45);
             this.btn_ZUp.TabIndex = 380;
             this.btn_ZUp.Tag = "Z";
             this.btn_ZUp.Text = "上";
@@ -1303,10 +1293,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_ZDown.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ZDown.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ZDown.Location = new System.Drawing.Point(221, 86);
+            this.btn_ZDown.Location = new System.Drawing.Point(283, 156);
             this.btn_ZDown.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_ZDown.Name = "btn_ZDown";
-            this.btn_ZDown.Size = new System.Drawing.Size(94, 50);
+            this.btn_ZDown.Size = new System.Drawing.Size(104, 45);
             this.btn_ZDown.TabIndex = 380;
             this.btn_ZDown.Tag = "Z";
             this.btn_ZDown.Text = "下";
@@ -1341,7 +1331,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage4.Controls.Add(this.uiTabControl3);
             this.tabPage4.Location = new System.Drawing.Point(0, 40);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(200, 60);
+            this.tabPage4.Size = new System.Drawing.Size(1144, 736);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "参数设置";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1377,6 +1367,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox7.Controls.Add(this.SaveData_Button);
             this.uiGroupBox7.Controls.Add(this.Btn_DelConfig);
             this.uiGroupBox7.Controls.Add(this.Begin_AddPoint_Btm);
+            this.uiGroupBox7.Controls.Add(this.btn_addvm);
             this.uiGroupBox7.Controls.Add(this.dataGridView3);
             this.uiGroupBox7.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiGroupBox7.Location = new System.Drawing.Point(4, 5);
@@ -1384,7 +1375,7 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox7.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox7.Name = "uiGroupBox7";
             this.uiGroupBox7.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox7.Size = new System.Drawing.Size(1268, 360);
+            this.uiGroupBox7.Size = new System.Drawing.Size(1135, 686);
             this.uiGroupBox7.TabIndex = 1;
             this.uiGroupBox7.Text = "产品型号设定";
             this.uiGroupBox7.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1392,7 +1383,7 @@ namespace CCDInspection.UI.Forms
             // SaveData_Button
             // 
             this.SaveData_Button.Font = new System.Drawing.Font("楷体", 22F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.SaveData_Button.Location = new System.Drawing.Point(839, 156);
+            this.SaveData_Button.Location = new System.Drawing.Point(942, 296);
             this.SaveData_Button.Margin = new System.Windows.Forms.Padding(2);
             this.SaveData_Button.Name = "SaveData_Button";
             this.SaveData_Button.Size = new System.Drawing.Size(161, 55);
@@ -1404,7 +1395,7 @@ namespace CCDInspection.UI.Forms
             // Btn_DelConfig
             // 
             this.Btn_DelConfig.Font = new System.Drawing.Font("楷体", 22F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_DelConfig.Location = new System.Drawing.Point(839, 94);
+            this.Btn_DelConfig.Location = new System.Drawing.Point(942, 165);
             this.Btn_DelConfig.Margin = new System.Windows.Forms.Padding(2);
             this.Btn_DelConfig.Name = "Btn_DelConfig";
             this.Btn_DelConfig.Size = new System.Drawing.Size(161, 55);
@@ -1416,7 +1407,7 @@ namespace CCDInspection.UI.Forms
             // Begin_AddPoint_Btm
             // 
             this.Begin_AddPoint_Btm.Font = new System.Drawing.Font("楷体", 22F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Begin_AddPoint_Btm.Location = new System.Drawing.Point(839, 32);
+            this.Begin_AddPoint_Btm.Location = new System.Drawing.Point(942, 34);
             this.Begin_AddPoint_Btm.Margin = new System.Windows.Forms.Padding(2);
             this.Begin_AddPoint_Btm.Name = "Begin_AddPoint_Btm";
             this.Begin_AddPoint_Btm.Size = new System.Drawing.Size(161, 55);
@@ -1424,6 +1415,18 @@ namespace CCDInspection.UI.Forms
             this.Begin_AddPoint_Btm.Text = "开始配置";
             this.Begin_AddPoint_Btm.UseVisualStyleBackColor = true;
             this.Begin_AddPoint_Btm.Click += new System.EventHandler(this.Begin_AddPlcPoint_Btm_Click);
+            // 
+            // btn_addvm
+            // 
+            this.btn_addvm.Font = new System.Drawing.Font("楷体", 22F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_addvm.Location = new System.Drawing.Point(942, 412);
+            this.btn_addvm.Margin = new System.Windows.Forms.Padding(2);
+            this.btn_addvm.Name = "btn_addvm";
+            this.btn_addvm.Size = new System.Drawing.Size(161, 49);
+            this.btn_addvm.TabIndex = 60;
+            this.btn_addvm.Text = "添加视觉方案";
+            this.btn_addvm.UseVisualStyleBackColor = true;
+            this.btn_addvm.Click += new System.EventHandler(this.btn_addvm_Click);
             // 
             // dataGridView3
             // 
@@ -1441,7 +1444,7 @@ namespace CCDInspection.UI.Forms
             this.dataGridView3.Name = "dataGridView3";
             this.dataGridView3.RowHeadersWidth = 62;
             this.dataGridView3.RowTemplate.Height = 30;
-            this.dataGridView3.Size = new System.Drawing.Size(833, 319);
+            this.dataGridView3.Size = new System.Drawing.Size(925, 623);
             this.dataGridView3.TabIndex = 50;
             // 
             // dataGridViewTextBoxColumn10
@@ -1479,6 +1482,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.Column4.HeaderText = "Z轴高度";
             this.Column4.Name = "Column4";
+            this.Column4.Width = 180;
             // 
             // tabPage10
             // 
@@ -1486,7 +1490,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage10.Controls.Add(this.gb_CheckItems);
             this.tabPage10.Location = new System.Drawing.Point(0, 40);
             this.tabPage10.Name = "tabPage10";
-            this.tabPage10.Size = new System.Drawing.Size(200, 60);
+            this.tabPage10.Size = new System.Drawing.Size(1276, 666);
             this.tabPage10.TabIndex = 1;
             this.tabPage10.Text = "登录、MES设定";
             this.tabPage10.UseVisualStyleBackColor = true;
@@ -1849,27 +1853,102 @@ namespace CCDInspection.UI.Forms
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.tabControl1);
-            this.tabPage3.Controls.Add(this.uiGroupBox13);
             this.tabPage3.Controls.Add(this.gb_Optional);
             this.tabPage3.Location = new System.Drawing.Point(0, 40);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(200, 60);
+            this.tabPage3.Size = new System.Drawing.Size(1144, 736);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "功能与屏蔽";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // gb_Optional
+            // 
+            this.gb_Optional.Controls.Add(this.ckb_ShieldLightCurtain);
+            this.gb_Optional.Controls.Add(this.ckb_CylinderShield);
+            this.gb_Optional.Controls.Add(this.ckb_SaveNGSourceImage);
+            this.gb_Optional.Controls.Add(this.ckb_SaveSourceImage);
+            this.gb_Optional.Controls.Add(this.ckb_ShieldBuzzer);
+            this.gb_Optional.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.gb_Optional.Location = new System.Drawing.Point(3, 6);
+            this.gb_Optional.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.gb_Optional.MinimumSize = new System.Drawing.Size(1, 1);
+            this.gb_Optional.Name = "gb_Optional";
+            this.gb_Optional.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
+            this.gb_Optional.Size = new System.Drawing.Size(1143, 728);
+            this.gb_Optional.TabIndex = 261;
+            this.gb_Optional.Text = "功能选择";
+            this.gb_Optional.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ckb_ShieldLightCurtain
+            // 
+            this.ckb_ShieldLightCurtain.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ckb_ShieldLightCurtain.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ckb_ShieldLightCurtain.Location = new System.Drawing.Point(96, 120);
+            this.ckb_ShieldLightCurtain.MinimumSize = new System.Drawing.Size(1, 1);
+            this.ckb_ShieldLightCurtain.Name = "ckb_ShieldLightCurtain";
+            this.ckb_ShieldLightCurtain.Size = new System.Drawing.Size(95, 29);
+            this.ckb_ShieldLightCurtain.TabIndex = 2;
+            this.ckb_ShieldLightCurtain.Text = "屏蔽光栅";
+            this.ckb_ShieldLightCurtain.CheckedChanged += new System.EventHandler(this.ckb_ShieldLightCurtain_CheckedChanged);
+            // 
+            // ckb_CylinderShield
+            // 
+            this.ckb_CylinderShield.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ckb_CylinderShield.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ckb_CylinderShield.Location = new System.Drawing.Point(96, 205);
+            this.ckb_CylinderShield.MinimumSize = new System.Drawing.Size(1, 1);
+            this.ckb_CylinderShield.Name = "ckb_CylinderShield";
+            this.ckb_CylinderShield.Size = new System.Drawing.Size(95, 29);
+            this.ckb_CylinderShield.TabIndex = 1;
+            this.ckb_CylinderShield.Text = "气缸屏蔽";
+            this.ckb_CylinderShield.CheckedChanged += new System.EventHandler(this.ckb_CylinderShield_CheckedChanged);
+            // 
+            // ckb_SaveNGSourceImage
+            // 
+            this.ckb_SaveNGSourceImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ckb_SaveNGSourceImage.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ckb_SaveNGSourceImage.Location = new System.Drawing.Point(96, 375);
+            this.ckb_SaveNGSourceImage.MinimumSize = new System.Drawing.Size(1, 1);
+            this.ckb_SaveNGSourceImage.Name = "ckb_SaveNGSourceImage";
+            this.ckb_SaveNGSourceImage.Size = new System.Drawing.Size(127, 29);
+            this.ckb_SaveNGSourceImage.TabIndex = 0;
+            this.ckb_SaveNGSourceImage.Text = "保存NG原图";
+            this.ckb_SaveNGSourceImage.CheckedChanged += new System.EventHandler(this.ckb_SaveNGSourceImage_CheckedChanged);
+            // 
+            // ckb_SaveSourceImage
+            // 
+            this.ckb_SaveSourceImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ckb_SaveSourceImage.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ckb_SaveSourceImage.Location = new System.Drawing.Point(96, 290);
+            this.ckb_SaveSourceImage.MinimumSize = new System.Drawing.Size(1, 1);
+            this.ckb_SaveSourceImage.Name = "ckb_SaveSourceImage";
+            this.ckb_SaveSourceImage.Size = new System.Drawing.Size(95, 29);
+            this.ckb_SaveSourceImage.TabIndex = 0;
+            this.ckb_SaveSourceImage.Text = "保存原图";
+            this.ckb_SaveSourceImage.CheckedChanged += new System.EventHandler(this.ckb_SaveSourceImage_CheckedChanged);
+            // 
+            // ckb_ShieldBuzzer
+            // 
+            this.ckb_ShieldBuzzer.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ckb_ShieldBuzzer.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ckb_ShieldBuzzer.Location = new System.Drawing.Point(96, 35);
+            this.ckb_ShieldBuzzer.MinimumSize = new System.Drawing.Size(1, 1);
+            this.ckb_ShieldBuzzer.Name = "ckb_ShieldBuzzer";
+            this.ckb_ShieldBuzzer.Size = new System.Drawing.Size(117, 29);
+            this.ckb_ShieldBuzzer.TabIndex = 0;
+            this.ckb_ShieldBuzzer.Text = "启用蜂鸣器";
+            this.ckb_ShieldBuzzer.CheckedChanged += new System.EventHandler(this.ckb_ShieldBuzzer_CheckedChanged);
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage14);
             this.tabControl1.Controls.Add(this.tabPage15);
-            this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tabControl1.Location = new System.Drawing.Point(762, 13);
+            this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.tabControl1.Location = new System.Drawing.Point(1411, 49);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(236, 375);
+            this.tabControl1.Size = new System.Drawing.Size(236, 765);
             this.tabControl1.TabIndex = 264;
-            this.tabControl1.Visible = false;
             // 
             // tabPage14
             // 
@@ -1886,10 +1965,10 @@ namespace CCDInspection.UI.Forms
             this.tabPage14.Controls.Add(this.txt_CurrentOKYeild);
             this.tabPage14.Controls.Add(this.label42);
             this.tabPage14.Controls.Add(this.label40);
-            this.tabPage14.Location = new System.Drawing.Point(4, 26);
+            this.tabPage14.Location = new System.Drawing.Point(4, 30);
             this.tabPage14.Name = "tabPage14";
             this.tabPage14.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage14.Size = new System.Drawing.Size(228, 345);
+            this.tabPage14.Size = new System.Drawing.Size(228, 731);
             this.tabPage14.TabIndex = 0;
             this.tabPage14.Text = "当天产量";
             this.tabPage14.UseVisualStyleBackColor = true;
@@ -1898,13 +1977,14 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_ClearCurrentCount.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ClearCurrentCount.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_ClearCurrentCount.Location = new System.Drawing.Point(24, 282);
+            this.btn_ClearCurrentCount.Location = new System.Drawing.Point(46, 345);
             this.btn_ClearCurrentCount.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_ClearCurrentCount.Name = "btn_ClearCurrentCount";
-            this.btn_ClearCurrentCount.Size = new System.Drawing.Size(113, 27);
+            this.btn_ClearCurrentCount.Size = new System.Drawing.Size(113, 49);
             this.btn_ClearCurrentCount.TabIndex = 262;
             this.btn_ClearCurrentCount.Text = "清除当天计数";
             this.btn_ClearCurrentCount.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_ClearCurrentCount.Click += new System.EventHandler(this.btn_ClearCurrentCount_Click);
             // 
             // label37
             // 
@@ -1921,7 +2001,7 @@ namespace CCDInspection.UI.Forms
             this.label48.AutoSize = true;
             this.label48.Location = new System.Drawing.Point(24, 12);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(86, 17);
+            this.label48.Size = new System.Drawing.Size(113, 21);
             this.label48.TabIndex = 254;
             this.label48.Text = "当天OK产品：";
             // 
@@ -1929,7 +2009,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_CurrentOKCount.Location = new System.Drawing.Point(64, 36);
             this.txt_CurrentOKCount.Name = "txt_CurrentOKCount";
-            this.txt_CurrentOKCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_CurrentOKCount.Size = new System.Drawing.Size(93, 29);
             this.txt_CurrentOKCount.TabIndex = 259;
             // 
             // label38
@@ -1946,7 +2026,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_CurrentNGYeild.Location = new System.Drawing.Point(69, 252);
             this.txt_CurrentNGYeild.Name = "txt_CurrentNGYeild";
-            this.txt_CurrentNGYeild.Size = new System.Drawing.Size(68, 23);
+            this.txt_CurrentNGYeild.Size = new System.Drawing.Size(68, 29);
             this.txt_CurrentNGYeild.TabIndex = 255;
             // 
             // label46
@@ -1954,7 +2034,7 @@ namespace CCDInspection.UI.Forms
             this.label46.AutoSize = true;
             this.label46.Location = new System.Drawing.Point(24, 66);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(87, 17);
+            this.label46.Size = new System.Drawing.Size(115, 21);
             this.label46.TabIndex = 253;
             this.label46.Text = "当天NG产品：";
             // 
@@ -1962,7 +2042,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_CurrentNGCount.Location = new System.Drawing.Point(64, 90);
             this.txt_CurrentNGCount.Name = "txt_CurrentNGCount";
-            this.txt_CurrentNGCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_CurrentNGCount.Size = new System.Drawing.Size(93, 29);
             this.txt_CurrentNGCount.TabIndex = 258;
             // 
             // label44
@@ -1970,7 +2050,7 @@ namespace CCDInspection.UI.Forms
             this.label44.AutoSize = true;
             this.label44.Location = new System.Drawing.Point(24, 120);
             this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(92, 17);
+            this.label44.Size = new System.Drawing.Size(122, 21);
             this.label44.TabIndex = 252;
             this.label44.Text = "当天生产产品：";
             // 
@@ -1978,14 +2058,14 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_CurrentCount.Location = new System.Drawing.Point(64, 144);
             this.txt_CurrentCount.Name = "txt_CurrentCount";
-            this.txt_CurrentCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_CurrentCount.Size = new System.Drawing.Size(93, 29);
             this.txt_CurrentCount.TabIndex = 257;
             // 
             // txt_CurrentOKYeild
             // 
             this.txt_CurrentOKYeild.Location = new System.Drawing.Point(69, 198);
             this.txt_CurrentOKYeild.Name = "txt_CurrentOKYeild";
-            this.txt_CurrentOKYeild.Size = new System.Drawing.Size(68, 23);
+            this.txt_CurrentOKYeild.Size = new System.Drawing.Size(68, 29);
             this.txt_CurrentOKYeild.TabIndex = 256;
             // 
             // label42
@@ -1993,7 +2073,7 @@ namespace CCDInspection.UI.Forms
             this.label42.AutoSize = true;
             this.label42.Location = new System.Drawing.Point(24, 174);
             this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(68, 17);
+            this.label42.Size = new System.Drawing.Size(90, 21);
             this.label42.TabIndex = 251;
             this.label42.Text = "当天良率：";
             // 
@@ -2002,7 +2082,7 @@ namespace CCDInspection.UI.Forms
             this.label40.AutoSize = true;
             this.label40.Location = new System.Drawing.Point(24, 228);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(75, 17);
+            this.label40.Size = new System.Drawing.Size(99, 21);
             this.label40.TabIndex = 250;
             this.label40.Text = "当天NG率：";
             // 
@@ -2021,10 +2101,10 @@ namespace CCDInspection.UI.Forms
             this.tabPage15.Controls.Add(this.label10);
             this.tabPage15.Controls.Add(this.label11);
             this.tabPage15.Controls.Add(this.btn_ClearTotalCount);
-            this.tabPage15.Location = new System.Drawing.Point(4, 26);
+            this.tabPage15.Location = new System.Drawing.Point(4, 30);
             this.tabPage15.Name = "tabPage15";
             this.tabPage15.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage15.Size = new System.Drawing.Size(228, 345);
+            this.tabPage15.Size = new System.Drawing.Size(228, 731);
             this.tabPage15.TabIndex = 1;
             this.tabPage15.Text = "总产量";
             this.tabPage15.UseVisualStyleBackColor = true;
@@ -2044,7 +2124,7 @@ namespace CCDInspection.UI.Forms
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(17, 15);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 17);
+            this.label2.Size = new System.Drawing.Size(97, 21);
             this.label2.TabIndex = 285;
             this.label2.Text = "总OK产品：";
             // 
@@ -2052,7 +2132,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_TotalOKCount.Location = new System.Drawing.Point(57, 39);
             this.txt_TotalOKCount.Name = "txt_TotalOKCount";
-            this.txt_TotalOKCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_TotalOKCount.Size = new System.Drawing.Size(93, 29);
             this.txt_TotalOKCount.TabIndex = 290;
             // 
             // label3
@@ -2069,7 +2149,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_TotalNGYeild.Location = new System.Drawing.Point(62, 255);
             this.txt_TotalNGYeild.Name = "txt_TotalNGYeild";
-            this.txt_TotalNGYeild.Size = new System.Drawing.Size(68, 23);
+            this.txt_TotalNGYeild.Size = new System.Drawing.Size(68, 29);
             this.txt_TotalNGYeild.TabIndex = 286;
             // 
             // label5
@@ -2077,7 +2157,7 @@ namespace CCDInspection.UI.Forms
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(17, 69);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(75, 17);
+            this.label5.Size = new System.Drawing.Size(99, 21);
             this.label5.TabIndex = 284;
             this.label5.Text = "总NG产品：";
             // 
@@ -2085,7 +2165,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_TotalNGCount.Location = new System.Drawing.Point(57, 93);
             this.txt_TotalNGCount.Name = "txt_TotalNGCount";
-            this.txt_TotalNGCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_TotalNGCount.Size = new System.Drawing.Size(93, 29);
             this.txt_TotalNGCount.TabIndex = 289;
             // 
             // label9
@@ -2093,7 +2173,7 @@ namespace CCDInspection.UI.Forms
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(17, 123);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(80, 17);
+            this.label9.Size = new System.Drawing.Size(106, 21);
             this.label9.TabIndex = 283;
             this.label9.Text = "总生产产品：";
             // 
@@ -2101,14 +2181,14 @@ namespace CCDInspection.UI.Forms
             // 
             this.txt_TotalCount.Location = new System.Drawing.Point(57, 147);
             this.txt_TotalCount.Name = "txt_TotalCount";
-            this.txt_TotalCount.Size = new System.Drawing.Size(93, 23);
+            this.txt_TotalCount.Size = new System.Drawing.Size(93, 29);
             this.txt_TotalCount.TabIndex = 288;
             // 
             // txt_TotalOKYeild
             // 
             this.txt_TotalOKYeild.Location = new System.Drawing.Point(62, 201);
             this.txt_TotalOKYeild.Name = "txt_TotalOKYeild";
-            this.txt_TotalOKYeild.Size = new System.Drawing.Size(68, 23);
+            this.txt_TotalOKYeild.Size = new System.Drawing.Size(68, 29);
             this.txt_TotalOKYeild.TabIndex = 287;
             // 
             // label10
@@ -2116,7 +2196,7 @@ namespace CCDInspection.UI.Forms
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(17, 177);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(56, 17);
+            this.label10.Size = new System.Drawing.Size(74, 21);
             this.label10.TabIndex = 282;
             this.label10.Text = "总良率：";
             // 
@@ -2125,7 +2205,7 @@ namespace CCDInspection.UI.Forms
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(17, 231);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 17);
+            this.label11.Size = new System.Drawing.Size(83, 21);
             this.label11.TabIndex = 281;
             this.label11.Text = "总NG率：";
             // 
@@ -2140,378 +2220,7 @@ namespace CCDInspection.UI.Forms
             this.btn_ClearTotalCount.TabIndex = 280;
             this.btn_ClearTotalCount.Text = "清除总计数";
             this.btn_ClearTotalCount.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            // 
-            // uiGroupBox13
-            // 
-            this.uiGroupBox13.Controls.Add(this.uiLabel37);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox18);
-            this.uiGroupBox13.Controls.Add(this.uiLabel36);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox17);
-            this.uiGroupBox13.Controls.Add(this.uiLabel35);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox16);
-            this.uiGroupBox13.Controls.Add(this.uiLabel25);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox12);
-            this.uiGroupBox13.Controls.Add(this.uiLabel30);
-            this.uiGroupBox13.Controls.Add(this.uiLabel32);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox13);
-            this.uiGroupBox13.Controls.Add(this.uiLabel43);
-            this.uiGroupBox13.Controls.Add(this.uiLabel42);
-            this.uiGroupBox13.Controls.Add(this.uiLabel41);
-            this.uiGroupBox13.Controls.Add(this.uiLabel40);
-            this.uiGroupBox13.Controls.Add(this.uiLabel39);
-            this.uiGroupBox13.Controls.Add(this.uiLabel38);
-            this.uiGroupBox13.Controls.Add(this.uiLabel34);
-            this.uiGroupBox13.Controls.Add(this.uiLabel33);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox14);
-            this.uiGroupBox13.Controls.Add(this.uiTextBox15);
-            this.uiGroupBox13.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox13.Location = new System.Drawing.Point(351, 4);
-            this.uiGroupBox13.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiGroupBox13.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiGroupBox13.Name = "uiGroupBox13";
-            this.uiGroupBox13.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox13.Size = new System.Drawing.Size(404, 376);
-            this.uiGroupBox13.TabIndex = 260;
-            this.uiGroupBox13.Text = "延迟设置";
-            this.uiGroupBox13.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.uiGroupBox13.Visible = false;
-            // 
-            // uiLabel37
-            // 
-            this.uiLabel37.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel37.Location = new System.Drawing.Point(57, 234);
-            this.uiLabel37.Name = "uiLabel37";
-            this.uiLabel37.Size = new System.Drawing.Size(107, 23);
-            this.uiLabel37.TabIndex = 264;
-            this.uiLabel37.Text = "重置回原点计次";
-            this.uiLabel37.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox18
-            // 
-            this.uiTextBox18.ButtonSymbol = 61761;
-            this.uiTextBox18.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox18.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox18.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox18.Location = new System.Drawing.Point(171, 231);
-            this.uiTextBox18.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox18.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox18.Name = "uiTextBox18";
-            this.uiTextBox18.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox18.ShowText = false;
-            this.uiTextBox18.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox18.TabIndex = 260;
-            this.uiTextBox18.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox18.Watermark = "";
-            // 
-            // uiLabel36
-            // 
-            this.uiLabel36.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel36.Location = new System.Drawing.Point(58, 198);
-            this.uiLabel36.Name = "uiLabel36";
-            this.uiLabel36.Size = new System.Drawing.Size(107, 23);
-            this.uiLabel36.TabIndex = 264;
-            this.uiLabel36.Text = "扫码超时时间";
-            this.uiLabel36.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox17
-            // 
-            this.uiTextBox17.ButtonSymbol = 61761;
-            this.uiTextBox17.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox17.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox17.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox17.Location = new System.Drawing.Point(172, 195);
-            this.uiTextBox17.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox17.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox17.Name = "uiTextBox17";
-            this.uiTextBox17.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox17.ShowText = false;
-            this.uiTextBox17.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox17.TabIndex = 260;
-            this.uiTextBox17.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox17.Watermark = "";
-            // 
-            // uiLabel35
-            // 
-            this.uiLabel35.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel35.Location = new System.Drawing.Point(57, 164);
-            this.uiLabel35.Name = "uiLabel35";
-            this.uiLabel35.Size = new System.Drawing.Size(107, 23);
-            this.uiLabel35.TabIndex = 264;
-            this.uiLabel35.Text = "扫码触发时间";
-            this.uiLabel35.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox16
-            // 
-            this.uiTextBox16.ButtonSymbol = 61761;
-            this.uiTextBox16.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox16.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox16.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox16.Location = new System.Drawing.Point(171, 160);
-            this.uiTextBox16.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox16.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox16.Name = "uiTextBox16";
-            this.uiTextBox16.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox16.ShowText = false;
-            this.uiTextBox16.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox16.TabIndex = 260;
-            this.uiTextBox16.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox16.Watermark = "";
-            // 
-            // uiLabel25
-            // 
-            this.uiLabel25.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel25.Location = new System.Drawing.Point(58, 130);
-            this.uiLabel25.Name = "uiLabel25";
-            this.uiLabel25.Size = new System.Drawing.Size(107, 23);
-            this.uiLabel25.TabIndex = 264;
-            this.uiLabel25.Text = "出板超时检测";
-            this.uiLabel25.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox12
-            // 
-            this.uiTextBox12.ButtonSymbol = 61761;
-            this.uiTextBox12.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox12.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox12.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox12.Location = new System.Drawing.Point(172, 127);
-            this.uiTextBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox12.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox12.Name = "uiTextBox12";
-            this.uiTextBox12.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox12.ShowText = false;
-            this.uiTextBox12.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox12.TabIndex = 260;
-            this.uiTextBox12.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox12.Watermark = "";
-            // 
-            // uiLabel30
-            // 
-            this.uiLabel30.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel30.Location = new System.Drawing.Point(58, 100);
-            this.uiLabel30.Name = "uiLabel30";
-            this.uiLabel30.Size = new System.Drawing.Size(107, 23);
-            this.uiLabel30.TabIndex = 265;
-            this.uiLabel30.Text = "进板检测延时";
-            this.uiLabel30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel32
-            // 
-            this.uiLabel32.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel32.Location = new System.Drawing.Point(89, 66);
-            this.uiLabel32.Name = "uiLabel32";
-            this.uiLabel32.Size = new System.Drawing.Size(75, 23);
-            this.uiLabel32.TabIndex = 266;
-            this.uiLabel32.Text = "出板延时";
-            this.uiLabel32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox13
-            // 
-            this.uiTextBox13.ButtonSymbol = 61761;
-            this.uiTextBox13.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox13.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox13.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox13.Location = new System.Drawing.Point(172, 93);
-            this.uiTextBox13.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox13.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox13.Name = "uiTextBox13";
-            this.uiTextBox13.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox13.ShowText = false;
-            this.uiTextBox13.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox13.TabIndex = 261;
-            this.uiTextBox13.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox13.Watermark = "";
-            // 
-            // uiLabel43
-            // 
-            this.uiLabel43.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel43.Location = new System.Drawing.Point(270, 234);
-            this.uiLabel43.Name = "uiLabel43";
-            this.uiLabel43.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel43.TabIndex = 267;
-            this.uiLabel43.Text = "次";
-            this.uiLabel43.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel42
-            // 
-            this.uiLabel42.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel42.Location = new System.Drawing.Point(271, 198);
-            this.uiLabel42.Name = "uiLabel42";
-            this.uiLabel42.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel42.TabIndex = 267;
-            this.uiLabel42.Text = "秒";
-            this.uiLabel42.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel41
-            // 
-            this.uiLabel41.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel41.Location = new System.Drawing.Point(270, 163);
-            this.uiLabel41.Name = "uiLabel41";
-            this.uiLabel41.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel41.TabIndex = 267;
-            this.uiLabel41.Text = "秒";
-            this.uiLabel41.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel40
-            // 
-            this.uiLabel40.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel40.Location = new System.Drawing.Point(271, 130);
-            this.uiLabel40.Name = "uiLabel40";
-            this.uiLabel40.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel40.TabIndex = 267;
-            this.uiLabel40.Text = "秒";
-            this.uiLabel40.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel39
-            // 
-            this.uiLabel39.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel39.Location = new System.Drawing.Point(271, 96);
-            this.uiLabel39.Name = "uiLabel39";
-            this.uiLabel39.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel39.TabIndex = 267;
-            this.uiLabel39.Text = "秒";
-            this.uiLabel39.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel38
-            // 
-            this.uiLabel38.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel38.Location = new System.Drawing.Point(270, 64);
-            this.uiLabel38.Name = "uiLabel38";
-            this.uiLabel38.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel38.TabIndex = 267;
-            this.uiLabel38.Text = "秒";
-            this.uiLabel38.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel34
-            // 
-            this.uiLabel34.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel34.Location = new System.Drawing.Point(271, 32);
-            this.uiLabel34.Name = "uiLabel34";
-            this.uiLabel34.Size = new System.Drawing.Size(27, 23);
-            this.uiLabel34.TabIndex = 267;
-            this.uiLabel34.Text = "秒";
-            this.uiLabel34.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiLabel33
-            // 
-            this.uiLabel33.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiLabel33.Location = new System.Drawing.Point(89, 32);
-            this.uiLabel33.Name = "uiLabel33";
-            this.uiLabel33.Size = new System.Drawing.Size(76, 23);
-            this.uiLabel33.TabIndex = 267;
-            this.uiLabel33.Text = "停板延时";
-            this.uiLabel33.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // uiTextBox14
-            // 
-            this.uiTextBox14.ButtonSymbol = 61761;
-            this.uiTextBox14.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox14.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox14.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox14.Location = new System.Drawing.Point(172, 61);
-            this.uiTextBox14.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox14.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox14.Name = "uiTextBox14";
-            this.uiTextBox14.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox14.ShowText = false;
-            this.uiTextBox14.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox14.TabIndex = 262;
-            this.uiTextBox14.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox14.Watermark = "";
-            // 
-            // uiTextBox15
-            // 
-            this.uiTextBox15.ButtonSymbol = 61761;
-            this.uiTextBox15.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.uiTextBox15.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.uiTextBox15.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiTextBox15.Location = new System.Drawing.Point(172, 29);
-            this.uiTextBox15.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiTextBox15.MinimumSize = new System.Drawing.Size(1, 16);
-            this.uiTextBox15.Name = "uiTextBox15";
-            this.uiTextBox15.Padding = new System.Windows.Forms.Padding(5);
-            this.uiTextBox15.ShowText = false;
-            this.uiTextBox15.Size = new System.Drawing.Size(92, 29);
-            this.uiTextBox15.TabIndex = 263;
-            this.uiTextBox15.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.uiTextBox15.Watermark = "";
-            // 
-            // gb_Optional
-            // 
-            this.gb_Optional.Controls.Add(this.ckb_ShieldLightCurtain);
-            this.gb_Optional.Controls.Add(this.ckb_CylinderShield);
-            this.gb_Optional.Controls.Add(this.ckb_SaveNGSourceImage);
-            this.gb_Optional.Controls.Add(this.ckb_SaveSourceImage);
-            this.gb_Optional.Controls.Add(this.ckb_ShieldBuzzer);
-            this.gb_Optional.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.gb_Optional.Location = new System.Drawing.Point(3, 6);
-            this.gb_Optional.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.gb_Optional.MinimumSize = new System.Drawing.Size(1, 1);
-            this.gb_Optional.Name = "gb_Optional";
-            this.gb_Optional.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.gb_Optional.Size = new System.Drawing.Size(338, 374);
-            this.gb_Optional.TabIndex = 261;
-            this.gb_Optional.Text = "功能选择";
-            this.gb_Optional.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ckb_ShieldLightCurtain
-            // 
-            this.ckb_ShieldLightCurtain.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_ShieldLightCurtain.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_ShieldLightCurtain.Location = new System.Drawing.Point(13, 65);
-            this.ckb_ShieldLightCurtain.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_ShieldLightCurtain.Name = "ckb_ShieldLightCurtain";
-            this.ckb_ShieldLightCurtain.Size = new System.Drawing.Size(95, 29);
-            this.ckb_ShieldLightCurtain.TabIndex = 2;
-            this.ckb_ShieldLightCurtain.Text = "屏蔽光栅";
-            this.ckb_ShieldLightCurtain.CheckedChanged += new System.EventHandler(this.ckb_ShieldLightCurtain_CheckedChanged);
-            // 
-            // ckb_CylinderShield
-            // 
-            this.ckb_CylinderShield.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_CylinderShield.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_CylinderShield.Location = new System.Drawing.Point(13, 100);
-            this.ckb_CylinderShield.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_CylinderShield.Name = "ckb_CylinderShield";
-            this.ckb_CylinderShield.Size = new System.Drawing.Size(95, 29);
-            this.ckb_CylinderShield.TabIndex = 1;
-            this.ckb_CylinderShield.Text = "气缸屏蔽";
-            this.ckb_CylinderShield.CheckedChanged += new System.EventHandler(this.ckb_CylinderShield_CheckedChanged);
-            // 
-            // ckb_SaveNGSourceImage
-            // 
-            this.ckb_SaveNGSourceImage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_SaveNGSourceImage.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_SaveNGSourceImage.Location = new System.Drawing.Point(165, 59);
-            this.ckb_SaveNGSourceImage.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_SaveNGSourceImage.Name = "ckb_SaveNGSourceImage";
-            this.ckb_SaveNGSourceImage.Size = new System.Drawing.Size(127, 29);
-            this.ckb_SaveNGSourceImage.TabIndex = 0;
-            this.ckb_SaveNGSourceImage.Text = "保存NG原图";
-            this.ckb_SaveNGSourceImage.CheckedChanged += new System.EventHandler(this.ckb_SaveNGSourceImage_CheckedChanged);
-            // 
-            // ckb_SaveSourceImage
-            // 
-            this.ckb_SaveSourceImage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_SaveSourceImage.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_SaveSourceImage.Location = new System.Drawing.Point(165, 24);
-            this.ckb_SaveSourceImage.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_SaveSourceImage.Name = "ckb_SaveSourceImage";
-            this.ckb_SaveSourceImage.Size = new System.Drawing.Size(95, 29);
-            this.ckb_SaveSourceImage.TabIndex = 0;
-            this.ckb_SaveSourceImage.Text = "保存原图";
-            this.ckb_SaveSourceImage.CheckedChanged += new System.EventHandler(this.ckb_SaveSourceImage_CheckedChanged);
-            // 
-            // ckb_ShieldBuzzer
-            // 
-            this.ckb_ShieldBuzzer.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ckb_ShieldBuzzer.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ckb_ShieldBuzzer.Location = new System.Drawing.Point(13, 30);
-            this.ckb_ShieldBuzzer.MinimumSize = new System.Drawing.Size(1, 1);
-            this.ckb_ShieldBuzzer.Name = "ckb_ShieldBuzzer";
-            this.ckb_ShieldBuzzer.Size = new System.Drawing.Size(117, 29);
-            this.ckb_ShieldBuzzer.TabIndex = 0;
-            this.ckb_ShieldBuzzer.Text = "屏蔽蜂鸣器";
-            this.ckb_ShieldBuzzer.CheckedChanged += new System.EventHandler(this.ckb_ShieldBuzzer_CheckedChanged);
+            this.btn_ClearTotalCount.Click += new System.EventHandler(this.btn_ClearTotalCount_Click);
             // 
             // tabPage2
             // 
@@ -2543,12 +2252,12 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox10.Controls.Add(this.iO_In12);
             this.uiGroupBox10.Controls.Add(this.iO_In0);
             this.uiGroupBox10.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox10.Location = new System.Drawing.Point(4, 7);
+            this.uiGroupBox10.Location = new System.Drawing.Point(4, 5);
             this.uiGroupBox10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiGroupBox10.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox10.Name = "uiGroupBox10";
             this.uiGroupBox10.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox10.Size = new System.Drawing.Size(455, 486);
+            this.uiGroupBox10.Size = new System.Drawing.Size(575, 731);
             this.uiGroupBox10.TabIndex = 91;
             this.uiGroupBox10.Text = "输入";
             this.uiGroupBox10.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2558,7 +2267,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In11.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In11.IOIndex = 11;
             this.iO_In11.IOName = "输入1";
-            this.iO_In11.Location = new System.Drawing.Point(3, 441);
+            this.iO_In11.Location = new System.Drawing.Point(3, 682);
             this.iO_In11.Name = "iO_In11";
             this.iO_In11.Size = new System.Drawing.Size(200, 32);
             this.iO_In11.TabIndex = 57;
@@ -2569,7 +2278,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In7.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In7.IOIndex = 7;
             this.iO_In7.IOName = "输入1";
-            this.iO_In7.Location = new System.Drawing.Point(3, 293);
+            this.iO_In7.Location = new System.Drawing.Point(3, 446);
             this.iO_In7.Name = "iO_In7";
             this.iO_In7.Size = new System.Drawing.Size(200, 32);
             this.iO_In7.TabIndex = 57;
@@ -2580,7 +2289,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In15.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In15.IOIndex = 15;
             this.iO_In15.IOName = "输入1";
-            this.iO_In15.Location = new System.Drawing.Point(243, 144);
+            this.iO_In15.Location = new System.Drawing.Point(245, 210);
             this.iO_In15.Name = "iO_In15";
             this.iO_In15.Size = new System.Drawing.Size(200, 32);
             this.iO_In15.TabIndex = 57;
@@ -2591,7 +2300,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In3.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In3.IOIndex = 3;
             this.iO_In3.IOName = "输入1";
-            this.iO_In3.Location = new System.Drawing.Point(3, 144);
+            this.iO_In3.Location = new System.Drawing.Point(3, 210);
             this.iO_In3.Name = "iO_In3";
             this.iO_In3.Size = new System.Drawing.Size(200, 32);
             this.iO_In3.TabIndex = 57;
@@ -2602,7 +2311,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In10.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In10.IOIndex = 10;
             this.iO_In10.IOName = "输入1";
-            this.iO_In10.Location = new System.Drawing.Point(3, 404);
+            this.iO_In10.Location = new System.Drawing.Point(3, 623);
             this.iO_In10.Name = "iO_In10";
             this.iO_In10.Size = new System.Drawing.Size(200, 32);
             this.iO_In10.TabIndex = 57;
@@ -2613,7 +2322,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In6.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In6.IOIndex = 6;
             this.iO_In6.IOName = "输入1";
-            this.iO_In6.Location = new System.Drawing.Point(3, 256);
+            this.iO_In6.Location = new System.Drawing.Point(3, 387);
             this.iO_In6.Name = "iO_In6";
             this.iO_In6.Size = new System.Drawing.Size(200, 32);
             this.iO_In6.TabIndex = 57;
@@ -2624,7 +2333,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In14.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In14.IOIndex = 14;
             this.iO_In14.IOName = "输入1";
-            this.iO_In14.Location = new System.Drawing.Point(243, 107);
+            this.iO_In14.Location = new System.Drawing.Point(245, 151);
             this.iO_In14.Name = "iO_In14";
             this.iO_In14.Size = new System.Drawing.Size(200, 32);
             this.iO_In14.TabIndex = 57;
@@ -2635,7 +2344,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In2.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In2.IOIndex = 2;
             this.iO_In2.IOName = "输入1";
-            this.iO_In2.Location = new System.Drawing.Point(3, 107);
+            this.iO_In2.Location = new System.Drawing.Point(3, 151);
             this.iO_In2.Name = "iO_In2";
             this.iO_In2.Size = new System.Drawing.Size(200, 32);
             this.iO_In2.TabIndex = 57;
@@ -2646,7 +2355,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In9.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In9.IOIndex = 9;
             this.iO_In9.IOName = "输入1";
-            this.iO_In9.Location = new System.Drawing.Point(3, 367);
+            this.iO_In9.Location = new System.Drawing.Point(3, 564);
             this.iO_In9.Name = "iO_In9";
             this.iO_In9.Size = new System.Drawing.Size(200, 32);
             this.iO_In9.TabIndex = 57;
@@ -2657,7 +2366,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In5.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In5.IOIndex = 5;
             this.iO_In5.IOName = "输入1";
-            this.iO_In5.Location = new System.Drawing.Point(3, 218);
+            this.iO_In5.Location = new System.Drawing.Point(3, 328);
             this.iO_In5.Name = "iO_In5";
             this.iO_In5.Size = new System.Drawing.Size(200, 32);
             this.iO_In5.TabIndex = 57;
@@ -2668,7 +2377,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In13.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In13.IOIndex = 13;
             this.iO_In13.IOName = "输入1";
-            this.iO_In13.Location = new System.Drawing.Point(243, 70);
+            this.iO_In13.Location = new System.Drawing.Point(245, 92);
             this.iO_In13.Name = "iO_In13";
             this.iO_In13.Size = new System.Drawing.Size(200, 32);
             this.iO_In13.TabIndex = 57;
@@ -2679,7 +2388,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In1.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In1.IOIndex = 1;
             this.iO_In1.IOName = "输入1";
-            this.iO_In1.Location = new System.Drawing.Point(3, 70);
+            this.iO_In1.Location = new System.Drawing.Point(3, 92);
             this.iO_In1.Name = "iO_In1";
             this.iO_In1.Size = new System.Drawing.Size(200, 32);
             this.iO_In1.TabIndex = 57;
@@ -2690,7 +2399,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In8.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In8.IOIndex = 8;
             this.iO_In8.IOName = "输入1";
-            this.iO_In8.Location = new System.Drawing.Point(3, 330);
+            this.iO_In8.Location = new System.Drawing.Point(3, 505);
             this.iO_In8.Name = "iO_In8";
             this.iO_In8.Size = new System.Drawing.Size(200, 32);
             this.iO_In8.TabIndex = 57;
@@ -2701,7 +2410,7 @@ namespace CCDInspection.UI.Forms
             this.iO_In4.BackColor = System.Drawing.SystemColors.Control;
             this.iO_In4.IOIndex = 4;
             this.iO_In4.IOName = "输入1";
-            this.iO_In4.Location = new System.Drawing.Point(3, 181);
+            this.iO_In4.Location = new System.Drawing.Point(3, 269);
             this.iO_In4.Name = "iO_In4";
             this.iO_In4.Size = new System.Drawing.Size(200, 32);
             this.iO_In4.TabIndex = 57;
@@ -2748,12 +2457,12 @@ namespace CCDInspection.UI.Forms
             this.uiGroupBox9.Controls.Add(this.iO_Out7);
             this.uiGroupBox9.Controls.Add(this.iO_Out4);
             this.uiGroupBox9.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox9.Location = new System.Drawing.Point(476, 7);
+            this.uiGroupBox9.Location = new System.Drawing.Point(587, 5);
             this.uiGroupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiGroupBox9.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox9.Name = "uiGroupBox9";
             this.uiGroupBox9.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox9.Size = new System.Drawing.Size(519, 486);
+            this.uiGroupBox9.Size = new System.Drawing.Size(553, 731);
             this.uiGroupBox9.TabIndex = 90;
             this.uiGroupBox9.Text = "输出";
             this.uiGroupBox9.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2763,7 +2472,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out8.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out8.IOIndex = 8;
             this.iO_Out8.IOName = "输出1";
-            this.iO_Out8.Location = new System.Drawing.Point(10, 329);
+            this.iO_Out8.Location = new System.Drawing.Point(10, 505);
             this.iO_Out8.Name = "iO_Out8";
             this.iO_Out8.Size = new System.Drawing.Size(220, 32);
             this.iO_Out8.TabIndex = 220;
@@ -2785,7 +2494,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out5.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out5.IOIndex = 5;
             this.iO_Out5.IOName = "输出1";
-            this.iO_Out5.Location = new System.Drawing.Point(10, 218);
+            this.iO_Out5.Location = new System.Drawing.Point(10, 328);
             this.iO_Out5.Name = "iO_Out5";
             this.iO_Out5.Size = new System.Drawing.Size(220, 32);
             this.iO_Out5.TabIndex = 38;
@@ -2796,7 +2505,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out9.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out9.IOIndex = 9;
             this.iO_Out9.IOName = "输出1";
-            this.iO_Out9.Location = new System.Drawing.Point(10, 366);
+            this.iO_Out9.Location = new System.Drawing.Point(10, 564);
             this.iO_Out9.Name = "iO_Out9";
             this.iO_Out9.Size = new System.Drawing.Size(220, 32);
             this.iO_Out9.TabIndex = 218;
@@ -2807,7 +2516,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out2.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out2.IOIndex = 2;
             this.iO_Out2.IOName = "输出1";
-            this.iO_Out2.Location = new System.Drawing.Point(10, 107);
+            this.iO_Out2.Location = new System.Drawing.Point(10, 151);
             this.iO_Out2.Name = "iO_Out2";
             this.iO_Out2.Size = new System.Drawing.Size(220, 32);
             this.iO_Out2.TabIndex = 37;
@@ -2818,7 +2527,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out10.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out10.IOIndex = 10;
             this.iO_Out10.IOName = "输出1";
-            this.iO_Out10.Location = new System.Drawing.Point(10, 403);
+            this.iO_Out10.Location = new System.Drawing.Point(10, 623);
             this.iO_Out10.Name = "iO_Out10";
             this.iO_Out10.Size = new System.Drawing.Size(220, 32);
             this.iO_Out10.TabIndex = 216;
@@ -2829,7 +2538,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out6.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out6.IOIndex = 6;
             this.iO_Out6.IOName = "输出1";
-            this.iO_Out6.Location = new System.Drawing.Point(10, 255);
+            this.iO_Out6.Location = new System.Drawing.Point(10, 387);
             this.iO_Out6.Name = "iO_Out6";
             this.iO_Out6.Size = new System.Drawing.Size(220, 32);
             this.iO_Out6.TabIndex = 32;
@@ -2840,7 +2549,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out11.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out11.IOIndex = 11;
             this.iO_Out11.IOName = "输出1";
-            this.iO_Out11.Location = new System.Drawing.Point(10, 440);
+            this.iO_Out11.Location = new System.Drawing.Point(10, 682);
             this.iO_Out11.Name = "iO_Out11";
             this.iO_Out11.Size = new System.Drawing.Size(220, 32);
             this.iO_Out11.TabIndex = 222;
@@ -2862,7 +2571,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out3.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out3.IOIndex = 3;
             this.iO_Out3.IOName = "输出1";
-            this.iO_Out3.Location = new System.Drawing.Point(10, 144);
+            this.iO_Out3.Location = new System.Drawing.Point(10, 210);
             this.iO_Out3.Name = "iO_Out3";
             this.iO_Out3.Size = new System.Drawing.Size(220, 32);
             this.iO_Out3.TabIndex = 36;
@@ -2873,7 +2582,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out1.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out1.IOIndex = 1;
             this.iO_Out1.IOName = "输出1";
-            this.iO_Out1.Location = new System.Drawing.Point(10, 70);
+            this.iO_Out1.Location = new System.Drawing.Point(10, 92);
             this.iO_Out1.Name = "iO_Out1";
             this.iO_Out1.Size = new System.Drawing.Size(220, 32);
             this.iO_Out1.TabIndex = 33;
@@ -2884,7 +2593,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out13.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out13.IOIndex = 13;
             this.iO_Out13.IOName = "输出1";
-            this.iO_Out13.Location = new System.Drawing.Point(257, 70);
+            this.iO_Out13.Location = new System.Drawing.Point(257, 92);
             this.iO_Out13.Name = "iO_Out13";
             this.iO_Out13.Size = new System.Drawing.Size(220, 32);
             this.iO_Out13.TabIndex = 224;
@@ -2895,7 +2604,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out14.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out14.IOIndex = 14;
             this.iO_Out14.IOName = "输出1";
-            this.iO_Out14.Location = new System.Drawing.Point(257, 107);
+            this.iO_Out14.Location = new System.Drawing.Point(257, 151);
             this.iO_Out14.Name = "iO_Out14";
             this.iO_Out14.Size = new System.Drawing.Size(220, 32);
             this.iO_Out14.TabIndex = 226;
@@ -2906,7 +2615,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out15.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out15.IOIndex = 15;
             this.iO_Out15.IOName = "输出1";
-            this.iO_Out15.Location = new System.Drawing.Point(257, 144);
+            this.iO_Out15.Location = new System.Drawing.Point(257, 210);
             this.iO_Out15.Name = "iO_Out15";
             this.iO_Out15.Size = new System.Drawing.Size(220, 32);
             this.iO_Out15.TabIndex = 212;
@@ -2917,7 +2626,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out7.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out7.IOIndex = 7;
             this.iO_Out7.IOName = "输出1";
-            this.iO_Out7.Location = new System.Drawing.Point(10, 292);
+            this.iO_Out7.Location = new System.Drawing.Point(10, 446);
             this.iO_Out7.Name = "iO_Out7";
             this.iO_Out7.Size = new System.Drawing.Size(220, 32);
             this.iO_Out7.TabIndex = 34;
@@ -2928,7 +2637,7 @@ namespace CCDInspection.UI.Forms
             this.iO_Out4.BackColor = System.Drawing.SystemColors.Control;
             this.iO_Out4.IOIndex = 4;
             this.iO_Out4.IOName = "输出1";
-            this.iO_Out4.Location = new System.Drawing.Point(10, 181);
+            this.iO_Out4.Location = new System.Drawing.Point(10, 269);
             this.iO_Out4.Name = "iO_Out4";
             this.iO_Out4.Size = new System.Drawing.Size(220, 32);
             this.iO_Out4.TabIndex = 35;
@@ -2936,45 +2645,24 @@ namespace CCDInspection.UI.Forms
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.gbTestResult);
             this.tabPage1.Controls.Add(this.uiGroupBox15);
             this.tabPage1.Location = new System.Drawing.Point(0, 40);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(1034, 560);
+            this.tabPage1.Size = new System.Drawing.Size(1144, 736);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "主界面";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // gbTestResult
-            // 
-            this.gbTestResult.Controls.Add(this.rtb_TestResult);
-            this.gbTestResult.Location = new System.Drawing.Point(859, 11);
-            this.gbTestResult.Name = "gbTestResult";
-            this.gbTestResult.Size = new System.Drawing.Size(172, 539);
-            this.gbTestResult.TabIndex = 5;
-            this.gbTestResult.TabStop = false;
-            this.gbTestResult.Text = "检测结果";
-            // 
-            // rtb_TestResult
-            // 
-            this.rtb_TestResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtb_TestResult.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rtb_TestResult.Location = new System.Drawing.Point(3, 25);
-            this.rtb_TestResult.Name = "rtb_TestResult";
-            this.rtb_TestResult.Size = new System.Drawing.Size(166, 511);
-            this.rtb_TestResult.TabIndex = 0;
-            this.rtb_TestResult.Text = "";
             // 
             // uiGroupBox15
             // 
             this.uiGroupBox15.Controls.Add(this.vmRenderControl1);
             this.uiGroupBox15.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiGroupBox15.Location = new System.Drawing.Point(4, -6);
+            this.uiGroupBox15.Location = new System.Drawing.Point(-3, 0);
             this.uiGroupBox15.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.uiGroupBox15.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiGroupBox15.Name = "uiGroupBox15";
             this.uiGroupBox15.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
-            this.uiGroupBox15.Size = new System.Drawing.Size(851, 559);
+            this.uiGroupBox15.Size = new System.Drawing.Size(1143, 732);
             this.uiGroupBox15.TabIndex = 1;
             this.uiGroupBox15.Text = "原图显示";
             this.uiGroupBox15.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2987,11 +2675,31 @@ namespace CCDInspection.UI.Forms
             this.vmRenderControl1.ImageSource = null;
             this.vmRenderControl1.IsShowCustomROIMenu = false;
             this.vmRenderControl1.Location = new System.Drawing.Point(0, 32);
-            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(144831, 152377, 144831, 152377);
+            this.vmRenderControl1.Margin = new System.Windows.Forms.Padding(813755, 856151, 813755, 856151);
             this.vmRenderControl1.ModuleSource = null;
             this.vmRenderControl1.Name = "vmRenderControl1";
-            this.vmRenderControl1.Size = new System.Drawing.Size(851, 527);
+            this.vmRenderControl1.Size = new System.Drawing.Size(1143, 700);
             this.vmRenderControl1.TabIndex = 0;
+            // 
+            // gbTestResult
+            // 
+            this.gbTestResult.Controls.Add(this.rtb_TestResult);
+            this.gbTestResult.Location = new System.Drawing.Point(1153, 49);
+            this.gbTestResult.Name = "gbTestResult";
+            this.gbTestResult.Size = new System.Drawing.Size(256, 765);
+            this.gbTestResult.TabIndex = 5;
+            this.gbTestResult.TabStop = false;
+            this.gbTestResult.Text = "检测记录";
+            // 
+            // rtb_TestResult
+            // 
+            this.rtb_TestResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb_TestResult.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.rtb_TestResult.Location = new System.Drawing.Point(3, 22);
+            this.rtb_TestResult.Name = "rtb_TestResult";
+            this.rtb_TestResult.Size = new System.Drawing.Size(250, 740);
+            this.rtb_TestResult.TabIndex = 0;
+            this.rtb_TestResult.Text = "";
             // 
             // uiTabControl1
             // 
@@ -3008,7 +2716,7 @@ namespace CCDInspection.UI.Forms
             this.uiTabControl1.MainPage = "";
             this.uiTabControl1.Name = "uiTabControl1";
             this.uiTabControl1.SelectedIndex = 0;
-            this.uiTabControl1.Size = new System.Drawing.Size(1034, 600);
+            this.uiTabControl1.Size = new System.Drawing.Size(1144, 776);
             this.uiTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.uiTabControl1.TabIndex = 0;
             this.uiTabControl1.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -3022,7 +2730,7 @@ namespace CCDInspection.UI.Forms
             this.tabPage5.Controls.Add(this.dataGridView1);
             this.tabPage5.Location = new System.Drawing.Point(0, 40);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(200, 60);
+            this.tabPage5.Size = new System.Drawing.Size(1144, 736);
             this.tabPage5.TabIndex = 6;
             this.tabPage5.Text = "数据查询";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -3031,10 +2739,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_open.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_open.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_open.Location = new System.Drawing.Point(839, 223);
+            this.btn_open.Location = new System.Drawing.Point(932, 228);
             this.btn_open.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_open.Name = "btn_open";
-            this.btn_open.Size = new System.Drawing.Size(101, 34);
+            this.btn_open.Size = new System.Drawing.Size(191, 34);
             this.btn_open.TabIndex = 9;
             this.btn_open.Text = "打开文件夹";
             this.btn_open.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -3043,10 +2751,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.btn_print.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_print.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_print.Location = new System.Drawing.Point(839, 183);
+            this.btn_print.Location = new System.Drawing.Point(932, 182);
             this.btn_print.MinimumSize = new System.Drawing.Size(1, 1);
             this.btn_print.Name = "btn_print";
-            this.btn_print.Size = new System.Drawing.Size(101, 34);
+            this.btn_print.Size = new System.Drawing.Size(191, 34);
             this.btn_print.TabIndex = 9;
             this.btn_print.Text = "打印";
             this.btn_print.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -3073,7 +2781,7 @@ namespace CCDInspection.UI.Forms
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Location = new System.Drawing.Point(0, 15);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(994, 142);
+            this.groupBox2.Size = new System.Drawing.Size(1123, 142);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "筛选条件";
@@ -3081,7 +2789,7 @@ namespace CCDInspection.UI.Forms
             // ckb_enableendtime
             // 
             this.ckb_enableendtime.AutoSize = true;
-            this.ckb_enableendtime.Location = new System.Drawing.Point(344, 106);
+            this.ckb_enableendtime.Location = new System.Drawing.Point(385, 106);
             this.ckb_enableendtime.Name = "ckb_enableendtime";
             this.ckb_enableendtime.Size = new System.Drawing.Size(15, 14);
             this.ckb_enableendtime.TabIndex = 9;
@@ -3108,7 +2816,7 @@ namespace CCDInspection.UI.Forms
             // ckb_enbalecode
             // 
             this.ckb_enbalecode.AutoSize = true;
-            this.ckb_enbalecode.Location = new System.Drawing.Point(684, 41);
+            this.ckb_enbalecode.Location = new System.Drawing.Point(790, 46);
             this.ckb_enbalecode.Name = "ckb_enbalecode";
             this.ckb_enbalecode.Size = new System.Drawing.Size(15, 14);
             this.ckb_enbalecode.TabIndex = 9;
@@ -3117,7 +2825,7 @@ namespace CCDInspection.UI.Forms
             // ckb_enableType
             // 
             this.ckb_enableType.AutoSize = true;
-            this.ckb_enableType.Location = new System.Drawing.Point(344, 46);
+            this.ckb_enableType.Location = new System.Drawing.Point(385, 46);
             this.ckb_enableType.Name = "ckb_enableType";
             this.ckb_enableType.Size = new System.Drawing.Size(15, 14);
             this.ckb_enableType.TabIndex = 9;
@@ -3127,7 +2835,7 @@ namespace CCDInspection.UI.Forms
             // 
             this.dateTimePicker2.CustomFormat = "yyyy-MM-dd HH:mm:ss”";
             this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker2.Location = new System.Drawing.Point(473, 91);
+            this.dateTimePicker2.Location = new System.Drawing.Point(514, 91);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(209, 29);
             this.dateTimePicker2.TabIndex = 8;
@@ -3135,7 +2843,7 @@ namespace CCDInspection.UI.Forms
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(705, 34);
+            this.label15.Location = new System.Drawing.Point(811, 39);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(74, 21);
             this.label15.TabIndex = 7;
@@ -3144,7 +2852,7 @@ namespace CCDInspection.UI.Forms
             // com_product_code
             // 
             this.com_product_code.FormattingEnabled = true;
-            this.com_product_code.Location = new System.Drawing.Point(798, 31);
+            this.com_product_code.Location = new System.Drawing.Point(904, 39);
             this.com_product_code.Name = "com_product_code";
             this.com_product_code.Size = new System.Drawing.Size(121, 29);
             this.com_product_code.TabIndex = 6;
@@ -3153,10 +2861,10 @@ namespace CCDInspection.UI.Forms
             // 
             this.sql_select.Cursor = System.Windows.Forms.Cursors.Hand;
             this.sql_select.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.sql_select.Location = new System.Drawing.Point(702, 91);
+            this.sql_select.Location = new System.Drawing.Point(790, 91);
             this.sql_select.MinimumSize = new System.Drawing.Size(1, 1);
             this.sql_select.Name = "sql_select";
-            this.sql_select.Size = new System.Drawing.Size(217, 34);
+            this.sql_select.Size = new System.Drawing.Size(245, 34);
             this.sql_select.TabIndex = 5;
             this.sql_select.Text = "查询";
             this.sql_select.TipsFont = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -3165,7 +2873,7 @@ namespace CCDInspection.UI.Forms
             // cob_sqlProduct_model
             // 
             this.cob_sqlProduct_model.FormattingEnabled = true;
-            this.cob_sqlProduct_model.Location = new System.Drawing.Point(473, 36);
+            this.cob_sqlProduct_model.Location = new System.Drawing.Point(514, 36);
             this.cob_sqlProduct_model.Name = "cob_sqlProduct_model";
             this.cob_sqlProduct_model.Size = new System.Drawing.Size(203, 29);
             this.cob_sqlProduct_model.TabIndex = 3;
@@ -3199,7 +2907,7 @@ namespace CCDInspection.UI.Forms
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(365, 97);
+            this.label16.Location = new System.Drawing.Point(406, 97);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(74, 21);
             this.label16.TabIndex = 0;
@@ -3217,7 +2925,7 @@ namespace CCDInspection.UI.Forms
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(365, 44);
+            this.label12.Location = new System.Drawing.Point(406, 44);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(74, 21);
             this.label12.TabIndex = 0;
@@ -3244,7 +2952,7 @@ namespace CCDInspection.UI.Forms
             this.dataGridView1.Location = new System.Drawing.Point(23, 171);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(795, 352);
+            this.dataGridView1.Size = new System.Drawing.Size(810, 539);
             this.dataGridView1.TabIndex = 0;
             // 
             // time
@@ -3290,12 +2998,15 @@ namespace CCDInspection.UI.Forms
             // FrmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1326, 800);
+            this.ClientSize = new System.Drawing.Size(1920, 1032);
+            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.gbTestResult);
             this.Controls.Add(this.groip);
             this.Controls.Add(this.uiGroupBox1);
             this.Controls.Add(this.uiGroupBox2);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.uiTabControl1);
+            this.MaximizeBox = false;
             this.Name = "FrmMain";
             this.Text = "CCD外形检测";
             this.ZoomScaleRect = new System.Drawing.Rectangle(15, 15, 1336, 1000);
@@ -3307,7 +3018,6 @@ namespace CCDInspection.UI.Forms
             this.toolStrip1.PerformLayout();
             this.uiGroupBox2.ResumeLayout(false);
             this.uiGroupBox2.PerformLayout();
-            this.uiGroupBox4.ResumeLayout(false);
             this.uiGroupBox1.ResumeLayout(false);
             this.cms_PathPlan.ResumeLayout(false);
             this.cms_AssistPosition.ResumeLayout(false);
@@ -3328,19 +3038,18 @@ namespace CCDInspection.UI.Forms
             this.gb_CheckItems.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_CheckItem)).EndInit();
             this.tabPage3.ResumeLayout(false);
+            this.gb_Optional.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage14.ResumeLayout(false);
             this.tabPage14.PerformLayout();
             this.tabPage15.ResumeLayout(false);
             this.tabPage15.PerformLayout();
-            this.uiGroupBox13.ResumeLayout(false);
-            this.gb_Optional.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.uiGroupBox10.ResumeLayout(false);
             this.uiGroupBox9.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.gbTestResult.ResumeLayout(false);
             this.uiGroupBox15.ResumeLayout(false);
+            this.gbTestResult.ResumeLayout(false);
             this.uiTabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -3367,9 +3076,6 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.ToolStripLabel tslb_actionInfo;
         private System.Windows.Forms.ToolStripLabel tslbl_InfoShow;
         private Sunny.UI.UIGroupBox uiGroupBox2;
-        private Sunny.UI.UIButton btn_StopAutoTest;
-        private Sunny.UI.UIButton btn_StartAutoTest;
-        private Sunny.UI.UIButton btn_Login;
 
 
         private Sunny.UI.UILabel lbl;
@@ -3396,7 +3102,6 @@ namespace CCDInspection.UI.Forms
 
         private Sunny.UI.UILabel lbl_MachineStatus;
         private Sunny.UI.UILabel Product_Label;
-        private Sunny.UI.UIGroupBox uiGroupBox4;
         private System.Windows.Forms.TabPage tabPage6;
         private Sunny.UI.UIGroupBox uiGroupBox17;
         private Sunny.UI.UIGroupBox gb_AxisSet;
@@ -3445,6 +3150,7 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.Button SaveData_Button;
         private System.Windows.Forms.Button Btn_DelConfig;
         private System.Windows.Forms.Button Begin_AddPoint_Btm;
+        private System.Windows.Forms.Button btn_addvm;
         private System.Windows.Forms.DataGridView dataGridView3;
         private System.Windows.Forms.TabPage tabPage10;
         private Sunny.UI.UIGroupBox uiGroupBox16;
@@ -3500,28 +3206,6 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private Sunny.UI.UIButton btn_ClearTotalCount;
-        private Sunny.UI.UIGroupBox uiGroupBox13;
-        private Sunny.UI.UILabel uiLabel37;
-        private Sunny.UI.UITextBox uiTextBox18;
-        private Sunny.UI.UILabel uiLabel36;
-        private Sunny.UI.UITextBox uiTextBox17;
-        private Sunny.UI.UILabel uiLabel35;
-        private Sunny.UI.UITextBox uiTextBox16;
-        private Sunny.UI.UILabel uiLabel25;
-        private Sunny.UI.UITextBox uiTextBox12;
-        private Sunny.UI.UILabel uiLabel30;
-        private Sunny.UI.UILabel uiLabel32;
-        private Sunny.UI.UITextBox uiTextBox13;
-        private Sunny.UI.UILabel uiLabel43;
-        private Sunny.UI.UILabel uiLabel42;
-        private Sunny.UI.UILabel uiLabel41;
-        private Sunny.UI.UILabel uiLabel40;
-        private Sunny.UI.UILabel uiLabel39;
-        private Sunny.UI.UILabel uiLabel38;
-        private Sunny.UI.UILabel uiLabel34;
-        private Sunny.UI.UILabel uiLabel33;
-        private Sunny.UI.UITextBox uiTextBox14;
-        private Sunny.UI.UITextBox uiTextBox15;
         private Sunny.UI.UIGroupBox gb_Optional;
         private Sunny.UI.UICheckBox ckb_ShieldLightCurtain;
         private Sunny.UI.UICheckBox ckb_CylinderShield;
@@ -3571,11 +3255,6 @@ namespace CCDInspection.UI.Forms
         private Sunny.UI.UITabControl uiTabControl1;
         private Sunny.UI.UITextBox uiTextBox1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cob_ProductType;
@@ -3608,6 +3287,17 @@ namespace CCDInspection.UI.Forms
         private System.Windows.Forms.CheckBox ckb_enbalestartTime;
         private System.Windows.Forms.CheckBox ckb_enbalecode;
         private System.Windows.Forms.CheckBox ckb_enableProt;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.Label lbl_result;
+        private System.Windows.Forms.Label lbl_about;
+        private System.Windows.Forms.ComboBox com_productcode;
+        private Sunny.UI.UILabel lbl_currentCode;
+        private Sunny.UI.UILabel uiLabel9;
+        private Sunny.UI.UILabel uiLabel7;
     }
 }
 

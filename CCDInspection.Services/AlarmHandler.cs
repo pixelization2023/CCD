@@ -36,6 +36,8 @@ namespace CCDInspection.Services
 
             _devices.Motion?.ZAxis?.Stop();
             _devices.Motion?.EmergencyStop();
+            _devices.Motion?.WriteOutput(IOMapping.OUT_CylinderIN, true);
+            _devices.Motion?.WriteOutput(IOMapping.OUT_CylinderOUT, false);
             _devices.SetTowerLight(false, true, false, true);
 
             OnAlarm?.Invoke(code, message);
